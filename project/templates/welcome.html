@@ -1,0 +1,22 @@
+{{ define "welcome" }}
+{{ $input := . }}
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/resources/map.css">
+  </head>
+  <body>
+    {{ template "topbar" }}
+    <div class="sidebar">
+      {{ if $input.repos }}
+        {{ range $input.repos }}
+        <a href="/info/{{.}}">[{{.}}]</a>
+        {{ end }}
+      {{ else }}
+      <div class="emptyrepos">
+        <p>Sorry, you have no added repos</p>
+      </div>
+      {{ end }}
+    </div>
+  </body>
+</html>
+{{ end }}

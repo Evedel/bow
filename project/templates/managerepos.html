@@ -1,0 +1,47 @@
+{{ define "managerepos" }}
+{{ $input := . }}
+  <html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="/resources/map.css">
+    </head>
+    <body>
+      {{ template "topbar" }}
+      <div class="sidebar">
+        <a href="/managerepos/add">[add new repo]</a><br>
+        {{ if $input.repos }}
+          {{ range $input.repos }}
+          <a href="/managerepos/edit?reponame={{.}}">[{{.}}]</a>
+          {{ end }}
+        {{ else }}
+        <div class="emptyrepos">
+          <p>Sorry, you have no added repos</p>
+        </div>
+        {{ end }}
+      </div>
+      {{ if eq $input.path "add" }}
+      <div class="managerepos">
+        <form id="managerepoform">
+          Repo name: <input type="text" name="reponame"> (Just how it will be shown in this app)<br>
+          Repo addr: <input type="text" name="repohost"> (Hostname or ip:port of repo)<br>
+          Username : <input type="text" name="repouser"> (Username to connect to Repo, mandatory field)<br>
+          Password : <input type="text" name="repopass"> (Password to connect to Repo, mandatory field)<br>
+        </form>
+        <button type="submit" form="managerepoform" value="add">Add</button><a href="/managerepos/">Cancel</a>
+      </div>
+      {{ end }}
+      {{ if eq $input.path "edit" }}
+      <div class="managerepos">
+        <form id="managerepoform">
+          Repo name: <input type="text" name="reponame" value="{{ $input.chosen.reponame }}"> (Just how it will be shown in this app)<br>
+          Repo addr: <input type="text" name="repohost" value="{{ $input.chosen.repohost }}"> (Hostname or ip:port of repo)<br>
+          Username : <input type="text" name="repouser" value="{{ $input.chosen.repouser }}"> (Username to connect to Repo, mandatory field)<br>
+          Password : <input type="text" name="repopass" value="{{ $input.chosen.repopass }}"> (Password to connect to Repo, mandatory field)<br>
+        </form>
+        <button type="submit" form="managerepoform" value="add">Edit</button>
+        <a href="/managerepos/delete?reponame={{ $input.chosen.reponame }}">Delete</a>
+        <a href="/managerepos/">Cancel</a>
+      </div>
+      {{ end }}
+    </body>
+  </html>
+{{ end }}

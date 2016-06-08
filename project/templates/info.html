@@ -1,0 +1,45 @@
+{{ define "info" }}
+  <html>
+  {{ $input := . }}
+    <head>
+      <link rel="stylesheet" type="text/css" href="/resources/map.css">
+    </head>
+    <body>
+      {{ with $input.header }}
+        {{ template "topbar" . }}
+      {{ else }}
+        {{ template "topbar" }}
+      {{ end }}
+      {{ if $input.catalog }}
+        <div class="sidebar">
+          {{range $input.catalog }}
+            {{ if $input.curname }}
+              {{ if eq $input.curname . }}
+                <a class="chosen" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+              {{else}}
+                <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+              {{end}}
+            {{else}}
+              <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+            {{ end }}
+          {{end}}
+        </div>
+      {{ end }}
+      {{ if $input.tags }}
+      <div class="tags">
+          {{ range $input.tags }}
+            {{ if $input.curtag }}
+              {{ if eq $input.curtag . }}
+                <a class="chosen" href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{.}}">[{{.}}]</a>
+              {{ else }}
+                <a href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{.}}">[{{.}}]</a>
+              {{ end }}
+            {{ else }}
+              <a href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{.}}">[{{.}}]</a>
+            {{ end }}
+          {{ end }}
+      </div>
+      {{ end }}
+    </body>
+  </html>
+{{ end }}

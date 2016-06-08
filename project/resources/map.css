@@ -1,0 +1,118 @@
+body{
+  font-family: Courier;
+  background-color: #222225;
+}
+a:link, a:visited{
+  position: relative;
+  width: 95%;
+  background-color: #446688;
+  color: black;
+  padding: 14px 0px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  transition: 0.4s ease-out;
+  transition-delay: 0.01s;
+}
+a:hover, a:active{
+  width: 100%;
+  background-color: #6BC0EA;
+  opacity: 0.85;
+  transition: 0.4s ease-out;
+  transition-delay: 0.01s;
+}
+button{
+  position: relative;
+  color: black;
+  background-color: #006699;
+}
+a.chosen{
+  background-color: #0e121d;
+  color: #006699;
+}
+div.topbar{
+  position: relative;
+  width: 100%;
+  height: 50px;
+  background-color: #006699;
+  overflow: hidden;
+}
+div.topbar a:link, div.topbar a:visited{
+  width: 5%;
+  height: 100%;
+  float: right;
+  background-color: #006699;
+  padding: 14px 0px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  overflow: hidden;
+  color: black;
+  transition: 0.4s ease-out;
+  transition-delay: 0.01s;
+}
+div.topbar a:hover, div.topbar a:active{
+  width: 7%;
+  background-color: #6BC0EA;
+  transition: 0.4s ease-out;
+  transition-delay: 0.01s;
+}
+div p {
+  position: relative;
+  background-color: #006699;
+  color: black;
+  padding: 0px 20px;
+  text-align: center;
+  font-weight: bold;
+  display: inline-block;
+  transition-delay: 0.01s;
+}
+div.sidebar{
+  width: 175px;
+  padding: 5px 0px;
+  float: left;
+  font-size: 12;
+  overflow: auto;
+}
+div.tags{
+  width: 175px;
+  padding: 5px 0px;
+  float: left;
+  font-size: 12;
+}
+div.emptyrepos{
+  position: relative;
+  width: 100%;
+  height: 50%;
+  float: left;
+}
+div.managerepos{
+  width: 75%;
+  float: right;
+}
+form#managerepoform{
+  color: #6bc0ea;
+  padding: 10px 0px;
+}
+div.managerepos a:link, div.managerepos a:visited{
+  width: 10%;
+  float: right;
+  color: black;
+}
+div.managerepos a:hover, div.managerepos a:active{
+  width: 11%;
+  color: black;
+}
+div.managerepos button{
+}
+.manifest{
+  background: #5564AA;
+  width: 98%;
+  height: 99%;
+  padding: 5px;
+  padding-right: 20px;
+  border: solid 1px black;
+  float: left;
+  overflow: hidden;
+}

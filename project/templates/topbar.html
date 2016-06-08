@@ -1,0 +1,10 @@
+{{define "topbar"}}
+{{ $curPos := . }}
+  <div class="topbar">
+    <a class="goback" href="/">Main</a>
+    {{ if $curPos }}
+      <p>{{ $curPos }}</p>
+    {{ end }}
+      <a class="setting" href="/managerepos">Confs</a>
+  </div>
+{{end}}
