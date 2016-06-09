@@ -21,17 +21,17 @@ BoltDB levels
 (br){reponame[N]}
         \   
  (brc){catalog}
-          \
+          \---{ _names }---[ id => last_name ]
  (brcn){imagename[N]}--*--[ _valid => 0 || 1 ]
             \           \
              \           \- { _uploads }---[ date => count ]
               \            
-      (brcnt){tags}--*--{ _uploads }---[ date => count ]
+      (brcnt){tags}--*
                       \
- [ _valid => 0 || 1 ]--*--[ architecture => amd64 ]
-          { fslayers }--\--[ digest => header:digest ]
-              /          \--{ history }--[ datetime => command ]
-    [ sha256 => size]     *--{ _totalsize }--[ digest => size ]
+ [ _valid => 0 || 1 ]--*--{ _uploads }---[ date => count ]
+                        \--[ digest => header:digest ]
+                         \--{ history }--[ datetime => (command + blob:{sha256, size} ]
+                          *--{ _totalsize }--[ digest => size ]
 ```
 
 //IDEAS

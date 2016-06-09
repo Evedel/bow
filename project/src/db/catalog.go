@@ -63,3 +63,21 @@ func AddCatalog(repo string, catalog []string) {
   }
   say.Info("DB: Done")
 }
+func PutCatalogSubBucket(repo string, bucket string, key string, value string){
+  say.Info("DB: insert in subbucket for catalog [ " + repo + "/" + bucket + " / " + key + " ]")
+  if err := DB.Update(func(tx *bolt.Tx) error {
+    if b := tx.Bucket([]byte("repositories")); b != nil {
+      if br := b.Bucket([]byte(repo)); br != nil {
+        if brs, err := br.CreateBucketIfNotExists([]byte(bucket)); err == nil {
+          brs.Put([]byte(key), []byte(value))
+        } else {
+          return err
+        }
+      }
+    }
+    return nil
+  }); err != nil {
+    say.Error(err.Error())
+  }
+  say.Info("DB: Done ")
+}

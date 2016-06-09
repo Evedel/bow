@@ -162,35 +162,41 @@ func CheckManifests(){
               dbdigest := db.GetTagDigest(er, en, et)
               curldigest := Resp.Header.Get("Docker-Content-Digest")
               if (dbdigest != curldigest){
+                say.Raw(er + " / " + en + " / " + et)
                 db.PutTagDigest(er, en, et, curldigest)
-                fsshaarr := c.(map[string]interface{})["fsLayers"].([]interface{})
-                db.DeleteTagSubBucket(er, en, et, "fslayers")
+                var ch interface{}
                 totalsize := 0
-                for _, efs := range fsshaarr {
-                  fssha := efs.(map[string]interface{})["blobSum"].(string)
+                fsshaarr := c.(map[string]interface{})["fsLayers"].([]interface{})
+                historyarr := c.(map[string]interface{})["history"].([]interface{})
+
+                db.DeleteTagSubBucket(er, en, et, "history")
+                for i, _ := range fsshaarr {
+                  fssha := fsshaarr[i].(map[string]interface{})["blobSum"].(string)
                   fssize := GetfsLayerSize(curlpath + "/v2/" + en + "/blobs/" + fssha)
+                  history := historyarr[i].(map[string]interface{})["v1Compatibility"].(string)
+                  historytrunc := history
+                  if last := len(historytrunc) - 1; last >= 0 {
+                      historytrunc = historytrunc[:last]
+                  }
+                  historynew := historytrunc + ",\"blobSum\":\"" + fssha + "\", \"blobSize\":\"" + fssize + "\"}"
                   if fsshanum, err := strconv.Atoi(fssize); err != nil {
                     say.Error(err.Error())
                   } else {
                     totalsize += fsshanum
-                    db.PutTagSubBucket(er, en, et, "fslayers", fssha, fssize)
                   }
-                }
-                db.PutTagSubBucket(er, en, et, "_totalsize", time.Now().Local().Format("2006-01-02 15:04:05"), strconv.Itoa(totalsize))
-                historyarr := c.(map[string]interface{})["history"].([]interface{})
-                db.DeleteTagSubBucket(er, en, et, "history")
-                for _, eh := range historyarr {
-                  history := eh.(map[string]interface{})["v1Compatibility"].(string)
-                  var ch interface{}
                   if err := json.Unmarshal([]byte(history), &ch); err != nil {
                     say.Error(err.Error())
                   } else {
                     created := ch.(map[string]interface{})["created"].(string)
-                    db.PutTagSubBucket(er, en, et, "history", created, history)
+                    if i == 0 {
+                      db.PutCatalogSubBucket(er, "_names", ch.(map[string]interface{})["parent"].(string), en + "/" + et)
+                    }
+                    db.PutTagSubBucket(er, en, et, "history", created, historynew)
                   }
                 }
+                db.PutTagSubBucket(er, en, et, "_totalsize", time.Now().Local().Format("2006-01-02 15:04:05"), strconv.Itoa(totalsize))
               } else {
-                say.Info("CheckManifests Daemon: digests are the same, stopping work")
+                say.Info("CheckManifests Daemon: digests are the same, shouldnot update anything, stopping work")
               }
             }
           }

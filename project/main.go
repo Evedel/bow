@@ -4,14 +4,11 @@ import (
 	"say"
 	"conf"
 	"db"
+	"strconv"
 	"net/url"
 	"net/http"
 	"html/template"
-	"io/ioutil"
-	"encoding/json"
-	"strconv"
 	"checker"
-// make it work in virtualbox
 	_ "github.com/wader/disable_sendfile_vbox_linux"
 )
 func main() {
@@ -93,7 +90,12 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 	} else {
 		if len(v) != 0 {
 			if v["curname"] != nil {
-				irepos["tags"] = db.GetTags(irepos["reponame"].(string), v["curname"][0])
+				tags := db.GetTags(irepos["reponame"].(string), v["curname"][0])
+				uploads := make(map[string]int)
+				for _, e := range tags {
+					uploads[e] = totalUploads(irepos["reponame"].(string), v["curname"][0], e)
+				}
+				irepos["tags"] = uploads
 				irepos["curname"] = v["curname"][0]
 				irepos["header"] = irepos["header"].(string) + "/" + irepos["curname"].(string)
 				if v["curtag"] != nil {
@@ -105,26 +107,18 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	irepos["catalog"] = db.GetCatalog(irepos["reponame"].(string))
-
 	renderTemplate(w, "info", irepos)
 }
-func calcImageSize(reponame string, name string, manifest interface{} ) int {
-	var size int
-	sliceMap := manifest.(map[string]interface{})["fsLayers"]
-	for _, element := range sliceMap.([]interface{}) {
-		reqt :=  reponame + "/v2/" + name + "/blobs/" + element.(map[string]interface {})["blobSum"].(string)
-		if resp, err := http.Head(reqt); err != nil {
+func totalUploads(repo string, name string, tag string) (count int){
+	uploads := db.GetTagSubbucket(repo, name, tag, "_uploads")
+	for _, e := range uploads {
+		if num, err := strconv.Atoi(e); err != nil {
 			say.Error(err.Error())
 		} else {
-			bytes := resp.Header.Get("Content-Length")
-			if bn, err := strconv.Atoi(bytes); err != nil {
-				say.Error(err.Error())
-			} else {
-				size += bn
-			}
+			count += num
 		}
 	}
-	return size
+	return
 }
 func renderTemplate(w http.ResponseWriter, tmpl string, c interface{}) {
 	say.Info("Rendering template [ " + tmpl + " ]")
@@ -133,20 +127,5 @@ func renderTemplate(w http.ResponseWriter, tmpl string, c interface{}) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-}
-func getManifest(reponame string, name string, tag string, c *interface{})  {
-	say.Info("Preparing data for manifest [ " + name + ":" + tag + " ]")
-	reqt := reponame + "/v2/" + name + "/manifests/" + tag
-	if resp, err := http.Get(reqt); err != nil {
-		say.Error(err.Error())
-	} else {
-		if body, err := ioutil.ReadAll(resp.Body); err != nil {
-			say.Error(err.Error())
-		} else {
-			if err := json.Unmarshal(body, c); err != nil {
-				say.Error(err.Error())
-			}
-		}
 	}
 }

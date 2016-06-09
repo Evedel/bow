@@ -65,37 +65,6 @@ func AddTags(repo string, name string, tags []string){
   }
   say.Info("DB: Done")
 }
-func IncTagUploads(repo string, name string, tag string){
-  say.Info("DB: insert manifest for [" + repo + "/" + name + "/" + tag + "]")
-  if err := DB.Update(func(tx *bolt.Tx) error {
-    if b := tx.Bucket([]byte("repositories")); b != nil {
-      if br := b.Bucket([]byte(repo)); br != nil {
-        if brc := br.Bucket([]byte("catalog")); brc != nil {
-          if brcn := brc.Bucket([]byte(name)); brcn != nil {
-            if brcnt := brcn.Bucket([]byte(tag)); brcnt != nil {
-              if brcntu, err := brcnt.CreateBucketIfNotExists([]byte("_uploads")); err == nil {
-                shortDate := time.Now().Local().Format("2006-01-02")
-                if brcntud := brcntu.Get([]byte(shortDate)); brcntud != nil {
-                  val, _ := strconv.Atoi(string(brcntud))
-                  val++
-                  brcntu.Put([]byte(shortDate), []byte(strconv.Itoa(val)))
-                } else {
-                  brcntu.Put([]byte(shortDate), []byte("1"))
-                }
-              } else {
-                return err
-              }
-            }
-          }
-        }
-      }
-    }
-    return nil
-  }); err != nil {
-    say.Error(err.Error())
-  }
-  say.Info("DB: Done")
-}
 func GetTagDigest(repo string, name string, tag string) (digest string){
   say.Info("DB: select digest for [" + repo + "/" + name + "/" + tag + "]")
   if err := DB.Update(func(tx *bolt.Tx) error {
@@ -163,8 +132,8 @@ func PutTagDigest(repo string, name string, tag string, digest string){
   }
   say.Info("DB: Done")
 }
-func GetTagUploads(repo string, name string, tag string) (uploads map[string]string){
-  uploads = make(map[string]string)
+func GetTagSubbucket(repo string, name string, tag string, bucket string) (data map[string]string){
+  data = make(map[string]string)
   say.Info("DB: insert manifest for [" + repo + "/" + name + "/" + tag + "]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
@@ -172,9 +141,9 @@ func GetTagUploads(repo string, name string, tag string) (uploads map[string]str
         if brc := br.Bucket([]byte("catalog")); brc != nil {
           if brcn := brc.Bucket([]byte(name)); brcn != nil {
             if brcnt := brcn.Bucket([]byte(tag)); brcnt != nil {
-              if brcntu := brcnt.Bucket([]byte("_uploads")); brcntu != nil {
-                if err := brcntu.ForEach(func(k, v []byte) error {
-                  uploads[string(k)] = string(v)
+              if brcnts := brcnt.Bucket([]byte(bucket)); brcnts != nil {
+                if err := brcnts.ForEach(func(k, v []byte) error {
+                  data[string(k)] = string(v)
                   return nil
                 }); err != nil {
                   return err
