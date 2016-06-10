@@ -10,37 +10,15 @@
       {{ else }}
         {{ template "topbar" }}
       {{ end }}
-      {{ if $input.catalog }}
-        <div class="sidebar">
-          {{range $input.catalog }}
-            {{ if $input.curname }}
-              {{ if eq $input.curname . }}
-                <a class="chosen" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
-              {{else}}
-                <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
-              {{end}}
-            {{else}}
-              <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
-            {{ end }}
-          {{end}}
-        </div>
-      {{ end }}
-      {{ if $input.tags }}
-      <div class="tags">
-          {{$input.tags}}
-          {{ range $etag, $eupl := $input.tags }}
-            {{ if $input.curtag }}
-              {{ if eq $input.curtag $etag }}
-                <a class="chosen" href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{.}}">[{{$etag}}] ({{$eupl}})</a>
-              {{ else }}
-                <a href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{.}}">[{{$etag}}] ({{$eupl}})</a>
-              {{ end }}
-            {{ else }}
-              <a href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
-            {{ end }}
-          {{ end }}
+      <div>
+
+        {{ template "repobar" $input }}
+
+        {{ template "tagbar" $input }}
+
+        {{ template "manifestbar" $input }}
+
       </div>
-      {{ end }}
     </body>
   </html>
 {{ end }}

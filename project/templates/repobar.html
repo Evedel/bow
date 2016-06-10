@@ -1,0 +1,18 @@
+{{ define "repobar" }}
+  {{ $input := . }}
+  {{ if $input.catalog }}
+    <div class="sidebar">
+      {{range $input.catalog }}
+        {{ if $input.curname }}
+          {{ if eq $input.curname . }}
+            <a class="chosen" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+          {{else}}
+            <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+          {{end}}
+        {{else}}
+          <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+        {{ end }}
+      {{end}}
+    </div>
+  {{ end }}
+{{ end }}

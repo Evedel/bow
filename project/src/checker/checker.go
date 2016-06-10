@@ -13,6 +13,13 @@ import (
 func DaemonManager() {
   for {
     say.Info("Manager Daemon: TicTac")
+    // dbpath := make([]string, 5)
+    // dbpath[0] = "kinoplan"
+    // dbpath[1] = "catalog"
+    // dbpath[2] = "release_kinoplan_daemon"
+    // dbpath[3] = "latest"
+    // dbpath[4] = "_uploads"
+    // say.Raw(db.GetSimplePairsFromBucket(dbpath))
     go CheckRepos()
     go CheckTags()
     go CheckManifests()
@@ -162,7 +169,6 @@ func CheckManifests(){
               dbdigest := db.GetTagDigest(er, en, et)
               curldigest := Resp.Header.Get("Docker-Content-Digest")
               if (dbdigest != curldigest){
-                say.Raw(er + " / " + en + " / " + et)
                 db.PutTagDigest(er, en, et, curldigest)
                 var ch interface{}
                 totalsize := 0
@@ -174,27 +180,28 @@ func CheckManifests(){
                   fssha := fsshaarr[i].(map[string]interface{})["blobSum"].(string)
                   fssize := GetfsLayerSize(curlpath + "/v2/" + en + "/blobs/" + fssha)
                   history := historyarr[i].(map[string]interface{})["v1Compatibility"].(string)
-                  historytrunc := history
-                  if last := len(historytrunc) - 1; last >= 0 {
-                      historytrunc = historytrunc[:last]
-                  }
-                  historynew := historytrunc + ",\"blobSum\":\"" + fssha + "\", \"blobSize\":\"" + fssize + "\"}"
+                  historynew := history
                   if fsshanum, err := strconv.Atoi(fssize); err != nil {
                     say.Error(err.Error())
                   } else {
+                    if last := len(historynew) - 1; last >= 0 {
+                        historynew = historynew[:last]
+                    }
+                    historynew = historynew + ",\"blobSum\":\"" + fssha + "\", \"blobSize\":\"" + fromByteToHuman(fsshanum) + "\"}"
                     totalsize += fsshanum
                   }
                   if err := json.Unmarshal([]byte(history), &ch); err != nil {
                     say.Error(err.Error())
                   } else {
                     created := ch.(map[string]interface{})["created"].(string)
+                    created = created[0:10] + " " + created[11:len(created)-11]
                     if i == 0 {
                       db.PutCatalogSubBucket(er, "_names", ch.(map[string]interface{})["parent"].(string), en + "/" + et)
                     }
                     db.PutTagSubBucket(er, en, et, "history", created, historynew)
                   }
                 }
-                db.PutTagSubBucket(er, en, et, "_totalsize", time.Now().Local().Format("2006-01-02 15:04:05"), strconv.Itoa(totalsize))
+                db.PutTagSubBucket(er, en, et, "_totalsize", time.Now().Local().Format("2006-01-02 15:04:05"), fromByteToHuman(totalsize))
               } else {
                 say.Info("CheckManifests Daemon: digests are the same, shouldnot update anything, stopping work")
               }
@@ -219,4 +226,20 @@ func GetfsLayerSize(link string ) (size string){
     }
   }
   return ""
+}
+func fromByteToHuman(bytes int) (human string){
+  human = strconv.Itoa(bytes) + " B"
+  if bytes > 1024 {
+    bytes = bytes / 1024
+    human = strconv.Itoa(bytes) + " KB"
+  }
+  if bytes > 1024 {
+    bytes = bytes / 1024
+    human = strconv.Itoa(bytes) + " MB"
+  }
+  if bytes > 1024 {
+    bytes = bytes / 1024
+    human = strconv.Itoa(bytes) + " GB"
+  }
+  return
 }

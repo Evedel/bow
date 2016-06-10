@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"net/http"
 	"html/template"
+	"encoding/json"
 	"checker"
 	_ "github.com/wader/disable_sendfile_vbox_linux"
 )
@@ -54,6 +55,7 @@ func mrepoHandler(w http.ResponseWriter, r *http.Request){
 		} else {
 			if len(v) == 1 {
 				repopretty = db.GetRepoPretty(v["reponame"][0])
+				repopretty["repopass"] = "*********"
 			}
 			if len(v) > 1 {
 				db.CreateRepo(v)
@@ -100,7 +102,21 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 				irepos["header"] = irepos["header"].(string) + "/" + irepos["curname"].(string)
 				if v["curtag"] != nil {
 					irepos["curtag"] = v["curtag"][0]
-					irepos["header"] = irepos["header"].(string) + "/" + irepos["curtag"].(string)
+					irepos["header"] = irepos["header"].(string) + ":" + irepos["curtag"].(string)
+					var dbpath = []string{
+						irepos["reponame"].(string),
+						"catalog",
+						irepos["curname"].(string),
+						irepos["curtag"].(string),
+						"history" }
+					strhist := db.GetSimplePairsFromBucket(dbpath)
+					objhist := make(map[string]interface{})
+					for key, value := range  strhist {
+						var ch interface{}
+						_ = json.Unmarshal([]byte(value), &ch)
+						objhist[key] = ch
+					}
+					irepos["history"] = objhist
 				}
 			}
 		}

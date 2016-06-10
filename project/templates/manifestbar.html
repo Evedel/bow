@@ -1,0 +1,21 @@
+{{ define "manifestbar" }}
+  {{ $input := . }}
+  {{ if $input.history }}
+    <div class="manifestbar">
+      <table>
+        <tr>
+          <td><div class="content">Created Time</div></td>
+          <td><div class="content">Compressed Size</div></td>
+          <td><div class="content">Creeating Commad</div></td>
+        </tr>
+        {{ range $time, $histobj := $input.history }}
+        <tr>
+          <td><div class="content">{{ $time }}</div></td>
+          <td><div class="content">{{ $histobj.blobSize }}</div></td>
+          <td><div class="content" style="text-align:left;">{{ index $histobj.container_config.Cmd 0 }}</div></td>
+        </tr>
+        {{ end }}
+      </table>
+    </div>
+  {{ end }}
+{{ end }}

@@ -18,41 +18,41 @@ At the moment (initial commit) it has
 ==  
 ## Great minuses
 - v2 registry support only
-- ability to show the list of repos/names/tags only
-- scary templates and interface in whole only
-- __it stores you password for registry as raw text so it is needed to hide this frontend at least under httbasic auth__
+- scary templates and interface in whole
+- it use your password for registry as raw text so it is needed to hide this frontend at least under httbasic auth
 
 ## But also a couple of pluses
 - internal db gives it ability to store info and as result it responses much more faster then after direct api call after each click
-- already realized ability to parse and storing lot of info from registry such as
+- already realized ability of parsing, storing and showing info from registry such as:
  - image layers info
  - image creating commands history
  - total image size
  - number of pushes in tag/image
-   - emphasize, it can't __show__ all above right at the moment =(
 - it is possible to set multiple repositories and watch all in one place
 
 ## Bow milestons
-I strongly intended to improve it, so closest changes in the road are:
-- print info for tag (layers, size, pushes, created commands)
-- delete tags/images from repo just by click
-- show statistics pretty, draw curves of uploads and sizes for tag/image/repo
-- interface and visual improvement
+I strongly intended to improve it, so closest changes in the road are:  
+- delete tags/images from repo just by click  
+- show statistics pretty, draw curves of uploads and sizes for tag/image/repo  
+- make improvements on interface and visual side  
+- show tree of parents for image/ build dependency tree for whole repo  
+- show short info card for tag  
 
 How to start use Bow
 ==
 ```
-docker run -d \  
-   -e BS_LOG_SILENT=yes\
-   -v /home/$(whoami)/db/bow:/var/lib/bow\
-   -p 12345:19808\
+docker run -d \
+   --name=Bow \
+   -e BS_LOG_SILENT=yes \
+   -v /home/$(whoami)/db/bow:/var/lib/bow \
+   -p 12345:19808 \
    evedel/bow
 ```
 How to start contribute to Bow
 ==
 If you have interest to you can easily start with
 ```
-git clone https://github.com/Evede1/bow.git
+git clone https://github.com/evedel/bow.git
 cd bow
 docker-compose -f develop/devlinux.yml up -d
 docker exec -it develop_golang_1 go get

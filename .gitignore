@@ -2,4 +2,4 @@ project/asapdrf.db
 project/pkg
 project/src/github.com
 develop/app
-develop/project/main
+project/main

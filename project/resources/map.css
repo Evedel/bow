@@ -73,13 +73,14 @@ div.sidebar{
   padding: 5px 0px;
   float: left;
   font-size: 12;
-  overflow: auto;
+  overflow: none;
 }
 div.tags{
   width: 175px;
   padding: 5px 0px;
   float: left;
   font-size: 12;
+  overflow: none;
 }
 div.emptyrepos{
   position: relative;
@@ -106,13 +107,28 @@ div.managerepos a:hover, div.managerepos a:active{
 }
 div.managerepos button{
 }
-.manifest{
-  background: #5564AA;
-  width: 98%;
-  height: 99%;
-  padding: 5px;
-  padding-right: 20px;
-  border: solid 1px black;
-  float: left;
+
+div.manifestbar{
+  position: relative;
+  width: 75%;
+  padding: 10px 0px;
+  float: right;
+}
+div.manifestbar table{
+  text-align: center;
+  width: 100%;
+  float: right;
+  background-color: #446688;
+}
+div.manifestbar tr{
+  padding: 10px;
+  width: 100%;
+  display: inline-flex;
+  border-top: solid black 1px;
+}
+div.content {
+  min-width: 250px;
   overflow: hidden;
+  height: 100%;
+  width: 100%;
 }
