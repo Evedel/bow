@@ -31,12 +31,12 @@ At the moment (initial commit) it has
 - it is possible to set multiple repositories and watch all in one place
 
 ## Bow milestons
-I strongly intended to improve it, so closest changes in the road are:  
-- delete tags/images from repo just by click  
-- show statistics pretty, draw curves of uploads and sizes for tag/image/repo  
-- make improvements on interface and visual side  
-- show tree of parents for image/ build dependency tree for whole repo  
-- show short info card for tag  
+I strongly intended to improve it, so closest changes in the road are:
+- delete tags/images from repo just by click
+- show statistics pretty, draw curves of uploads and sizes for tag/image/repo
+- make improvements on interface and visual side
+- show tree of parents for image/ build dependency tree for whole repo
+- show short info card for tag
 
 How to start use Bow
 ==

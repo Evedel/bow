@@ -2,20 +2,47 @@
   {{ $input := . }}
   {{ if $input.history }}
     <div class="manifestbar">
-      <table>
-        <tr>
-          <td><div class="content">Created Time</div></td>
-          <td><div class="content">Compressed Size</div></td>
-          <td><div class="content">Creeating Commad</div></td>
-        </tr>
-        {{ range $time, $histobj := $input.history }}
-        <tr>
-          <td><div class="content">{{ $time }}</div></td>
-          <td><div class="content">{{ $histobj.blobSize }}</div></td>
-          <td><div class="content" style="text-align:left;">{{ index $histobj.container_config.Cmd 0 }}</div></td>
-        </tr>
-        {{ end }}
-      </table>
+      <div class="tabs">
+        <input id="tab1" type="radio" name="tabs">
+        <label for="tab1" title="Summary">Image Summary</label>
+
+        <input id="tab2" type="radio" name="tabs" checked>
+        <label for="tab2" title="History">Creation History</label>
+
+        <input id="tab3" type="radio" name="tabs">
+        <label for="tab3" title="Statistics">Statistics</label>
+
+        <div id="content1">
+          <h1>
+            To Be Continued...
+          </h1>
+        </div>
+        <div id="content2">
+          <table class="historytable">
+            <thead>
+              <tr>
+                <th>Created Time</th>
+                <th>Compressed Size</th>
+                <th style="text-align:left;">Creeating Commad</th>
+              </tr>
+            </thead>
+            <tbody>
+            {{ range $time, $histobj := $input.history }}
+              <tr>
+                <td>{{ $time }}</td>
+                <td>{{ $histobj.blobSize }}</td>
+                <td style="text-align:left;">{{ index $histobj.container_config.Cmd 0 }}</td>
+              </tr>
+            {{ end }}
+            </tbody>
+          </table>
+        </div>
+        <div id="content3">
+          <h1>
+            To Be Continued...
+          </h1>
+        </div>
+      </div>
     </div>
   {{ end }}
 {{ end }}

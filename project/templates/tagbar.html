@@ -1,7 +1,7 @@
 {{ define "tagbar" }}
 {{ $input := . }}
   {{ if $input.tags }}
-  <div class="tags">
+  <div class="tagbar">
       {{ range $etag, $eupl := $input.tags }}
         {{ if $input.curtag }}
           {{ if eq $input.curtag $etag }}

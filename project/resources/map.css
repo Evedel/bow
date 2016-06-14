@@ -1,10 +1,14 @@
 body{
   font-family: Courier;
+  font-size: 12px;
   background-color: #222225;
+  overflow: hidden;
 }
 a:link, a:visited{
-  position: relative;
-  width: 95%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
   background-color: #446688;
   color: black;
   padding: 14px 0px;
@@ -12,21 +16,38 @@ a:link, a:visited{
   text-decoration: none;
   font-weight: bold;
   display: inline-block;
-  transition: 0.4s ease-out;
-  transition-delay: 0.01s;
+  transition: 1s ease-out;
+  transition-delay: 0.1s;
 }
 a:hover, a:active{
   width: 100%;
+  /*background-color: #0e121d;*/
   background-color: #6BC0EA;
+  /*color: #006699;*/
   opacity: 0.85;
-  transition: 0.4s ease-out;
-  transition-delay: 0.01s;
+  transition: 0.3s ease-out;
+  transition-delay: 0.05s;
 }
 button{
   position: relative;
   color: black;
   background-color: #006699;
 }
+
+::-webkit-scrollbar-track
+{
+  background-color: #0e121d;
+}
+::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: #F5F5F5;
+}
+::-webkit-scrollbar-thumb
+{
+  background-color: #6BC0EA;
+}
+
 a.chosen{
   background-color: #0e121d;
   color: #006699;
@@ -35,6 +56,7 @@ div.topbar{
   position: relative;
   width: 100%;
   height: 50px;
+  font-size: 16px;
   background-color: #006699;
   overflow: hidden;
 }
@@ -54,6 +76,7 @@ div.topbar a:link, div.topbar a:visited{
 }
 div.topbar a:hover, div.topbar a:active{
   width: 7%;
+  height: 100%;
   background-color: #6BC0EA;
   transition: 0.4s ease-out;
   transition-delay: 0.01s;
@@ -69,18 +92,18 @@ div p {
   transition-delay: 0.01s;
 }
 div.sidebar{
-  width: 175px;
+  width: 10%;
+  height: 90%;
   padding: 5px 0px;
   float: left;
-  font-size: 12;
-  overflow: none;
+  overflow-y: auto;
 }
-div.tags{
-  width: 175px;
+div.tagbar{
+  width: 10%;
+  height: 90%;
   padding: 5px 0px;
   float: left;
-  font-size: 12;
-  overflow: none;
+  overflow-y: auto;
 }
 div.emptyrepos{
   position: relative;
@@ -107,28 +130,81 @@ div.managerepos a:hover, div.managerepos a:active{
 }
 div.managerepos button{
 }
-
 div.manifestbar{
-  position: relative;
-  width: 75%;
-  padding: 10px 0px;
-  float: right;
+  width: 80%;
+  height: 90%;
+  float: left;
+  padding: 5px 0px;
 }
-div.manifestbar table{
-  text-align: center;
-  width: 100%;
-  float: right;
+
+.tabs div {
+  display: none;
+  overflow-y: auto;
+  height: 90%;
   background-color: #446688;
 }
-div.manifestbar tr{
-  padding: 10px;
+.tabs input {
+  display: none;
+}
+.tabs label {
+  display: inline-block;
+  padding: 15px 25px;
+  font-weight: bold;
+  text-align: center;
+  background-color: #446688;
+  border: solid 1px black;
+  color: black;
+}
+.tabs label:hover {
+  background-color: #6BC0EA;
+}
+.tabs input:checked + label {
+  background-color: #0e121d;
+  color: #006699;
+}
+#tab1:checked ~ #content1,
+#tab2:checked ~ #content2,
+#tab3:checked ~ #content3{
+  display: block;
+}
+@media screen and (max-width: 680px) {
+  .tabs label {
+    font-size: 0;
+  }
+  .tabs label:before {
+    font-size: 18px;
+  }
+}
+@media screen and (max-width: 100%) {
+  .tabs label {
+    padding: 15px;
+  }
+}
+
+table.historytable{
+  width: 100%;
+  text-align: center;
+  background-color: #446688;
+}
+table.historytable tr{
+  padding: 10px 0px;
   width: 100%;
   display: inline-flex;
-  border-top: solid black 1px;
+  border-bottom: solid black 1px;
+  transition: 0.7s ease-out;
+  transition-delay: 0.05s;
 }
-div.content {
-  min-width: 250px;
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
+table.historytable tr:hover{
+  background-color: #0e121d;
+  color: #006699;
+  transition: 0.7s ease-out;
+  transition-delay: 0.05s;
+}
+table.historytable td{
+  min-width: 150px;
+  font-size: 12px;
+}
+table.historytable th{
+  min-width: 150px;
+  font-size: 12px;
 }
