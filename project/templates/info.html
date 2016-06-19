@@ -2,23 +2,25 @@
   <html>
   {{ $input := . }}
     <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
       <link rel="stylesheet" type="text/css" href="/resources/map.css">
     </head>
-    <body>
+    <body class="preload">
       {{ with $input.header }}
         {{ template "topbar" . }}
       {{ else }}
         {{ template "topbar" }}
       {{ end }}
       <div>
-
         {{ template "repobar" $input }}
-
         {{ template "tagbar" $input }}
-
         {{ template "manifestbar" $input }}
-
       </div>
     </body>
+    <script>
+      $(window).load(function() {
+        $("body").removeClass("preload");
+      });
+    </script>
   </html>
 {{ end }}

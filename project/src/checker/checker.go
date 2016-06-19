@@ -13,13 +13,6 @@ import (
 func DaemonManager() {
   for {
     say.Info("Manager Daemon: TicTac")
-    // dbpath := make([]string, 5)
-    // dbpath[0] = "kinoplan"
-    // dbpath[1] = "catalog"
-    // dbpath[2] = "release_kinoplan_daemon"
-    // dbpath[3] = "latest"
-    // dbpath[4] = "_uploads"
-    // say.Raw(db.GetSimplePairsFromBucket(dbpath))
     go CheckRepos()
     go CheckTags()
     go CheckManifests()
@@ -48,7 +41,7 @@ func CatalogNeedUpdate(a []string, b []string) (bool) {
     }
   }
   if len(a) == numofequal {
-    say.Info("Length of catalogs are equal to number of equal elements. Not need update")
+    say.Info("Length of catalogs are same with number of equal elements. Not need update")
     return false
   }
   say.Error("Cant evaluate any condition. Try update")
@@ -169,7 +162,6 @@ func CheckManifests(){
               dbdigest := db.GetTagDigest(er, en, et)
               curldigest := Resp.Header.Get("Docker-Content-Digest")
               if (dbdigest != curldigest){
-                db.PutTagDigest(er, en, et, curldigest)
                 var ch interface{}
                 totalsize := 0
                 fsshaarr := c.(map[string]interface{})["fsLayers"].([]interface{})
@@ -200,8 +192,11 @@ func CheckManifests(){
                     }
                     db.PutTagSubBucket(er, en, et, "history", created, historynew)
                   }
+                  db.PutTagDigest(er, en, et, curldigest)
                 }
-                db.PutTagSubBucket(er, en, et, "_totalsize", time.Now().Local().Format("2006-01-02 15:04:05"), fromByteToHuman(totalsize))
+                sizedt := time.Now().Local().Format("2006-01-02 15:04:05")
+                db.PutTagSubBucket(er, en, et, "_totalsizehuman", sizedt, fromByteToHuman(totalsize))
+                db.PutTagSubBucket(er, en, et, "_totalsizebytes", sizedt, strconv.Itoa(totalsize))
               } else {
                 say.Info("CheckManifests Daemon: digests are the same, shouldnot update anything, stopping work")
               }

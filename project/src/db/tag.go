@@ -134,7 +134,7 @@ func PutTagDigest(repo string, name string, tag string, digest string){
 }
 func GetTagSubbucket(repo string, name string, tag string, bucket string) (data map[string]string){
   data = make(map[string]string)
-  say.Info("DB: insert manifest for [" + repo + "/" + name + "/" + tag + "]")
+  say.Info("DB: select manifest for [" + repo + "/" + name + "/" + tag + "]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {

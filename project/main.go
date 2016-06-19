@@ -16,11 +16,12 @@ func main() {
 	conf.Init()
 	db.Init()
 
+	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
+
 	http.HandleFunc("/managerepos/", mrepoHandler)
 	http.HandleFunc("/info/", infoHandler)
+	http.HandleFunc("/upgrade/", upgradeHandler)
 	http.HandleFunc("/", welcomeHandler)
-
-	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
 
 	go checker.DaemonManager()
 
@@ -92,16 +93,34 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 	} else {
 		if len(v) != 0 {
 			if v["curname"] != nil {
-				tags := db.GetTags(irepos["reponame"].(string), v["curname"][0])
-				uploads := make(map[string]int)
-				for _, e := range tags {
-					uploads[e] = totalUploads(irepos["reponame"].(string), v["curname"][0], e)
-				}
-				irepos["tags"] = uploads
 				irepos["curname"] = v["curname"][0]
+
+				tags := db.GetTags(irepos["reponame"].(string), irepos["curname"].(string))
+				uploads := make(map[string]map[string]string)
+				totaluploads := make(map[string]int)
+				for _, e := range tags {
+					uploads[e] = make(map[string]string)
+					uploads[e] = db.GetSimplePairsFromBucket([]string{
+						irepos["reponame"].(string),
+						"catalog",
+						irepos["curname"].(string),
+						e,
+						"_uploads" })
+					count := 0
+					for _, eu := range uploads[e] {
+						if num, err := strconv.Atoi(eu); err != nil {
+							say.Error(err.Error())
+						} else {
+							count += num
+						}
+					}
+					totaluploads[e] = count
+				}
+				irepos["tags"] = totaluploads
 				irepos["header"] = irepos["header"].(string) + "/" + irepos["curname"].(string)
 				if v["curtag"] != nil {
 					irepos["curtag"] = v["curtag"][0]
+					irepos["uploads"] = uploads[irepos["curtag"].(string)]
 					irepos["header"] = irepos["header"].(string) + ":" + irepos["curtag"].(string)
 					var dbpath = []string{
 						irepos["reponame"].(string),
@@ -111,12 +130,37 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 						"history" }
 					strhist := db.GetSimplePairsFromBucket(dbpath)
 					objhist := make(map[string]interface{})
+					lastkey := ""
+					layersnum := 0
 					for key, value := range  strhist {
 						var ch interface{}
 						_ = json.Unmarshal([]byte(value), &ch)
 						objhist[key] = ch
+						if lastkey < key {
+							lastkey = key
+						}
+						layersnum++
 					}
 					irepos["history"] = objhist
+					irepos["lastupdated"] = lastkey
+					irepos["layersnum"] = layersnum
+					dbpath[4] = "_totalsizehuman"
+					strsizehuman := db.GetSimplePairsFromBucket(dbpath)
+					dbpath[4] = "_totalsizebytes"
+					strsizebytes := db.GetSimplePairsFromBucket(dbpath)
+					lastkey = ""
+					for key, _ := range strsizehuman {
+						if lastkey < key {
+							lastkey = key
+						}
+					}
+					if strsizebytes != nil {
+						irepos["imagesizebytes"] = strsizebytes
+					}
+					if strsizehuman != nil {
+						irepos["imagesizehuman"] = strsizehuman
+					}
+					irepos["lastpushed"] = lastkey
 				}
 			}
 		}
@@ -125,17 +169,17 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 	irepos["catalog"] = db.GetCatalog(irepos["reponame"].(string))
 	renderTemplate(w, "info", irepos)
 }
-func totalUploads(repo string, name string, tag string) (count int){
-	uploads := db.GetTagSubbucket(repo, name, tag, "_uploads")
-	for _, e := range uploads {
-		if num, err := strconv.Atoi(e); err != nil {
-			say.Error(err.Error())
-		} else {
-			count += num
-		}
+func upgradeHandler(w http.ResponseWriter, r *http.Request){
+	funcname := r.URL.Path[len("/upgrade/"):]
+	say.Info("Starting upgrae for [ " + funcname + " ]")
+	if funcname == "totalsize"{
+		db.UpgradeTotalSize()
 	}
-	return
+	if funcname == "falsenumnames"{
+		db.UpgradeFalseNumericImage()
+	}
 }
+
 func renderTemplate(w http.ResponseWriter, tmpl string, c interface{}) {
 	say.Info("Rendering template [ " + tmpl + " ]")
 	templates := template.Must(template.ParseGlob("./templates/*"))

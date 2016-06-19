@@ -31,16 +31,18 @@ BoltDB levels
  [ _valid => 0 || 1 ]--*--{ _uploads }---[ date => count ]
                         \--[ digest => header:digest ]
                          \--{ history }--[ datetime => (command + blob:{sha256, size} ]
-                          *--{ _totalsize }--[ digest => size ]
+                          *--{ _totalsizehuman }--[ datetime => size ]
+                          |--{ _totalsizebytes }--[ datetime => size ]
 ```
 
-//IDEAS
-Delete b{repositories} and brc{catalog} (static db fields not changed and used)
+//IDEAS  
+- [x] Delete b{repositories} and brc{catalog} (static db fields not changed and used)
 Make db.Put(args []string, level int, key string, value string ){
   for i 1 to level-1{
     read bucket @ args[i]
   }
   create if not exist bucket @ level
-  put key value  
+  put key value
 }
 Same for get and delete
+- [ ] refactor all db midleware to use common get put delete

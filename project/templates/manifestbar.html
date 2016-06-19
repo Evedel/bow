@@ -1,21 +1,122 @@
 {{ define "manifestbar" }}
   {{ $input := . }}
   {{ if $input.history }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>
     <div class="manifestbar">
       <div class="tabs">
-        <input id="tab1" type="radio" name="tabs">
+        <input id="tab1" type="radio" name="tabs" checked>
         <label for="tab1" title="Summary">Image Summary</label>
 
-        <input id="tab2" type="radio" name="tabs" checked>
+        <input id="tab2" type="radio" name="tabs">
         <label for="tab2" title="History">Creation History</label>
 
-        <input id="tab3" type="radio" name="tabs">
-        <label for="tab3" title="Statistics">Statistics</label>
-
         <div id="content1">
-          <h1>
-            To Be Continued...
-          </h1>
+          <table class="infotable">
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td>{{ $input.curname }}</td>
+              </tr>
+              <tr>
+                <td>Tag</td>
+                <td>{{ $input.curtag }}</td>
+              </tr>
+              <tr>
+                <td>Last Updated</td>
+                <td>{{ $input.lastupdated }}</td>
+              </tr>
+              <tr>
+                <td>Last Pushed</td>
+                <td>{{ $input.lastpushed }}</td>
+              </tr>
+              <tr>
+                <td>Image Size</td>
+                <td>{{ index $input.imagesizehuman $input.lastpushed }}</td>
+              </tr>
+              <tr>
+                <td>Number Of Pushes</td>
+                <td>{{ index $input.tags $input.curtag }}</td>
+              </tr>
+              <tr>
+                <td>Number Of Layers</td>
+                <td>{{ $input.layersnum }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div id="uploadsgraph">
+            <canvas id="uploadsChart"></canvas>
+          </div>
+          <div id="sizegraph">
+            <canvas id="sizeChart"></canvas>
+          </div>
+          <script>
+            Chart.defaults.global.defaultFontColor = 'rgba(0,0,0,1)';
+            uploads = {{ $input.uploads }};
+            var updates = [];
+            var upcounts = [];
+            for(var key in uploads) {
+              if(uploads.hasOwnProperty(key)) {
+                updates.push(key)
+                upcounts.push(uploads[key])
+              }
+            }
+            sizesbytes = {{ $input.imagesizebytes }};
+            var szdates = [];
+            var szbytes = [];
+            for(var key in sizesbytes) {
+              if(sizesbytes.hasOwnProperty(key)) {
+                szdates.push(key)
+                szbytes.push(sizesbytes[key])
+              }
+            }
+            var ctx = document.getElementById("uploadsChart");
+            var myChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: updates,
+                datasets: [{
+                  label: 'Number of Pushes',
+                  data: upcounts,
+                  backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                  borderColor: 'rgba(0,0,0,1)',
+                  borderWidth: 2
+                }]
+              }
+            });
+            var ctx = document.getElementById("sizeChart");
+            var myChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: szdates,
+                datasets: [{
+                  label: 'Size in Bytes',
+                  data: szbytes,
+                  backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                  borderColor: 'rgba(0,0,0,1)',
+                  borderWidth: 2
+                }],
+              },
+              options: {
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      callback: function(value, index, values) {
+                        var i = -1;
+                        var convnumber = value
+                        var byteUnits = [' KB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
+                        do {
+                          convnumber = convnumber / 1024;
+                          i++;
+                        } while (convnumber > 1024);
+                        return Math.max(convnumber, 0.1).toFixed(1) + byteUnits[i];
+                      }
+                    }
+                  }]
+              }
+            }
+            });
+
+          </script>
         </div>
         <div id="content2">
           <table class="historytable">
@@ -31,16 +132,15 @@
               <tr>
                 <td>{{ $time }}</td>
                 <td>{{ $histobj.blobSize }}</td>
-                <td style="text-align:left;">{{ index $histobj.container_config.Cmd 0 }}</td>
+                <td style="text-align:left;">
+                  {{ range $i, $e := $histobj.container_config.Cmd }}
+                    {{ $e }}
+                  {{ end }}
+                </td>
               </tr>
             {{ end }}
             </tbody>
           </table>
-        </div>
-        <div id="content3">
-          <h1>
-            To Be Continued...
-          </h1>
         </div>
       </div>
     </div>
