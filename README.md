@@ -7,6 +7,8 @@ Pictures
 
 ![](develop/info.png)
 
+![](develop/history.png)
+
 Features
 ==  
 - v2 registry support only
@@ -22,7 +24,8 @@ Features
 - show short info card for tag
 - show statistics pretty, draw curves for uploads number and image sizes for tag with respects to dates
 
-## Prospects
+Prospects
+==
 I can say that this app almost fit my needs, so in all likelyhood, soon, I will not improve it hardly, but this is the list of ideas just for case:
 - delete tags/images from repo just by click
 - make improvements on interface and visual side
