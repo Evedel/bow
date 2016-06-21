@@ -192,8 +192,8 @@ func CheckManifests(){
                     }
                     db.PutTagSubBucket(er, en, et, "history", created, historynew)
                   }
-                  db.PutTagDigest(er, en, et, curldigest)
                 }
+                db.PutTagDigest(er, en, et, curldigest)
                 sizedt := time.Now().Local().Format("2006-01-02 15:04:05")
                 db.PutTagSubBucket(er, en, et, "_totalsizehuman", sizedt, fromByteToHuman(totalsize))
                 db.PutTagSubBucket(er, en, et, "_totalsizebytes", sizedt, strconv.Itoa(totalsize))
