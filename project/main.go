@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/managerepos/", mrepoHandler)
 	http.HandleFunc("/info/", infoHandler)
 	http.HandleFunc("/upgrade/", upgradeHandler)
+	http.HandleFunc("/delete", deleteHandler)
 	http.HandleFunc("/", welcomeHandler)
 
 	go checker.DaemonManager()
@@ -161,6 +162,8 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 						irepos["imagesizehuman"] = strsizehuman
 					}
 					irepos["lastpushed"] = lastkey
+					dbpath[4] = "_parent"
+					irepos["parent"] = db.GetSimplePairsFromBucket(dbpath)
 				}
 			}
 		}
@@ -171,12 +174,29 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 }
 func upgradeHandler(w http.ResponseWriter, r *http.Request){
 	funcname := r.URL.Path[len("/upgrade/"):]
-	say.Info("Starting upgrae for [ " + funcname + " ]")
-	if funcname == "totalsize"{
+	say.Info("Starting upgrade for [ " + funcname + " ]")
+	if funcname == "totalsize" {
 		db.UpgradeTotalSize()
 	}
-	if funcname == "falsenumnames"{
+	if funcname == "falsenumnames" {
 		db.UpgradeFalseNumericImage()
+	}
+	if funcname == "oldparentnames" {
+		db.UpgradeOldParentNames()
+	}
+	http.Redirect(w, r, "/", 307)
+}
+func deleteHandler(w http.ResponseWriter, r *http.Request){
+	if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
+		say.Raw(err)
+	} else {
+		if (v["reponame"] != nil) && (v["curname"] != nil) && (v["curtag"] != nil) {
+			say.Info("Starting delete manifest [ " + v["reponame"][0] + "/" + v["curname"][0] + "/" + v["curtag"][0] + " ]")
+			say.Raw(checker.DeleteTagFromRepo(v["reponame"][0], v["curname"][0], v["curtag"][0]))
+			http.Redirect(w, r, "/info/" + v["reponame"][0] + "?curname=" + v["curname"][0], 307)
+		} else {
+			say.Error("Something wrong with args in deleteHandler")
+		}
 	}
 }
 

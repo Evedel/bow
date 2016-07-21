@@ -11,38 +11,52 @@
         <label for="tab2" title="History">Creation History</label>
 
         <div id="content1">
-          <table class="infotable">
-            <tbody>
-              <tr>
-                <td>Name</td>
-                <td>{{ $input.curname }}</td>
-              </tr>
-              <tr>
-                <td>Tag</td>
-                <td>{{ $input.curtag }}</td>
-              </tr>
-              <tr>
-                <td>Last Updated</td>
-                <td>{{ $input.lastupdated }}</td>
-              </tr>
-              <tr>
-                <td>Last Pushed</td>
-                <td>{{ $input.lastpushed }}</td>
-              </tr>
-              <tr>
-                <td>Image Size</td>
-                <td>{{ index $input.imagesizehuman $input.lastpushed }}</td>
-              </tr>
-              <tr>
-                <td>Number Of Pushes</td>
-                <td>{{ index $input.tags $input.curtag }}</td>
-              </tr>
-              <tr>
-                <td>Number Of Layers</td>
-                <td>{{ $input.layersnum }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div style="display: block; height:40%;">
+            <table class="infotable" style="display: inline-block;">
+              <tbody>
+                <tr>
+                  <td>Name</td>
+                  <td>{{ $input.curname }}</td>
+                </tr>
+                <tr>
+                  <td>Tag</td>
+                  <td>{{ $input.curtag }}</td>
+                </tr>
+                <tr>
+                  <td>Last Updated</td>
+                  <td>{{ $input.lastupdated }}</td>
+                </tr>
+                <tr>
+                  <td>Last Pushed</td>
+                  <td>{{ $input.lastpushed }}</td>
+                </tr>
+                <tr>
+                  <td>Image Size</td>
+                  <td>{{ index $input.imagesizehuman $input.lastpushed }}</td>
+                </tr>
+                <tr>
+                  <td>Number Of Pushes</td>
+                  <td>{{ index $input.tags $input.curtag }}</td>
+                </tr>
+                <tr>
+                  <td>Number Of Layers</td>
+                  <td>{{ $input.layersnum }}</td>
+                </tr>
+                <tr>
+                  <td>Parent Image</td>
+                  {{ if $input.parent.name }}
+                  <td><a class="namelink" href="/info/{{$input.reponame}}?curname={{ $input.parent.name }}&curtag={{ $input.parent.tag }}">
+                    {{ $input.parent.name }}:{{ $input.parent.tag }}
+                  </a></td>
+                  {{ else }}
+                  <td>Parent unknown</td>
+                  {{ end }}
+                </tr>
+              </tbody>
+            </table>
+            <!-- <a class="danger" href="/delete?reponame={{$input.reponame}}&curname={{$input.curname}}&curtag={{$input.curtag}}"
+              style="width:10%; top: -100px; left: -150px;">[DELETE]</a> -->
+          </div>
           <div id="uploadsgraph">
             <canvas id="uploadsChart"></canvas>
           </div>

@@ -185,27 +185,3 @@ func DeleteTagSubBucket(repo string, name string, tag string, bucket string){
   }
   say.Info("DB: Done")
 }
-func PutTagSubBucket(repo string, name string, tag string, bucket string, key string, value string){
-  say.Info("DB: insert into subbucket for [ " + repo + "/" + name + "/" + tag + "/" + bucket + "/ " + key + " ]")
-  if err := DB.Update(func(tx *bolt.Tx) error {
-    if b := tx.Bucket([]byte("repositories")); b != nil {
-      if br := b.Bucket([]byte(repo)); br != nil {
-        if brc := br.Bucket([]byte("catalog")); brc != nil {
-          if brcn := brc.Bucket([]byte(name)); brcn != nil {
-            if brcnt := brcn.Bucket([]byte(tag)); brcnt != nil {
-              if brcntf, err := brcnt.CreateBucketIfNotExists([]byte(bucket)); err == nil {
-                brcntf.Put([]byte(key), []byte(value))
-              } else {
-                return err
-              }
-            }
-          }
-        }
-      }
-    }
-    return nil
-  }); err != nil {
-    say.Error(err.Error())
-  }
-  say.Info("DB: Done")
-}

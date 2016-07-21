@@ -23,6 +23,8 @@ Features
 - it is possible to set multiple repositories and watch all registries in one place
 - show short info card for tag
 - show statistics pretty, draw curves for uploads number and image sizes for tag with respects to dates
+- __(new)__ find parent of image, in case parent in the same repo (it is clickable!)
+<img src="develop/parent.png" width="300">
 
 Prospects
 ==

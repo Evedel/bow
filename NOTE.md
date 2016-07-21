@@ -18,21 +18,24 @@ BoltDB levels
     \  
 (b){repositories}
       \
-(br){reponame[N]}
-        \   
- (brc){catalog}
-          \---{ _names }---[ id => last_name ]
- (brcn){imagename[N]}--*--[ _valid => 0 || 1 ]
-            \           \
-             \           \- { _uploads }---[ date => count ]
-              \            
-      (brcnt){tags}--*
-                      \
- [ _valid => 0 || 1 ]--*--{ _uploads }---[ date => count ]
-                        \--[ digest => header:digest ]
-                         \--{ history }--[ datetime => (command + blob:{sha256, size} ]
-                          *--{ _totalsizehuman }--[ datetime => size ]
-                          |--{ _totalsizebytes }--[ datetime => size ]
+(br){reponame[N]}---{ _names }---{ imagename }---[ datetime => last_name ]
+        \                                                              :
+ (brc){catalog}                                                        :
+          \                                                            :
+ (brcn){imagename[N]}--*--[ _valid => 0 || 1 ]                         :
+            \           \                                              :
+             \           \- { _uploads }---[ date => count ]           :
+              \                                                        :
+      (brcnt){tags}--*                                                 :
+                      \                                                :
+ [ _valid => 0 || 1 ]--*--{ _uploads }---[ date => count ]             :
+                        \                                              :
+                         \--[ digest => header:digest ]................:
+                          \
+                           \--{ history }--[ datetime => (command + blob:{sha256, size} ]
+                            *--{ _totalsizehuman }--[ datetime => size ]
+                            |--{ _totalsizebytes }--[ datetime => size ]
+                            '--[ _parent => name:tag ]
 ```
 
 //IDEAS  

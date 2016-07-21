@@ -47,11 +47,11 @@ func GetSimplePairsFromBucket(path []string) (pairs map[string]string){
       if b[i] != nil {
         b[i+1] = b[i].Bucket([]byte(e))
       } else {
-        return errors.New("There is no such bucket [ " + path[i-1] + " ]")
+        return errors.New("GET BUCKET: There is no such bucket [ " + path[i-1] + " ]")
       }
     }
     if b[len(path)] == nil {
-      return errors.New("There is no such bucket [ " + path[len(path)-1] + " ]")
+      return errors.New("GET BUCKET: There is no such bucket [ " + path[len(path)-1] + " ]")
     }
     if err := b[len(path)].ForEach(func(k, v []byte) error {
       pairs[string(k)] = string(v)
@@ -66,6 +66,37 @@ func GetSimplePairsFromBucket(path []string) (pairs map[string]string){
   say.Info("DB: Done")
   return
 }
+func GetValueFromBucket(path []string, key string) (value string){
+  b := make([]*bolt.Bucket, len(path)+1)
+  pathstr := ""
+  if len(path) > 0 {
+    pathstr = path[0]
+  }
+  for i := 1; i < len(path); i++ {
+    pathstr = pathstr + "->" + path[i]
+  }
+  say.Info("DB: open bucket for READ  [ " + pathstr + "=>" + key + " ]")
+  if err := DB.View(func(tx *bolt.Tx) error {
+    b[0] = tx.Bucket([]byte("repositories"))
+    for i, e := range path {
+      if b[i] != nil {
+        b[i+1] = b[i].Bucket([]byte(e))
+      } else {
+        return errors.New("GET VALUE: There is no such bucket [ " + path[i-1] + " ]")
+      }
+    }
+    if b[len(path)] == nil {
+      return errors.New("GET VALUE: There is no such bucket [ " + path[len(path)-1] + " ]")
+    }
+    value =  string(b[len(path)].Get([]byte(key)))
+    return nil
+  }); err != nil {
+    say.Error(err.Error())
+  }
+  say.Info("DB: Done")
+  return
+}
+
 func PutSimplePairToBucket(path []string, key string, value string){
   var err error
   b := make([]*bolt.Bucket, len(path)+1)
@@ -103,6 +134,7 @@ func PutSimplePairToBucket(path []string, key string, value string){
   }
   say.Info("DB: Done")
 }
+
 func DeleteBucketFromDB(path []string) {
   var err error
   b := make([]*bolt.Bucket, len(path)+1)
@@ -120,14 +152,46 @@ func DeleteBucketFromDB(path []string) {
       if b[i] != nil {
         b[i+1] = b[i].Bucket([]byte(e))
       } else {
-        return errors.New("There is no such bucket [ " + path[i-1] + " ]")
+        return errors.New("DELETE BUCKET: There is no such bucket [ " + path[i-1] + " ]")
       }
     }
     if b[len(path)] == nil {
-      return errors.New("There is no such bucket [ " + path[len(path)-1] + " ]")
+      return errors.New("DELETE BUCKET: There is no such bucket [ " + path[len(path)-1] + " ]")
     }
     say.Info("DB: deleting bucket [ " + path[len(path)-1] + " ]")
     if err = b[len(path)-1].DeleteBucket([]byte(path[len(path)-1])); err != nil {
+      return err
+    }
+    return nil
+  }); err != nil {
+    say.Error(err.Error())
+  }
+  say.Info("DB: Done")
+}
+func DeleteKeyFromDB(path []string, key string ) {
+  b := make([]*bolt.Bucket, len(path)+1)
+  pathstr := ""
+  if len(path) > 0 {
+    pathstr = path[0]
+  }
+  for i := 1; i < len(path); i++ {
+    pathstr = pathstr + "->" + path[i]
+  }
+  say.Info("DB: open bucket for DELETE [ " + pathstr + " ]")
+  if err := DB.Update(func(tx *bolt.Tx) error {
+    b[0] = tx.Bucket([]byte("repositories"))
+    for i, e := range path {
+      if b[i] != nil {
+        b[i+1] = b[i].Bucket([]byte(e))
+      } else {
+        return errors.New("DELETE KEY: There is no such bucket [ " + path[i-1] + " ]")
+      }
+    }
+    if b[len(path)] == nil {
+      return errors.New("DELETE KEY: There is no such bucket [ " + path[len(path)-1] + " ]")
+    }
+    say.Info("DB: deleting key [ " + key + " ]")
+    if err := b[len(path)].Delete([]byte(key)); err != nil {
       return err
     }
     return nil

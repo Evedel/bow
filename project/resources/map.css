@@ -51,10 +51,26 @@ button{
 {
   background-color: #6BC0EA;
 }
-
+a.namelink:link, a.namelink:visited{
+  padding: 0px 0px;
+  text-align: left;
+  text-decoration: underline;
+}
+a.namelink:hover, a.namelink:active{
+  width: 90%;
+  background-color: #446688;
+  opacity: 1;
+  color: white;
+  font-weight: normal;
+}
 a.chosen{
   background-color: #0e121d;
   color: #006699;
+}
+a.danger{
+  background-color: #650f22;
+  position: relative;
+  color: #0e121d;
 }
 div.topbar{
   position: relative;

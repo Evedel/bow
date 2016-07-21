@@ -50,6 +50,19 @@ func UpgradeFalseNumericImage(){
     }
   }
 }
+func UpgradeOldParentNames(){
+  repos := GetSimplePairsFromBucket([]string{})
+  for key, value := range repos {
+    if value == "" {
+      names := GetSimplePairsFromBucket([]string{key, "_names"})
+      for keyn, valuen := range names {
+        if valuen != "" {
+          DeleteKeyFromDB([]string{key, "_names" }, keyn)
+        }
+      }
+    }
+  }
+}
 func fromByteToHuman(bytes int) (human string){
   human = strconv.Itoa(bytes) + " B"
   if bytes > 1024 {
