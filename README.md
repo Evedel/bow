@@ -9,6 +9,8 @@ Pictures
 
 ![](develop/history.png)
 
+![](develop/parents.png)
+
 Features
 ==  
 - v2 registry support only
@@ -24,14 +26,14 @@ Features
 - show short info card for tag
 - show statistics pretty, draw curves for uploads number and image sizes for tag with respects to dates
 - __(new)__ find parent of image, in case parent in the same repo (it is clickable!)
-<img src="develop/parent.png" width="300">
+- __(the newes)__ show tree of parents for image/ build dependency tree for whole repo
+
 
 Prospects
 ==
 I can say that this app almost fit my needs, so in all likelyhood, soon, I will not improve it hardly, but this is the list of ideas just for case:
 - delete tags/images from repo just by click
 - make improvements on interface and visual side
-- show tree of parents for image/ build dependency tree for whole repo
 - dynamically upload nice images from __icons8.com__ API
 
 How to start use Bow
@@ -57,7 +59,8 @@ docker exec -it develop_golang_1 go run main.go
 Code and packages
 ==
 This app is written on golang with use of standard packages and:  
-https://github.com/boltdb/bolt#using-buckets -- BoltDB  
+https://github.com/boltdb/bolt -- BoltDB  
 https://github.com/fatih/color -- to make cli shiny  
 https://github.com/wader/disable_sendfile_vbox_linux -- to develop on docker-machine  
 http://www.chartjs.org/ -- to draw best graphs ever
+https://github.com/fperucic/treant-js -- to draw parents graphs

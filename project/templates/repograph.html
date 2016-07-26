@@ -1,0 +1,46 @@
+{{ define "repograph" }}
+  {{ $input := . }}
+  <html>
+    <head>
+      <script src="/resources/treant-js/Treant.js"></script>
+      <script src="/resources/treant-js/vendor/raphael.js"></script>
+
+      <script src="/resources/treant-js/vendor/jquery.min.js"></script>
+      <script src="/resources/treant-js/vendor/jquery.easing.js"></script>
+
+      <link rel="stylesheet" type="text/css" href="/resources/treant.css">
+
+      <link rel="stylesheet" type="text/css" href="/resources/map.css">
+    </head>
+    <body>
+      {{ template "topbar" $input.headerdata }}
+      {{ template "repobar" $input.repodata }}
+      <div id="parents-tree"></div>
+      <script>
+      var simple_chart_config = {
+      	chart:{
+          rootOrientation: "WEST",
+          container: "#parents-tree",
+          animateOnInit: false,
+          hideRootNode: true,
+          nodeAlign: "BOTTOM",
+          connectors: {
+            type: "bCurve",
+            style: {
+              stroke: "white"
+            }
+          },
+          animation: {
+            nodeAnimation: "easeInQuad",
+            nodeSpeed: 1000,
+            connectorsAnimation: "easeInQuad",
+            connectorsSpeed: 1500
+          }
+        },
+      	nodeStructure: JSON.parse({{ $input.graphdata }})
+      };
+      tree = new Treant(simple_chart_config);
+      </script>
+    </body>
+  </html>
+{{ end }}

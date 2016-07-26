@@ -2,6 +2,7 @@ package conf
 
 import (
   "os"
+  "strconv"
 )
 
 var Env map[string] string
@@ -30,5 +31,14 @@ func Init()  {
       Env["dbname"] = val
     } else {
       Env["dbname"] = "asapdrf"
+  }
+  if val = os.Getenv("BS_CHECKER_TIMEOUT"); val != "" {
+    if _, err := strconv.Atoi(val); err != nil {
+      Env["checker_time"] = "300"
+    } else {
+      Env["checker_time"] = val
+    }
+  } else {
+    Env["checker_time"] = "300"
   }
 }

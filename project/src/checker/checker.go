@@ -3,6 +3,7 @@ package checker
 import (
   "db"
   "say"
+  "conf"
   "time"
   "strconv"
   "strings"
@@ -12,13 +13,15 @@ import (
 )
 
 func DaemonManager() {
+  t, _ := strconv.Atoi(conf.Env["checker_time"])
+  say.L2("DaemonManager: Sleep time is : " + conf.Env["checker_time"] + " seconds")
   for {
-    say.Info("Manager Daemon: TicTac")
+    say.L1("DaemonManager: TicTac")
     go CheckRepos()
     go CheckTags()
     go CheckManifests()
     go CheckParents()
-    time.Sleep(5 * 60 * time.Second)
+    time.Sleep(time.Duration(t) * time.Second)
   }
 }
 
@@ -26,15 +29,15 @@ func IsSliceDifferent(a []string, b []string) (bool) {
   al := len(a)
   bl := len(b)
   if a == nil && b == nil {
-    say.Info("Slices are equally nill. Same.")
+    say.L1("Slices are equally nill. Same.")
     return false
   }
   if a == nil || b == nil {
-    say.Info("One of the slices is empty. Different.")
+    say.L1("One of the slices is empty. Different.")
     return true
   }
   if al != bl {
-    say.Info("Length of slices are different. Different.")
+    say.L1("Length of slices are different. Different.")
     return true
   }
   numofequal := 0
@@ -47,16 +50,16 @@ func IsSliceDifferent(a []string, b []string) (bool) {
     }
   }
   if len(a) == numofequal {
-    say.Info("Length of slices are same with number of equal elements. Same.")
+    say.L1("Length of slices are same with number of equal elements. Same.")
     return false
   } else {
-    say.Info("Length of slices are differ with number of equal elements. Different.")
+  say.L1("Length of slices are differ with number of equal elements. Different.")
     return true
   }
 }
 
 func CheckRepos(){
-  say.Info("CheckRepos Daemon: started work")
+  say.L1("CheckRepos Daemon: started work")
   repos := db.GetRepos()
   for _, e := range repos {
     pretty := db.GetRepoPretty(e)
@@ -73,14 +76,14 @@ func CheckRepos(){
         db.AddCatalog(e, arrstr)
       }
     } else {
-      say.Error("CheckRepos Daemon: cannot recieve response from registry, stopping work")
+      say.L3("CheckRepos Daemon: cannot recieve response from registry, stopping work")
     }
   }
-  say.Info("CheckRepos Daemon: finished work")
+  say.L1("CheckRepos Daemon: finished work")
 }
 
 func CheckTags(){
-  say.Info("CheckTags Daemon: started work")
+  say.L1("CheckTags Daemon: started work")
   repos := db.GetRepos()
   for _, er := range repos {
     pretty := db.GetRepoPretty(er)
@@ -99,15 +102,15 @@ func CheckTags(){
           db.AddTags(er, en, arrstr)
         }
       } else {
-        say.Error("CheckTags Daemon: cannot recieve response from registry, stopping work")
+        say.L3("CheckTags Daemon: cannot recieve response from registry, stopping work")
       }
     }
   }
-  say.Info("CheckTags Daemon: finished work")
+  say.L1("CheckTags Daemon: finished work")
 }
 
 func CheckManifests(){
-  say.Info("CheckManifests Daemon: started work")
+  say.L1("CheckManifests Daemon: started work")
   repos := db.GetRepos()
   for _, er := range repos {
     pretty := db.GetRepoPretty(er)
@@ -122,8 +125,8 @@ func CheckManifests(){
           Reqtv2Digest, _ := http.NewRequest("GET", Reqt, nil)
           Reqtv2Digest.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
           if Respv2Digest, err := client.Do(Reqtv2Digest); err != nil {
-            say.Error(err.Error())
-            say.Error("CheckManifests Daemon: cannot recieve response from registry, stopping work")
+            say.L3(err.Error())
+            say.L3("CheckManifests Daemon: cannot recieve response from registry, stopping work")
           } else {
             defer Respv2Digest.Body.Close()
             dbdigest := db.GetTagDigest(er, en, et)
@@ -140,7 +143,7 @@ func CheckManifests(){
                 history := historyarr[i].(map[string]interface{})["v1Compatibility"].(string)
                 historynew := history
                 if fsshanum, err := strconv.Atoi(fssize); err != nil {
-                  say.Error(err.Error())
+                  say.L3(err.Error())
                 } else {
                   if last := len(historynew) - 1; last >= 0 {
                       historynew = historynew[:last]
@@ -149,7 +152,7 @@ func CheckManifests(){
                   totalsize += fsshanum
                 }
                 if err := json.Unmarshal([]byte(history), &ch); err != nil {
-                  say.Error(err.Error())
+                  say.L3(err.Error())
                 } else {
                   created := ch.(map[string]interface{})["created"].(string)
                   created = created[0:10] + " " + created[11:len(created)-11]
@@ -161,16 +164,16 @@ func CheckManifests(){
               db.PutSimplePairToBucket([]string{ er, "catalog", en, et, "_totalsizebytes" }, sizedt, strconv.Itoa(totalsize))
               db.PutTagDigest(er, en, et, curldigest)
             } else {
-              say.Info("CheckManifests Daemon: digests are the same, shouldnot update anything, stopping work")
+              say.L1("CheckManifests Daemon: digests are the same, shouldnot update anything, stopping work")
             }
           }
         } else {
-          say.Error("CheckManifests Daemon: cannot recieve response from registry, stopping work")
+          say.L3("CheckManifests Daemon: cannot recieve response from registry, stopping work")
         }
       }
     }
   }
-  say.Info("CheckManifests Daemon: finished work")
+  say.L1("CheckManifests Daemon: finished work")
 }
 
 func CheckParents(){
@@ -190,7 +193,7 @@ func CheckParents(){
               for _, valh := range history {
                 var ch interface{}
                 if err := json.Unmarshal([]byte(valh), &ch); err != nil {
-                  say.Error(err.Error())
+                  say.L3(err.Error())
                 } else {
                   tmpstr = ""
                   for valji, valj := range ch.(map[string]interface{})["container_config"].(map[string]interface{})["Cmd"].([]interface{}) {
@@ -217,7 +220,7 @@ func CheckParents(){
               cmdneedaddition := true
               for _, valcmd := range cmd {
                 if err := json.Unmarshal([]byte(valcmd), &cmdslice); err != nil {
-                  say.Error(err.Error())
+                  say.L3(err.Error())
                 } else {
                   if ! IsSliceDifferent(histarr, cmdslice) {
                     cmdneedaddition = false
@@ -230,7 +233,7 @@ func CheckParents(){
                 fullcmd, _ := json.Marshal(histarr)
                 db.PutSimplePairToBucket([]string{ key, "_names", keyn + ":" + keyt }, sizedt, string(fullcmd))
               }
-              say.Info("Finding parent for [ " + keyn + ":" + keyt +  " ]")
+              say.L1("Finding parent for [ " + keyn + ":" + keyt +  " ]")
               if pn, pt, pok := FindParent(histarr, key, keyn, keyt); pok {
                 db.PutSimplePairToBucket([]string{ key, "catalog", keyn, keyt, "_parent" }, "name", pn)
                 db.PutSimplePairToBucket([]string{ key, "catalog", keyn, keyt, "_parent" }, "tag",  pt)
@@ -243,17 +246,64 @@ func CheckParents(){
         }
       }
     }
+    db.DeleteBucket([]string{key, "_namesgraph"})
+    BuildParentsGraph(key)
+  }
+}
+
+func BuildParentsGraph(repo string){
+  say.L1("Building parents tree for [ " + repo + " ]")
+  fullnames := []string{}
+  names := db.GetSimplePairsFromBucket([]string{repo, "catalog"})
+  for kn, _ := range names {
+    tags := db.GetSimplePairsFromBucket([]string{repo, "catalog", kn})
+    for kt, _ := range tags {
+      if kt[0:1] != "_" {
+        fullnames = append(fullnames, kn + ":" + kt)
+      }
+    }
+  }
+
+  Depth := 0
+  Base := [][]string{}
+  L0 := []string{repo, "_namesgraph"}
+  Base = append(Base, L0)
+  db.PutBucketToBucket(Base[0])
+
+  for (len(fullnames) > 0) && (Depth < 100) {
+    tmpBase := [][]string{}
+    for i := len(fullnames)-1; i > -1; i-- {
+      s := strings.Split(fullnames[i], ":")
+      n := s[0]
+      t := s[1]
+      np := db.GetValueFromBucket([]string{ repo, "catalog", n, t, "_parent" }, "name")
+      tp := db.GetValueFromBucket([]string{ repo, "catalog", n, t, "_parent" }, "tag")
+
+      for j := 0; j < len(Base); j++ {
+        if ( np + ":" + tp == Base[j][len(Base[j])-1] ) || (( Depth == 0 ) && ( np + ":" + tp == ":" )) {
+          say.L1("Found parents [ " + np + ":" + tp + " => " + n + ":" + t + " ]")
+          tmpPath := append(Base[j], n + ":" + t)
+          cpPath := make([]string, len(tmpPath))
+          copy(cpPath, tmpPath)
+          tmpBase = append(tmpBase, cpPath)
+          db.PutBucketToBucket(tmpPath)
+          fullnames = append(fullnames[:i], fullnames[i+1:]...)
+        }
+      }
+    }
+    Base = tmpBase
+    Depth++
   }
 }
 
 func GetfsLayerSize(link string ) (size string){
   if Resp, err := http.Head(link); err != nil {
-    say.Error(err.Error())
-    say.Error("CheckManifests Daemon: GetfsLayerSize cannot recieve response from registry, stopping work")
+    say.L3(err.Error())
+    say.L3("CheckManifests Daemon: GetfsLayerSize cannot recieve response from registry, stopping work")
   } else {
     defer Resp.Body.Close()
     if _, err := ioutil.ReadAll(Resp.Body); err != nil {
-      say.Error(err.Error())
+      say.L3(err.Error())
     } else {
       size = Resp.Header.Get("Content-Length")
       return
@@ -288,16 +338,16 @@ func DeleteTagFromRepo(repo string, name string, tag string) (ok bool){
   Reqt, _ := http.NewRequest("DELETE", ReqtStr, nil)
   Reqt.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
   if Resp, err := client.Do(Reqt); err != nil {
-    say.Error(err.Error())
-    say.Error("Delete From Repository: cannot recieve response from registry, stopping work")
+    say.L3(err.Error())
+    say.L3("Delete From Repository: cannot recieve response from registry, stopping work")
     return
   } else {
     defer Resp.Body.Close()
     if Resp.StatusCode == 202 {
       ok = true
     } else {
-      say.Error(ReqtStr)
-      say.Error(Resp.Status)
+      say.L3(ReqtStr)
+      say.L3(Resp.Status)
     }
   }
   return
@@ -306,22 +356,22 @@ func DeleteTagFromRepo(repo string, name string, tag string) (ok bool){
 func MakeQueryToRepo(query string) (body interface{}, ok bool){
   ok = false
   if response, err := http.Get(query); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
     return
   } else {
     defer response.Body.Close()
     if bodytmp, err := ioutil.ReadAll(response.Body); err != nil {
-      say.Error(err.Error())
+      say.L3(err.Error())
       return
     } else {
       var c interface{}
       if err := json.Unmarshal(bodytmp, &c); err != nil {
-        say.Error(err.Error())
+        say.L3(err.Error())
         return
       } else {
         if c.(map[string]interface{})["errors"] != nil {
-          say.Error(query)
-          say.Error(c.(map[string]interface{})["errors"].([]interface{})[0].(map[string]interface{})["message"].(string))
+          say.L3(query)
+          say.L3(c.(map[string]interface{})["errors"].([]interface{})[0].(map[string]interface{})["message"].(string))
           return
         } else {
           body = c
@@ -334,7 +384,7 @@ func MakeQueryToRepo(query string) (body interface{}, ok bool){
 }
 
 func FindParent(childcmd []string, repo string, namei string, tagi string) (name string, tag string, ok bool){
-  say.Info("Searching for parent of [ " + namei + ":" + tagi + " ]")
+  say.L1("Searching for parent of [ " + namei + ":" + tagi + " ]")
   ok = true
   names := db.GetSimplePairsFromBucket([]string{repo, "_names"})
   maxname := ""
@@ -367,7 +417,7 @@ func FindParent(childcmd []string, repo string, namei string, tagi string) (name
             }
           }
         } else {
-          say.Error(err.Error())
+          say.L3(err.Error())
           ok = false
           return
         }
@@ -376,9 +426,9 @@ func FindParent(childcmd []string, repo string, namei string, tagi string) (name
   }
   if maxlayers == 0 {
     ok = false
-    say.Info("Parent not found")
+    say.L1("Parent not found")
   } else {
-    say.Info("Parent is [ "+ maxname +" ]")
+    say.L1("Parent is [ "+ maxname +" ]")
     s := strings.Split(maxname, ":")
     name = s[0]
     tag = s[1]

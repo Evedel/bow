@@ -22,13 +22,14 @@ func main() {
 	http.HandleFunc("/info/", infoHandler)
 	http.HandleFunc("/upgrade/", upgradeHandler)
 	http.HandleFunc("/delete", deleteHandler)
+	http.HandleFunc("/repograph", repograpHandler)
 	http.HandleFunc("/", welcomeHandler)
 
 	go checker.DaemonManager()
 
-	say.Info("Server listening at [" + conf.Env["servadd"] + "]")
+	say.L2("Server listening at [" + conf.Env["servadd"] + "]")
 	if err := http.ListenAndServe(conf.Env["servadd"], nil); err != nil {
-		say.Error(err.Error() + "\nListenAndServe()\nmain()\nmain.go\nmain")
+		say.L3(err.Error() + "\nListenAndServe()\nmain()\nmain.go\nmain")
 	}
 }
 func welcomeHandler(w http.ResponseWriter, r *http.Request){
@@ -43,7 +44,7 @@ func mrepoHandler(w http.ResponseWriter, r *http.Request){
 	var repopretty map[string]string
 	if urlc == "add" {
 		if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-			say.Raw(err)
+			say.L3(err.Error())
 		} else {
 			if len(v) != 0 {
 				db.CreateRepo(v)
@@ -53,7 +54,7 @@ func mrepoHandler(w http.ResponseWriter, r *http.Request){
 	}
 	if urlc == "edit" {
 		if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-			say.Raw(err)
+			say.L3(err.Error())
 		} else {
 			if len(v) == 1 {
 				repopretty = db.GetRepoPretty(v["reponame"][0])
@@ -67,7 +68,7 @@ func mrepoHandler(w http.ResponseWriter, r *http.Request){
 	}
 	if urlc == "delete" {
 		if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-			say.Raw(err)
+			say.L3(err.Error())
 		} else {
 			if len(v) == 1 {
 				db.DeleteRepo(v["reponame"][0])
@@ -87,10 +88,11 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 	irepos := make(map[string]interface{})
 	irepos["reponame"] = r.URL.Path[len("/info/"):]
 	repo := db.GetRepoPretty(irepos["reponame"].(string))
-	irepos["header"] = irepos["reponame"].(string) + " : " + repo["repohost"]
-
+	headerdata := make(map[string]string)
+	headerdata["header"] = irepos["reponame"].(string) + " : " + repo["repohost"]
+	headerdata["currepo"] = irepos["reponame"].(string)
 	if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-		say.Raw(err)
+		say.L3(err.Error())
 	} else {
 		if len(v) != 0 {
 			if v["curname"] != nil {
@@ -110,7 +112,7 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 					count := 0
 					for _, eu := range uploads[e] {
 						if num, err := strconv.Atoi(eu); err != nil {
-							say.Error(err.Error())
+							say.L3(err.Error())
 						} else {
 							count += num
 						}
@@ -118,11 +120,11 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 					totaluploads[e] = count
 				}
 				irepos["tags"] = totaluploads
-				irepos["header"] = irepos["header"].(string) + "/" + irepos["curname"].(string)
+				headerdata["header"] = headerdata["header"] + "/" + irepos["curname"].(string)
 				if v["curtag"] != nil {
 					irepos["curtag"] = v["curtag"][0]
 					irepos["uploads"] = uploads[irepos["curtag"].(string)]
-					irepos["header"] = irepos["header"].(string) + ":" + irepos["curtag"].(string)
+					headerdata["header"] = headerdata["header"] + ":" + irepos["curtag"].(string)
 					var dbpath = []string{
 						irepos["reponame"].(string),
 						"catalog",
@@ -169,12 +171,14 @@ func infoHandler(w http.ResponseWriter, r *http.Request){
 		}
 	}
 
+	irepos["headerdata"] = headerdata
 	irepos["catalog"] = db.GetCatalog(irepos["reponame"].(string))
 	renderTemplate(w, "info", irepos)
 }
+
 func upgradeHandler(w http.ResponseWriter, r *http.Request){
 	funcname := r.URL.Path[len("/upgrade/"):]
-	say.Info("Starting upgrade for [ " + funcname + " ]")
+	say.L1("Starting upgrade for [ " + funcname + " ]")
 	if funcname == "totalsize" {
 		db.UpgradeTotalSize()
 	}
@@ -186,22 +190,47 @@ func upgradeHandler(w http.ResponseWriter, r *http.Request){
 	}
 	http.Redirect(w, r, "/", 307)
 }
+
 func deleteHandler(w http.ResponseWriter, r *http.Request){
 	if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-		say.Raw(err)
+		say.L3(err.Error())
 	} else {
 		if (v["reponame"] != nil) && (v["curname"] != nil) && (v["curtag"] != nil) {
-			say.Info("Starting delete manifest [ " + v["reponame"][0] + "/" + v["curname"][0] + "/" + v["curtag"][0] + " ]")
-			say.Raw(checker.DeleteTagFromRepo(v["reponame"][0], v["curname"][0], v["curtag"][0]))
+			say.L1("Starting delete manifest [ " + v["reponame"][0] + "/" + v["curname"][0] + "/" + v["curtag"][0] + " ]")
+			say.L4(checker.DeleteTagFromRepo(v["reponame"][0], v["curname"][0], v["curtag"][0]))
 			http.Redirect(w, r, "/info/" + v["reponame"][0] + "?curname=" + v["curname"][0], 307)
 		} else {
-			say.Error("Something wrong with args in deleteHandler")
+			say.L3("Something wrong with args in deleteHandler")
+		}
+	}
+}
+
+func repograpHandler(w http.ResponseWriter, r *http.Request){
+	if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
+		say.L3(err.Error())
+	} else {
+		if v["reponame"] != nil {
+			irepos := make(map[string]interface{})
+			irepos["graphdata"] = db.GetSchemaFromPoint([]string{v["reponame"][0], "_namesgraph"})
+
+			headerdata := make(map[string]string)
+			headerdata["header"] = v["reponame"][0] + " : " + db.GetRepoPretty(v["reponame"][0])["repohost"]
+			headerdata["currepo"] = v["reponame"][0]
+			irepos["headerdata"] = headerdata
+
+			irepos["repodata"] = make(map[string]interface{})
+			irepos["repodata"].(map[string]interface{})["catalog"] = db.GetRepos()
+			irepos["repodata"].(map[string]interface{})["curname"] = v["reponame"][0]
+
+			renderTemplate(w, "repograph", irepos)
+		} else {
+			say.L3("Name of repository not set in repograpHandler")
 		}
 	}
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, c interface{}) {
-	say.Info("Rendering template [ " + tmpl + " ]")
+	say.L1("Rendering template [ " + tmpl + " ]")
 	templates := template.Must(template.ParseGlob("./templates/*"))
 	err := templates.ExecuteTemplate(w, tmpl, c)
 	if err != nil {

@@ -1,11 +1,13 @@
 package db
 
 import(
+  "say"
   "strings"
   "strconv"
 )
 
 func UpgradeTotalSize(){
+  say.L2("DB UPGRADE: make upgrade for total size")
   repos := GetSimplePairsFromBucket([]string{})
   for key, value := range repos {
     if value == "" {
@@ -29,7 +31,7 @@ func UpgradeTotalSize(){
                   PutSimplePairToBucket([]string{key, "catalog", keyi, keyt, "_totalsizehuman"}, keys, fromByteToHuman(num))
                 }
               }
-              DeleteBucketFromDB([]string{key, "catalog", keyi, keyt, "_totalsize"})
+              DeleteBucket([]string{key, "catalog", keyi, keyt, "_totalsize"})
             }
           }
         }
@@ -38,19 +40,21 @@ func UpgradeTotalSize(){
   }
 }
 func UpgradeFalseNumericImage(){
+  say.L2("DB UPGRADE: make upgrade for false numeric image")
   repos := GetSimplePairsFromBucket([]string{})
   for key, value := range repos {
     if value == "" {
       imagenames := GetSimplePairsFromBucket([]string{key, "catalog"})
       for keyi, _ := range imagenames {
         if _, err := strconv.Atoi(keyi); err == nil {
-          DeleteBucketFromDB([]string{key, "catalog", keyi})
+          DeleteBucket([]string{key, "catalog", keyi})
         }
       }
     }
   }
 }
 func UpgradeOldParentNames(){
+  say.L2("DB UPGRADE: make upgrade for old parent names")
   repos := GetSimplePairsFromBucket([]string{})
   for key, value := range repos {
     if value == "" {

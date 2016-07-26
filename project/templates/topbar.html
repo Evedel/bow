@@ -1,9 +1,10 @@
 {{define "topbar"}}
-{{ $curPos := . }}
+{{ $hdata := . }}
   <div class="topbar">
     <a class="goback" href="/">Main</a>
-    {{ if $curPos }}
-      <p>{{ $curPos }}</p>
+    {{ if $hdata }}
+      <p>{{ $hdata.header }}</p>
+      <a class="setting" href="/repograph?reponame={{ $hdata.currepo }}">Graph</a>
     {{ end }}
       <a class="setting" href="/managerepos">Confs</a>
   </div>

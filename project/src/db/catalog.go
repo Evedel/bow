@@ -1,4 +1,4 @@
-package db
+  package db
 
 import (
   "say"
@@ -6,7 +6,7 @@ import (
 )
 
 func GetCatalog(repo string) (catalog []string){
-  say.Info("DB: select catalog for [" + repo + "]")
+  say.L1("DB: select catalog for [" + repo + "]")
   if err := DB.View(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -26,13 +26,13 @@ func GetCatalog(repo string) (catalog []string){
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done")
+  say.L1("DB: Done")
   return
 }
 func AddCatalog(repo string, catalog []string) {
-  say.Info("DB: insert catalog for [" + repo + "]")
+  say.L1("DB: insert catalog for [" + repo + "]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -59,12 +59,12 @@ func AddCatalog(repo string, catalog []string) {
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done")
+  say.L1("DB: Done")
 }
 func PutCatalogSubBucket(repo string, bucket string, key string, value string){
-  say.Info("DB: insert in subbucket for catalog [ " + repo + "/" + bucket + " / " + key + " ]")
+  say.L1("DB: insert in subbucket for catalog [ " + repo + "/" + bucket + " / " + key + " ]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -77,7 +77,7 @@ func PutCatalogSubBucket(repo string, bucket string, key string, value string){
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done ")
+  say.L1("DB: Done ")
 }

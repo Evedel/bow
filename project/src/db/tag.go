@@ -8,7 +8,7 @@ import (
 )
 
 func GetTags(repo string, name string) (tags []string){
-  say.Info("DB: select tags for [" + repo + "/" + name + "]")
+  say.L1("DB: select tags for [" + repo + "/" + name + "]")
   if err := DB.View(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -30,13 +30,13 @@ func GetTags(repo string, name string) (tags []string){
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done")
+  say.L1("DB: Done")
   return
 }
 func AddTags(repo string, name string, tags []string){
-  say.Info("DB: insert tags for [" + repo + "/" + name + "]")
+  say.L1("DB: insert tags for [" + repo + "/" + name + "]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -61,12 +61,12 @@ func AddTags(repo string, name string, tags []string){
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done")
+  say.L1("DB: Done")
 }
 func GetTagDigest(repo string, name string, tag string) (digest string){
-  say.Info("DB: select digest for [" + repo + "/" + name + "/" + tag + "]")
+  say.L1("DB: select digest for [" + repo + "/" + name + "/" + tag + "]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -81,13 +81,13 @@ func GetTagDigest(repo string, name string, tag string) (digest string){
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done")
+  say.L1("DB: Done")
   return
 }
 func PutTagDigest(repo string, name string, tag string, digest string){
-  say.Info("DB: insert digest for [" + repo + "/" + name + "/" + tag + "]")
+  say.L1("DB: insert digest for [" + repo + "/" + name + "/" + tag + "]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -96,7 +96,7 @@ func PutTagDigest(repo string, name string, tag string, digest string){
             if brcnt := brcn.Bucket([]byte(tag)); brcnt != nil {
               brcnt.Put([]byte("digest"), []byte(digest))
               if brcntu, err := brcnt.CreateBucketIfNotExists([]byte("_uploads")); err == nil {
-                say.Info("DB: incrimenting uploads for [" + repo + "/" + name + "/" + tag + "]")
+                say.L1("DB: incrimenting uploads for [" + repo + "/" + name + "/" + tag + "]")
                 shortDate := time.Now().Local().Format("2006-01-02")
                 if brcntud := brcntu.Get([]byte(shortDate)); brcntud != nil {
                   val, _ := strconv.Atoi(string(brcntud))
@@ -109,7 +109,7 @@ func PutTagDigest(repo string, name string, tag string, digest string){
                 return err
               }
               if brcnu, err := brcn.CreateBucketIfNotExists([]byte("_uploads")); err == nil {
-                say.Info("DB: incrimenting uploads for [" + repo + "/" + name + "]")
+                say.L1("DB: incrimenting uploads for [" + repo + "/" + name + "]")
                 shortDate := time.Now().Local().Format("2006-01-02")
                 if brcnud := brcnu.Get([]byte(shortDate)); brcnud != nil {
                   val, _ := strconv.Atoi(string(brcnud))
@@ -128,13 +128,13 @@ func PutTagDigest(repo string, name string, tag string, digest string){
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done")
+  say.L1("DB: Done")
 }
 func GetTagSubbucket(repo string, name string, tag string, bucket string) (data map[string]string){
   data = make(map[string]string)
-  say.Info("DB: select manifest for [" + repo + "/" + name + "/" + tag + "]")
+  say.L1("DB: select manifest for [" + repo + "/" + name + "/" + tag + "]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -156,13 +156,13 @@ func GetTagSubbucket(repo string, name string, tag string, bucket string) (data 
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done")
+  say.L1("DB: Done")
   return
 }
 func DeleteTagSubBucket(repo string, name string, tag string, bucket string){
-  say.Info("DB: delete subbucket for [ " + repo + "/" + name + "/" + tag + "/" + bucket + " ]")
+  say.L1("DB: delete subbucket for [ " + repo + "/" + name + "/" + tag + "/" + bucket + " ]")
   if err := DB.Update(func(tx *bolt.Tx) error {
     if b := tx.Bucket([]byte("repositories")); b != nil {
       if br := b.Bucket([]byte(repo)); br != nil {
@@ -181,7 +181,7 @@ func DeleteTagSubBucket(repo string, name string, tag string, bucket string){
     }
     return nil
   }); err != nil {
-    say.Error(err.Error())
+    say.L3(err.Error())
   }
-  say.Info("DB: Done")
+  say.L1("DB: Done")
 }

@@ -2,11 +2,11 @@
   <html>
   {{ $input := . }}
     <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
       <link rel="stylesheet" type="text/css" href="/resources/map.css">
     </head>
     <body class="preload">
-      {{ with $input.header }}
+      {{ with $input.headerdata }}
         {{ template "topbar" . }}
       {{ else }}
         {{ template "topbar" }}

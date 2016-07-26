@@ -10,27 +10,27 @@ import(
 )
 var mode string
 
-func Info(str string){
+func L1(str string){
   cyan := color.New(color.FgCyan).SprintFunc()
   if conf.Env["log_silent"] != "yes" && conf.Env["log_silent"] != "super" {
-    fmt.Printf("[ " + time.Now().Format(time.RFC1123) + " ]" + cyan("[   info  ] ") + str + "\n")
+    fmt.Printf("[ " + time.Now().Format(time.RFC1123) + " ]" + cyan("[ L1 ] ") + str + "\n")
   }
 }
 
-func Warn(str string){
+func L2(str string){
   yellow := color.New(color.FgYellow).SprintFunc()
-  if conf.Env["log_silent"] != "yes" && conf.Env["log_silent"] != "super" {
-    fmt.Printf("[ " + time.Now().Format(time.RFC1123) + " ]" + yellow("[ warning ] ") + str + "\n")
+  if conf.Env["log_silent"] != "super" {
+    fmt.Printf("[ " + time.Now().Format(time.RFC1123) + " ]" + yellow("[ L2 ] ") + str + "\n")
   }
 }
 
-func Error(str string){
+func L3(str string){
   if conf.Env["log_silent"] != "super" {
-    finstr := "[ " + time.Now().Format(time.RFC1123) + " ][  ERROR  ] " + str
+    finstr := "[ " + time.Now().Format(time.RFC1123) + " ][ L3 ] " + str
     color.Red(finstr)
   }
 }
 
-func Raw(str interface{}){
+func L4(str interface{}){
   fmt.Println(str)
 }
