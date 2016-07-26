@@ -62,5 +62,5 @@ This app is written on golang with use of standard packages and:
 https://github.com/boltdb/bolt -- BoltDB  
 https://github.com/fatih/color -- to make cli shiny  
 https://github.com/wader/disable_sendfile_vbox_linux -- to develop on docker-machine  
-http://www.chartjs.org/ -- to draw best graphs ever
+http://www.chartjs.org/ -- to draw best graphs ever  
 https://github.com/fperucic/treant-js -- to draw parents graphs
