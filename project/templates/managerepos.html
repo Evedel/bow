@@ -21,8 +21,11 @@
       {{ if eq $input.path "add" }}
       <div class="managerepos">
         <form id="managerepoform">
-          Repo name: <input type="text" name="reponame"> (Just how it will be shown in this app)<br>
-          Repo addr: <input type="text" name="repohost"> (Hostname or ip:port of repo)<br>
+          Repo   name: <input type="text" name="reponame"> (Just how it will be shown in this app)<br>
+          Repo scheme:  <input type="radio" name="reposcheme" value="http">http
+                        <input type="radio" name="reposcheme" value="https" checked>https
+                        <br>
+          Repo   addr: <input type="text" name="repohost"> (Hostname or ip:port of repo)<br>
           Username : <input type="text" name="repouser"> (Username to connect to Repo, mandatory field)<br>
           Password : <input type="text" name="repopass"> (Password to connect to Repo, mandatory field)<br>
         </form>
@@ -32,8 +35,22 @@
       {{ if eq $input.path "edit" }}
       <div class="managerepos">
         <form id="managerepoform">
-          Repo name: <input type="text" name="reponame" value="{{ $input.chosen.reponame }}"> (Just how it will be shown in this app)<br>
-          Repo addr: <input type="text" name="repohost" value="{{ $input.chosen.repohost }}"> (Hostname or ip:port of repo)<br>
+          Repo   name: <input type="text" name="reponame" value="{{ $input.chosen.reponame }}"> (Just how it will be shown in this app)<br>
+          Repo scheme:  {{ if $input.chosen.reposcheme }}
+                          {{ if eq $input.chosen.reposcheme "http"}}
+                            <input type="radio" name="reposcheme" value="http" checked>http
+                            <input type="radio" name="reposcheme" value="https">https
+                          {{ end }}
+                          {{ if eq $input.chosen.reposcheme "https"}}
+                            <input type="radio" name="reposcheme" value="http">http
+                            <input type="radio" name="reposcheme" value="https" checked>https
+                          {{ end }}
+                        {{ else }}
+                          <input type="radio" name="reposcheme" value="http">http
+                          <input type="radio" name="reposcheme" value="https">https
+                        {{ end }}
+                        <br>
+          Repo   addr: <input type="text" name="repohost" value="{{ $input.chosen.repohost }}"> (Hostname or ip:port of repo)<br>
           Username : <input type="text" name="repouser" value="{{ $input.chosen.repouser }}"> (Username to connect to Repo, mandatory field)<br>
           Password : <input type="text" name="repopass" value="{{ $input.chosen.repopass }}"> (Password to connect to Repo, mandatory field)<br>
         </form>

@@ -63,7 +63,7 @@ func CheckRepos(){
   repos := db.GetRepos()
   for _, e := range repos {
     pretty := db.GetRepoPretty(e)
-    Req := "https://" + pretty["repouser"] +
+    Req := pretty["reposcheme"] + "://" + pretty["repouser"] +
       ":" + pretty["repopass"] + "@" + pretty["repohost"] + "/v2/_catalog?n=&last="
     if body, ok := MakeQueryToRepo(Req); ok {
       dbcatalog := db.GetCatalog(e)
@@ -88,7 +88,7 @@ func CheckTags(){
   for _, er := range repos {
     pretty := db.GetRepoPretty(er)
     catalog := db.GetCatalog(er)
-    reponame := "https://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
+    reponame := pretty["reposcheme"] + "://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
     for _, en := range catalog {
       Reqt := reponame + "/v2/" + en + "/tags/list"
       if body, ok := MakeQueryToRepo(Reqt); ok {
@@ -115,7 +115,7 @@ func CheckManifests(){
   for _, er := range repos {
     pretty := db.GetRepoPretty(er)
     catalog := db.GetCatalog(er)
-    curlpath := "https://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
+    curlpath := pretty["reposcheme"] + "://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
     for _, en := range catalog {
       dbtags := db.GetTags(er, en)
       for _, et := range dbtags {
@@ -332,7 +332,7 @@ func fromByteToHuman(bytes int) (human string){
 func DeleteTagFromRepo(repo string, name string, tag string) (ok bool){
   ok = false
   pretty := db.GetRepoPretty(repo)
-  curlpath := "https://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
+  curlpath := pretty["reposcheme"] + "://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
   ReqtStr := curlpath + "/v2/" + name + "/manifests/" + db.GetValueFromBucket([]string{repo, "catalog", name, tag}, "digest")
   client := &http.Client{}
   Reqt, _ := http.NewRequest("DELETE", ReqtStr, nil)

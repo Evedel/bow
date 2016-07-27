@@ -30,6 +30,7 @@ func CreateRepo(params map[string][]string) {
         br.Put([]byte("repohost"), []byte(params["repohost"][0]))
         br.Put([]byte("repouser"), []byte(params["repouser"][0]))
         br.Put([]byte("repopass"), []byte(params["repopass"][0]))
+        br.Put([]byte("reposcheme"), []byte(params["reposcheme"][0]))
       } else {
         return err
       }

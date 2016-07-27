@@ -14,7 +14,9 @@
   right: 0px;
   cursor: pointer;
 }
-.Treant .collapsed .collapse-switch { background-color: #868DEE; }
+.Treant .collapsed .collapse-switch {
+  background-color: #868DEE;
+}
 
 .chart {
   position: relative;
