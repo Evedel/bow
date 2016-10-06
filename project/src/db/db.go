@@ -119,7 +119,7 @@ func PutSimplePairToBucket(path []string, key string, value string){
         b[i+1] = b[i].Bucket([]byte(e))
       } else {
         say.L1("DB: PUT PAIR: creating bucket [ " + path[i-1] + " ]")
-        if b[i+1], err = b[i].CreateBucketIfNotExists([]byte(path[i-1])); err != nil {
+        if b[i], err = b[i-1].CreateBucketIfNotExists([]byte(path[i-1])); err != nil {
           return err
         }
       }

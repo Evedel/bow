@@ -93,7 +93,12 @@ func CheckTags(){
       Reqt := reponame + "/v2/" + en + "/tags/list"
       if body, ok := MakeQueryToRepo(Reqt); ok {
         dbtags := db.GetTags(er, en)
-        arrint := body.(map[string]interface{})["tags"].([]interface{})
+        arrint := make([]interface{}, 0)
+        if body.(map[string]interface{})["tags"] == nil {
+          say.L3("CheckTags Daemon: Array of tags is nil for [" + er + ":" + en + "], probably, registry state is corrupted.")
+        } else {
+          arrint = body.(map[string]interface{})["tags"].([]interface{})
+        }
         arrstr := make([]string, len(arrint))
         for i, _ := range arrint {
           arrstr[i] = arrint[i].(string)
