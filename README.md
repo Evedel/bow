@@ -31,7 +31,7 @@ Features
 
 Image deletion
 ==
-To enable image deletion you need to:
+To enable image deletion you need to:  
 1. Run your registry with flag `-e REGISTRY_STORAGE_DELETE_ENABLED=true`  
 Example:  
 ```
