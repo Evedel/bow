@@ -33,11 +33,28 @@ a:hover, a:active{
   transition-delay: 0.05s;
 }
 button{
-  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 10%;
+  background-color: #446688;
   color: black;
-  background-color: #006699;
+  padding: 14px 0px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  transition: 1s ease-out;
+  transition-delay: 0.1s;
+  border: none;
 }
-
+button:hover{
+  width: 11%;
+  background-color: #6BC0EA;
+  opacity: 0.85;
+  transition: 0.3s ease-out;
+  transition-delay: 0.05s;
+}
 ::-webkit-scrollbar-track
 {
   background-color: #0e121d;
@@ -66,11 +83,6 @@ a.namelink:hover, a.namelink:active{
 a.chosen{
   background-color: #0e121d;
   color: #006699;
-}
-a.danger{
-  background-color: #650f22;
-  position: relative;
-  color: #0e121d;
 }
 div.topbar{
   position: relative;
@@ -238,12 +250,27 @@ table.historytable th{
 }
 
 table.infotable {
-  width: 50%;
+  float: left;
+  width: 40%;
   padding: 10px 10px;
 }
 table.infotable td{
   border-bottom: solid rgba(255, 255, 255, 0.2) 1px;
   border-left: solid rgba(255, 255, 255, 0.2) 1px;
+}
+a.danger{
+  width: 10%;
+  position: relative;
+  float: left;
+  background-color: #650f22;
+  color: #0e121d;
+  top: 50%;
+  transform: translateY(-50%);
+}
+a.danger:hover, a.danger:active{
+  background-color: #8c0120;
+  opacity: 1;
+  color: white;
 }
 
 #uploadsgraph {

@@ -1,9 +1,10 @@
 package main
 
 import (
+	"db"
 	"say"
 	"conf"
-	"db"
+	"utils"
 	"strconv"
 	"net/url"
 	"net/http"
@@ -47,6 +48,7 @@ func mrepoHandler(w http.ResponseWriter, r *http.Request){
 			say.L3(err.Error())
 		} else {
 			if len(v) != 0 {
+				say.L4(r)
 				db.CreateRepo(v)
 				http.Redirect(w, r, "/managerepos/", 307)
 			}
@@ -58,7 +60,7 @@ func mrepoHandler(w http.ResponseWriter, r *http.Request){
 		} else {
 			if len(v) == 1 {
 				repopretty = db.GetRepoPretty(v["reponame"][0])
-				repopretty["repopass"] = "*********"
+				repopretty["repopass"] = ""
 			}
 			if len(v) > 1 {
 				db.CreateRepo(v)
@@ -197,8 +199,12 @@ func deleteHandler(w http.ResponseWriter, r *http.Request){
 	} else {
 		if (v["reponame"] != nil) && (v["curname"] != nil) && (v["curtag"] != nil) {
 			say.L1("Starting delete manifest [ " + v["reponame"][0] + "/" + v["curname"][0] + "/" + v["curtag"][0] + " ]")
-			say.L4(checker.DeleteTagFromRepo(v["reponame"][0], v["curname"][0], v["curtag"][0]))
-			http.Redirect(w, r, "/info/" + v["reponame"][0] + "?curname=" + v["curname"][0], 307)
+			if utils.DeleteTagFromRepo(v["reponame"][0], v["curname"][0], v["curtag"][0]) {
+				say.L4([]string{ v["reponame"][0], "catalog", v["curname"][0], v["curtag"][0]})
+				db.PutSimplePairToBucket([]string{ v["reponame"][0], "catalog", v["curname"][0], v["curtag"][0]}, "_valid", "0")
+				go checker.CheckTags()
+				http.Redirect(w, r, "/info/" + v["reponame"][0] + "?curname=" + v["curname"][0], 307)
+			}
 		} else {
 			say.L3("Something wrong with args in deleteHandler")
 		}

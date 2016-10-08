@@ -5,6 +5,7 @@ services:
     image: golang-1.6:4
     volumes:
       - ../project:/app
+      - ../:/var/lib/bow
     ports:
       - 19808:19808
     cap_add:
