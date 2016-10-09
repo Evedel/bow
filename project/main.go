@@ -24,7 +24,7 @@ func main() {
 	http.HandleFunc("/upgrade/", upgradeHandler)
 	http.HandleFunc("/delete", deleteHandler)
 	http.HandleFunc("/repograph", repograpHandler)
-	http.HandleFunc("/", welcomeHandler)
+	http.HandleFunc("/", mainHandler)
 
 	go checker.DaemonManager()
 
@@ -33,12 +33,17 @@ func main() {
 		say.L3(err.Error() + "\nListenAndServe()\nmain()\nmain.go\nmain")
 	}
 }
-func welcomeHandler(w http.ResponseWriter, r *http.Request){
-	repos := db.GetRepos()
-	irepos := make(map[string]interface{}, len(repos))
-	irepos["repos"] = repos
-	renderTemplate(w, "welcome", irepos)
+func mainHandler(w http.ResponseWriter, r *http.Request){
+	if r.URL.Path == "/" {
+		infoHandler(w, r)
+	} else {
+		if r.URL.Path != "/favicon.ico" {
+			say.L3("Main Handler : Wrong query [" + r.URL.Path + "]")
+			http.Redirect(w, r, "/", 307)
+		}
+	}
 }
+
 func mrepoHandler(w http.ResponseWriter, r *http.Request){
 	urlc := r.URL.Path[len("/managerepos/"):]
 	repos := db.GetRepos()
@@ -48,7 +53,6 @@ func mrepoHandler(w http.ResponseWriter, r *http.Request){
 			say.L3(err.Error())
 		} else {
 			if len(v) != 0 {
-				say.L4(r)
 				db.CreateRepo(v)
 				http.Redirect(w, r, "/managerepos/", 307)
 			}
@@ -83,98 +87,111 @@ func mrepoHandler(w http.ResponseWriter, r *http.Request){
 	irepos["path"] = urlc
 	irepos["repos"] = repos
 	irepos["chosen"] = repopretty
+	irepos["action"] = "conf"
 
 	renderTemplate(w, "managerepos", irepos)
 }
+
 func infoHandler(w http.ResponseWriter, r *http.Request){
 	irepos := make(map[string]interface{})
-	irepos["reponame"] = r.URL.Path[len("/info/"):]
-	repo := db.GetRepoPretty(irepos["reponame"].(string))
 	headerdata := make(map[string]string)
-	headerdata["header"] = irepos["reponame"].(string) + " : " + repo["repohost"]
-	headerdata["currepo"] = irepos["reponame"].(string)
-	if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-		say.L3(err.Error())
-	} else {
-		if len(v) != 0 {
-			if v["curname"] != nil {
-				irepos["curname"] = v["curname"][0]
+	repos := db.GetRepos()
+  irepos["repos"] = repos
 
-				tags := db.GetTags(irepos["reponame"].(string), irepos["curname"].(string))
-				uploads := make(map[string]map[string]string)
-				totaluploads := make(map[string]int)
-				for _, e := range tags {
-					uploads[e] = make(map[string]string)
-					uploads[e] = db.GetSimplePairsFromBucket([]string{
-						irepos["reponame"].(string),
-						"catalog",
-						irepos["curname"].(string),
-						e,
-						"_uploads" })
-					count := 0
-					for _, eu := range uploads[e] {
-						if num, err := strconv.Atoi(eu); err != nil {
-							say.L3(err.Error())
-						} else {
-							count += num
+	if r.URL.Path == "/" {
+		headerdata["header"] = ""
+		headerdata["currepo"] = ""
+		irepos["curname"] = ""
+	} else {
+		irepos["reponame"] = r.URL.Path[len("/info/"):]
+		repo := db.GetRepoPretty(irepos["reponame"].(string))
+		headerdata["header"] = irepos["reponame"].(string) + " : " + repo["repohost"]
+		headerdata["currepo"] = irepos["reponame"].(string)
+		irepos["curname"] = irepos["reponame"].(string)
+		if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
+			say.L3(err.Error())
+		} else {
+			if len(v) != 0 {
+				if v["curname"] != nil {
+					irepos["curname"] = v["curname"][0]
+
+					tags := db.GetTags(irepos["reponame"].(string), irepos["curname"].(string))
+					uploads := make(map[string]map[string]string)
+					totaluploads := make(map[string]int)
+					for _, e := range tags {
+						uploads[e] = make(map[string]string)
+						uploads[e] = db.GetSimplePairsFromBucket([]string{
+							irepos["reponame"].(string),
+							"catalog",
+							irepos["curname"].(string),
+							e,
+							"_uploads" })
+						count := 0
+						for _, eu := range uploads[e] {
+							if num, err := strconv.Atoi(eu); err != nil {
+								say.L3(err.Error())
+							} else {
+								count += num
+							}
 						}
+						totaluploads[e] = count
 					}
-					totaluploads[e] = count
-				}
-				irepos["tags"] = totaluploads
-				headerdata["header"] = headerdata["header"] + "/" + irepos["curname"].(string)
-				if v["curtag"] != nil {
-					irepos["curtag"] = v["curtag"][0]
-					irepos["uploads"] = uploads[irepos["curtag"].(string)]
-					headerdata["header"] = headerdata["header"] + ":" + irepos["curtag"].(string)
-					var dbpath = []string{
-						irepos["reponame"].(string),
-						"catalog",
-						irepos["curname"].(string),
-						irepos["curtag"].(string),
-						"history" }
-					strhist := db.GetSimplePairsFromBucket(dbpath)
-					objhist := make(map[string]interface{})
-					lastkey := ""
-					layersnum := 0
-					for key, value := range  strhist {
-						var ch interface{}
-						_ = json.Unmarshal([]byte(value), &ch)
-						objhist[key] = ch
-						if lastkey < key {
-							lastkey = key
+					irepos["tags"] = totaluploads
+					headerdata["header"] = headerdata["header"] + "/" + irepos["curname"].(string)
+					if v["curtag"] != nil {
+						irepos["curtag"] = v["curtag"][0]
+						irepos["uploads"] = uploads[irepos["curtag"].(string)]
+						headerdata["header"] = headerdata["header"] + ":" + irepos["curtag"].(string)
+						var dbpath = []string{
+							irepos["reponame"].(string),
+							"catalog",
+							irepos["curname"].(string),
+							irepos["curtag"].(string),
+							"history" }
+						strhist := db.GetSimplePairsFromBucket(dbpath)
+						objhist := make(map[string]interface{})
+						lastkey := ""
+						layersnum := 0
+						for key, value := range  strhist {
+							var ch interface{}
+							_ = json.Unmarshal([]byte(value), &ch)
+							objhist[key] = ch
+							if lastkey < key {
+								lastkey = key
+							}
+							layersnum++
 						}
-						layersnum++
-					}
-					irepos["history"] = objhist
-					irepos["lastupdated"] = lastkey
-					irepos["layersnum"] = layersnum
-					dbpath[4] = "_totalsizehuman"
-					strsizehuman := db.GetSimplePairsFromBucket(dbpath)
-					dbpath[4] = "_totalsizebytes"
-					strsizebytes := db.GetSimplePairsFromBucket(dbpath)
-					lastkey = ""
-					for key, _ := range strsizehuman {
-						if lastkey < key {
-							lastkey = key
+						irepos["history"] = objhist
+						irepos["lastupdated"] = lastkey
+						irepos["layersnum"] = layersnum
+						dbpath[4] = "_totalsizehuman"
+						strsizehuman := db.GetSimplePairsFromBucket(dbpath)
+						dbpath[4] = "_totalsizebytes"
+						strsizebytes := db.GetSimplePairsFromBucket(dbpath)
+						lastkey = ""
+						for key, _ := range strsizehuman {
+							if lastkey < key {
+								lastkey = key
+							}
 						}
+						if strsizebytes != nil {
+							irepos["imagesizebytes"] = strsizebytes
+						}
+						if strsizehuman != nil {
+							irepos["imagesizehuman"] = strsizehuman
+						}
+						irepos["lastpushed"] = lastkey
+						dbpath[4] = "_parent"
+						irepos["parent"] = db.GetSimplePairsFromBucket(dbpath)
 					}
-					if strsizebytes != nil {
-						irepos["imagesizebytes"] = strsizebytes
-					}
-					if strsizehuman != nil {
-						irepos["imagesizehuman"] = strsizehuman
-					}
-					irepos["lastpushed"] = lastkey
-					dbpath[4] = "_parent"
-					irepos["parent"] = db.GetSimplePairsFromBucket(dbpath)
 				}
 			}
 		}
+		irepos["catalog"] = db.GetCatalog(irepos["reponame"].(string))
 	}
 
 	irepos["headerdata"] = headerdata
-	irepos["catalog"] = db.GetCatalog(irepos["reponame"].(string))
+	irepos["action"] = "repos"
 	renderTemplate(w, "info", irepos)
 }
 
@@ -200,7 +217,6 @@ func deleteHandler(w http.ResponseWriter, r *http.Request){
 		if (v["reponame"] != nil) && (v["curname"] != nil) && (v["curtag"] != nil) {
 			say.L1("Starting delete manifest [ " + v["reponame"][0] + "/" + v["curname"][0] + "/" + v["curtag"][0] + " ]")
 			if utils.DeleteTagFromRepo(v["reponame"][0], v["curname"][0], v["curtag"][0]) {
-				say.L4([]string{ v["reponame"][0], "catalog", v["curname"][0], v["curtag"][0]})
 				db.PutSimplePairToBucket([]string{ v["reponame"][0], "catalog", v["curname"][0], v["curtag"][0]}, "_valid", "0")
 				go checker.CheckTags()
 				http.Redirect(w, r, "/info/" + v["reponame"][0] + "?curname=" + v["curname"][0], 307)
@@ -217,17 +233,31 @@ func repograpHandler(w http.ResponseWriter, r *http.Request){
 	} else {
 		if v["reponame"] != nil {
 			irepos := make(map[string]interface{})
-			irepos["graphdata"] = db.GetSchemaFromPoint([]string{v["reponame"][0], "_namesgraph"})
+			if v["reponame"][0] != "" {
+				irepos["graphdata"] = db.GetSchemaFromPoint([]string{v["reponame"][0], "_namesgraph"})
 
-			headerdata := make(map[string]string)
-			headerdata["header"] = v["reponame"][0] + " : " + db.GetRepoPretty(v["reponame"][0])["repohost"]
-			headerdata["currepo"] = v["reponame"][0]
-			irepos["headerdata"] = headerdata
+				headerdata := make(map[string]string)
+				headerdata["header"] = v["reponame"][0] + " : " + db.GetRepoPretty(v["reponame"][0])["repohost"]
+				headerdata["currepo"] = v["reponame"][0]
+				irepos["headerdata"] = headerdata
 
-			irepos["repodata"] = make(map[string]interface{})
-			irepos["repodata"].(map[string]interface{})["catalog"] = db.GetRepos()
-			irepos["repodata"].(map[string]interface{})["curname"] = v["reponame"][0]
+				irepos["repodata"] = make(map[string]interface{})
+				irepos["repodata"].(map[string]interface{})["catalog"] = db.GetRepos()
+				irepos["repodata"].(map[string]interface{})["curname"] = v["reponame"][0]
+			} else {
+				irepos["graphdata"] = ""
 
+				headerdata := make(map[string]string)
+				headerdata["header"] = ""
+				headerdata["currepo"] = ""
+				irepos["headerdata"] = headerdata
+
+				irepos["repodata"] = make(map[string]interface{})
+				irepos["repodata"].(map[string]interface{})["catalog"] = db.GetRepos()
+				irepos["repodata"].(map[string]interface{})["curname"] = ""
+			}
+
+			irepos["action"] = "graph"
 			renderTemplate(w, "repograph", irepos)
 		} else {
 			say.L3("Name of repository not set in repograpHandler")

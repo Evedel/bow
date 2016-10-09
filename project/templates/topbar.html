@@ -1,11 +1,27 @@
 {{define "topbar"}}
-{{ $hdata := . }}
+{{ $input := . }}
   <div class="topbar">
-    <a class="goback" href="/">Main</a>
-    {{ if $hdata }}
-      <p>{{ $hdata.header }}</p>
-      <a class="setting" href="/repograph?reponame={{ $hdata.currepo }}">Graph</a>
+    {{ if $input.headerdata }}
+      <p>{{ $input.headerdata.header }}</p>
     {{ end }}
-      <a class="setting" href="/managerepos">Confs</a>
+
+    {{ if eq $input.action "repos" }}
+      <a class="chosen" href="/">Repos</a>
+    {{ else }}
+      <a href="/">Repos</a>
+    {{ end }}
+
+    {{ if eq $input.action "graph" }}
+      <a class="chosen" href="/repograph?reponame={{ $input.currepo }}">Graph</a>
+    {{ else }}
+      <a href="/repograph?reponame={{ $input.currepo }}">Graph</a>
+    {{ end }}
+
+    {{ if eq $input.action "conf" }}
+      <a class="chosen" href="/managerepos">Confs</a>
+    {{ else }}
+      <a href="/managerepos">Confs</a>
+    {{ end }}
+
   </div>
 {{end}}

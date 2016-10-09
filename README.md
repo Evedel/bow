@@ -14,7 +14,6 @@ Pictures
 Features
 ==  
 - v2 registry support only
-- scary templates and interface in whole
 - internal db (BoltBD) gives it ability to store info, and as result it responses much more faster then after direct api call
 - app can pars, store and show info from registry such as:
  - image layers info:
@@ -32,7 +31,7 @@ Features
 Image deletion
 ==
 To enable image deletion you need to:  
-1. Run your registry with flag `-e REGISTRY_STORAGE_DELETE_ENABLED=true`  
+1. Run your registry with the flag `-e REGISTRY_STORAGE_DELETE_ENABLED=true`  
 Example:  
 ```
 docker run -d -p 5000:5000 --restart=always --name registry \
@@ -42,13 +41,11 @@ docker run -d -p 5000:5000 --restart=always --name registry \
   -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
   -e REGISTRY_STORAGE_DELETE_ENABLED=true \
   registry:2
-```
+```  
 2. Set up cron to run garbage collection  
 Example:  
-`10 * * * * docker exec registry bin/registry garbage-collect /etc/docker/registry/config.yml`
-
-3. Also be aware, that there is a known [issue](https://github.com/docker/distribution/issues/1939) in docker registry 2.6 in earlier. It means, that if you delete an image from a repository, you will not able to push __the exactly same__ image in that repository. To fix it, you will need each time to perform rebuilding of image with `--no-cache` mode, or restarting of registry `docker restart registry`
-
+`10 * * * * docker exec registry bin/registry garbage-collect /etc/docker/registry/config.yml`  
+3. Also be aware, that there is a known [issue](https://github.com/docker/distribution/issues/1939) in docker registry 2.6 in earlier. It means, that if you delete an image from a repository, you will not able to push __the exactly same__ image in that repository. To fix it, you will need each time to perform rebuilding of image with `--no-cache` mode, or restarting of registry `docker restart registry`  
 
 See more:  
 https://github.com/docker/docker-registry/issues/988#issuecomment-224280919  
@@ -57,12 +54,9 @@ https://docs.docker.com/registry/garbage-collection/#/how-garbage-collection-wor
 
 Prospects
 ==
-I can say that this app almost fit my needs, so in all likelyhood, soon, I will not improve it hardly, but this is the list of ideas just for case:  
-- ~~delete tags/images from repo by click~~
+I can say that this app almost fit my needs, so in all likelihood, soon, I will not improve it hardly, but this is the list of ideas just for case:  
 - "update repos" button (not wait for sleep time)
-- repository info, size, number of pushes and so on
-- make improvements on interface and visual side
-- dynamically upload nice images from __icons8.com__ API
+- info for whole repository: size, number of pushes so on so on soon
 
 How to start use Bow
 ==
@@ -79,6 +73,7 @@ How to start contribute to Bow
 If you have interest, you can easily start with
 ```
 git clone https://github.com/evedel/bow.git
+git clone https://github.com/fperucic/treant-js project/resources/treant-js
 cd bow
 docker-compose -f develop/devlinux.yml up -d
 docker exec -it develop_golang_1 go get

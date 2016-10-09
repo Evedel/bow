@@ -6,7 +6,7 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     </head>
     <body class="preload">
-      {{ template "topbar" }}
+      {{ template "topbar" $input }}
       <div class="sidebar">
       {{ if eq $input.path "add" }}
         <a class="chosen" href="/managerepos/add">[add new repo]</a><br>

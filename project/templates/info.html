@@ -6,13 +6,10 @@
       <link rel="stylesheet" type="text/css" href="/resources/map.css">
     </head>
     <body class="preload">
-      {{ with $input.headerdata }}
-        {{ template "topbar" . }}
-      {{ else }}
-        {{ template "topbar" }}
-      {{ end }}
+        {{ template "topbar" $input }}
       <div>
         {{ template "repobar" $input }}
+        {{ template "catalogbar" $input }}
         {{ template "tagbar" $input }}
         {{ template "manifestbar" $input }}
       </div>

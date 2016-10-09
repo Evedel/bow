@@ -11,45 +11,46 @@ body{
   -o-transition: none !important;
 }
 a:link, a:visited{
+  float: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 90%;
   background-color: #446688;
   color: black;
-  padding: 14px 0px;
+  padding: 10px 0px;
   text-align: center;
   text-decoration: none;
   font-weight: bold;
   display: inline-block;
   transition: 1s ease-out;
   transition-delay: 0.1s;
+  border: solid 1px white;
 }
 a:hover, a:active{
-  width: 100%;
   background-color: #6BC0EA;
   opacity: 0.85;
   transition: 0.3s ease-out;
   transition-delay: 0.05s;
 }
 button{
+  float: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 10%;
   background-color: #446688;
   color: black;
-  padding: 14px 0px;
+  padding: 10.5px 0px;
   text-align: center;
   text-decoration: none;
   font-weight: bold;
   display: inline-block;
   transition: 1s ease-out;
   transition-delay: 0.1s;
-  border: none;
+  border: solid 1px white;
 }
 button:hover{
-  width: 11%;
   background-color: #6BC0EA;
   opacity: 0.85;
   transition: 0.3s ease-out;
@@ -72,9 +73,9 @@ a.namelink:link, a.namelink:visited{
   padding: 0px 0px;
   text-align: left;
   text-decoration: underline;
+  border: none;
 }
 a.namelink:hover, a.namelink:active{
-  width: 90%;
   background-color: #446688;
   opacity: 1;
   color: white;
@@ -82,53 +83,50 @@ a.namelink:hover, a.namelink:active{
 }
 a.chosen{
   background-color: #0e121d;
-  color: #006699;
+  color: white;
 }
 div.topbar{
   position: relative;
   width: 100%;
   height: 50px;
   font-size: 16px;
-  background-color: #006699;
+  background-color: #446688;
   overflow: hidden;
+  border: solid 1px white;
 }
 div.topbar a:link, div.topbar a:visited{
-  width: 5%;
-  height: 100%;
+  width: 10%;
   float: right;
-  background-color: #006699;
-  padding: 14px 0px;
+  padding: 15px 0px;
   text-align: center;
   text-decoration: none;
   font-weight: bold;
   overflow: hidden;
-  color: black;
   transition: 0.4s ease-out;
   transition-delay: 0.01s;
 }
 div.topbar a:hover, div.topbar a:active{
-  width: 7%;
-  height: 100%;
   background-color: #6BC0EA;
   transition: 0.4s ease-out;
   transition-delay: 0.01s;
 }
 div p {
   position: relative;
-  background-color: #006699;
-  color: black;
-  padding: 0px 20px;
+  color: white;
+  background-color: #446688;
+  padding: 0px 10px;
   text-align: center;
-  font-weight: bold;
   display: inline-block;
   transition-delay: 0.01s;
 }
+
 div.sidebar{
   width: 10%;
   height: 90%;
   padding: 5px 0px;
   float: left;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 div.tagbar{
   width: 10%;
@@ -153,22 +151,20 @@ form#managerepoform{
 }
 div.managerepos a:link, div.managerepos a:visited{
   width: 10%;
-  float: right;
   color: black;
 }
 div.managerepos a:hover, div.managerepos a:active{
-  width: 11%;
   color: black;
 }
-div.managerepos button{
-}
 div.manifestbar{
-  width: 80%;
+  width: 70%;
   height: 90%;
   float: left;
   padding: 5px 0px;
 }
-
+div.content{
+  border: solid 1px white;
+}
 .tabs div {
   display: none;
   overflow-y: auto;
@@ -185,13 +181,12 @@ div.manifestbar{
   font-weight: bold;
   text-align: center;
   background-color: #446688;
-  border: solid 1px black;
+  border: solid 1px white;
   color: black;
   transition: 0.3s ease-out;
   transition-delay: 0.05s;
 }
 .tabs label:hover {
-  width: 13%;
   background-color: #6BC0EA;
   opacity: 0.85;
   transition: 0.3s ease-out;
@@ -199,7 +194,7 @@ div.manifestbar{
 }
 .tabs input:checked + label {
   background-color: #0e121d;
-  color: #006699;
+  color: white;
 }
 #tab1:checked ~ #content1,
 #tab2:checked ~ #content2,

@@ -13,8 +13,20 @@
       <link rel="stylesheet" type="text/css" href="/resources/map.css">
     </head>
     <body>
-      {{ template "topbar" $input.headerdata }}
-      {{ template "repobar" $input.repodata }}
+      {{ template "topbar" $input }}
+      <div class="sidebar">
+        {{range $input.repodata.catalog }}
+          {{ if $input.repodata.curname }}
+            {{ if eq $input.repodata.curname . }}
+              <a class="chosen" href="/repograph?reponame={{.}}">[{{.}}]</a>
+            {{else}}
+              <a href="/repograph?reponame={{.}}">[{{.}}]</a>
+            {{end}}
+          {{else}}
+            <a href="/repograph?reponame={{.}}">[{{.}}]</a>
+          {{ end }}
+        {{end}}
+      </div>
       <div id="parents-tree"></div>
       <script>
       var simple_chart_config = {

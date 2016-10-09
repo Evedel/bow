@@ -1,18 +1,22 @@
 {{ define "repobar" }}
-  {{ $input := . }}
-  {{ if $input.catalog }}
-    <div class="sidebar">
-      {{range $input.catalog }}
-        {{ if $input.curname }}
-          {{ if eq $input.curname . }}
-            <a class="chosen" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
-          {{else}}
-            <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
-          {{end}}
-        {{else}}
-          <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+{{ $input := . }}
+  <div class="sidebar">
+    {{ if $input.repos }}
+      {{ range $input.repos }}
+        {{ if $input.reponame }}
+          {{ if eq $input.reponame . }}
+            <a class="chosen" href="/info/{{.}}">[{{.}}]</a>
+          {{ else }}
+            <a href="/info/{{.}}">[{{.}}]</a>
+          {{ end }}
+        {{ else }}
+          <a href="/info/{{.}}">[{{.}}]</a>
         {{ end }}
-      {{end}}
+      {{ end }}
+    {{ else }}
+    <div class="emptyrepos">
+      <p>Sorry, you have no added repos</p>
     </div>
-  {{ end }}
+    {{ end }}
+  </div>
 {{ end }}
