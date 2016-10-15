@@ -29,29 +29,41 @@
       </div>
       <div id="parents-tree"></div>
       <script>
-      var simple_chart_config = {
-      	chart:{
-          rootOrientation: "WEST",
-          container: "#parents-tree",
-          animateOnInit: false,
-          hideRootNode: true,
-          nodeAlign: "BOTTOM",
-          connectors: {
-            type: "bCurve",
-            style: {
-              stroke: "white"
+        var simple_chart_config = {
+        	chart:{
+            rootOrientation: "WEST",
+            container: "#parents-tree",
+            animateOnInit: false,
+            hideRootNode: true,
+            nodeAlign: "BOTTOM",
+            connectors: {
+              type: "bCurve",
+              style: {
+                stroke: "white"
+              }
+            },
+            animation: {
+              nodeAnimation: "easeInQuad",
+              nodeSpeed: 1000,
+              connectorsAnimation: "easeInQuad",
+              connectorsSpeed: 1500
             }
           },
-          animation: {
-            nodeAnimation: "easeInQuad",
-            nodeSpeed: 1000,
-            connectorsAnimation: "easeInQuad",
-            connectorsSpeed: 1500
-          }
-        },
-      	nodeStructure: JSON.parse({{ $input.graphdata }})
-      };
-      tree = new Treant(simple_chart_config);
+        	nodeStructure: JSON.parse({{ $input.graphdata }})
+        };
+        tree = new Treant(simple_chart_config);
+        // $("#parents-tree").click(
+        //   function(evt){
+        //     var clicktext = evt.target.innerText;
+        //     var name = clicktext.split(":")[0];
+        //     var teg = clicktext.split(":")[1];
+        //     var url = "/info/{{$input.repodata.curname}}?curname=" + name + "&curtag=" + teg;
+        //     window.location.href = url;
+        //   });
+        // $("#parents-tree").hover(
+        //   function(evt){
+        //     console.log("hover");
+        //   });
       </script>
     </body>
   </html>

@@ -10,11 +10,10 @@
     {{ else }}
       <a href="/">Repos</a>
     {{ end }}
-
     {{ if eq $input.action "graph" }}
-      <a class="chosen" href="/repograph?reponame={{ $input.currepo }}">Graph</a>
+      <a class="chosen" href="/repograph?reponame={{ $input.reponame }}">Graph</a>
     {{ else }}
-      <a href="/repograph?reponame={{ $input.currepo }}">Graph</a>
+      <a href="/repograph?reponame={{ $input.reponame }}">Graph</a>
     {{ end }}
 
     {{ if eq $input.action "conf" }}

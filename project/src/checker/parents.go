@@ -86,7 +86,7 @@ func CheckParents(){
 
 func FindParent(childcmd []string, repo string, namei string, tagi string) (name string, tag string, ok bool){
   say.L1("Searching for parent of [ " + namei + ":" + tagi + " ]")
-  ok = true
+  ok = false
   names := db.GetSimplePairsFromBucket([]string{repo, "_names"})
   maxname := ""
   maxlayers := 0
@@ -96,40 +96,35 @@ func FindParent(childcmd []string, repo string, namei string, tagi string) (name
       for _, vc := range cmd {
         var parentcmd interface{}
         if err := json.Unmarshal([]byte(vc), &parentcmd); err == nil {
-          includecount := 0
-          for _, childraw := range childcmd {
-            cmdinparent := false
-            for _, parentraw := range parentcmd.([]interface{}) {
-              if parentraw == childraw {
-                cmdinparent = true
-                break
+          initParentLen := len(parentcmd.([]interface{}))
+          if initParentLen != 0 {
+            for _, eccmd := range childcmd {
+              for ipcmd, epcmd := range parentcmd.([]interface{}) {
+                if epcmd == eccmd {
+                  parentcmd = append(parentcmd.([]interface{})[:ipcmd], parentcmd.([]interface{})[ipcmd+1:]...)
+                  break
+                }
               }
             }
-            if cmdinparent {
-              includecount++
-            }
-          }
-          if includecount == len(parentcmd.([]interface{})) {
-            if len(parentcmd.([]interface{})) < len(childcmd) {
-              if maxlayers < len(parentcmd.([]interface{})) {
-                maxlayers = len(parentcmd.([]interface{}))
+            if len(parentcmd.([]interface{})) == 0 {
+              if maxlayers < initParentLen {
+                maxlayers = initParentLen
                 maxname = kn
               }
             }
           }
         } else {
           say.L3(err.Error())
-          ok = false
           return
         }
       }
     }
   }
   if maxlayers == 0 {
-    ok = false
     say.L1("Parent not found")
   } else {
     say.L1("Parent is [ "+ maxname +" ]")
+    ok = true
     s := strings.Split(maxname, ":")
     name = s[0]
     tag = s[1]
