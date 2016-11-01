@@ -5,6 +5,7 @@ import(
   "say"
   "time"
   "utils"
+  "strings"
   "strconv"
   "net/http"
   "encoding/json"
@@ -58,8 +59,16 @@ func CheckManifests(){
                   say.L3(err.Error())
                 } else {
                   created := ch.(map[string]interface{})["created"].(string)
-                  created = created[0:10] + " " + created[11:len(created)-11]
-                  db.PutSimplePairToBucket([]string{ er, "catalog", en, et, "history" }, created, historynew)
+                  var indx int
+                  if indx = strings.Index(created, "T"); indx > -1 {
+                    created = created[:indx] + " " + created[indx+1:]
+                    if indx = strings.Index(created, "."); indx > -1 {
+                      created = created[:indx]
+                    }
+                  }
+                  if indx > -1 {
+                    db.PutSimplePairToBucket([]string{ er, "catalog", en, et, "history" }, created, historynew)
+                  }
                 }
               }
               sizedt := time.Now().Local().Format("2006-01-02 15:04:05")

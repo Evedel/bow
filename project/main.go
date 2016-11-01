@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"db"
 	"say"
 	"conf"
@@ -199,13 +200,13 @@ func upgradeHandler(w http.ResponseWriter, r *http.Request){
 	funcname := r.URL.Path[len("/upgrade/"):]
 	say.L1("Starting upgrade for [ " + funcname + " ]")
 	if funcname == "totalsize" {
-		db.UpgradeTotalSize()
+		utils.UpgradeTotalSize()
 	}
 	if funcname == "falsenumnames" {
-		db.UpgradeFalseNumericImage()
+		utils.UpgradeFalseNumericImage()
 	}
 	if funcname == "oldparentnames" {
-		db.UpgradeOldParentNames()
+		utils.UpgradeOldParentNames()
 	}
 	http.Redirect(w, r, "/", 307)
 }

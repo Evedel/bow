@@ -24,9 +24,10 @@ Features
 - it is possible to set multiple repositories and watch all registries in one place
 - show statistics pretty, draw curves of uploads number and image sizes for tag with respects to dates
 - find parent of image, in case, parent in the same repo (it is clickable!)
-- __(new)__ show tree of parents for image/ build dependency tree for whole repo  
-- __(the newest)__ now it supports insecure regestries
-- __(killerfeature)__ enabled image deletion (registry --version >= 2.4.0)
+- show tree of parents for image/ build dependency tree for whole repo
+- __(new)__ now it supports insecure regestries
+- __(the newest)__ enabled image deletion (registry --version >= 2.4.0)
+- __(killerfeature)__ API compatibility checks
 
 Image deletion
 ==
@@ -77,6 +78,7 @@ git clone https://github.com/fperucic/treant-js project/resources/treant-js
 cd bow
 docker-compose -f develop/devlinux.yml up -d
 docker exec -it develop_golang_1 go get
+docker exec -it develop_golang_1 go test -v utils -repo='https://UsErNaMe:PaSsWoRd@myownregistry.org'
 docker exec -it develop_golang_1 go run main.go
 ```
 Code and packages

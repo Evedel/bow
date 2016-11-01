@@ -3,6 +3,7 @@ package utils
 import(
   "db"
   "say"
+  "strconv"
   "net/http"
   "io/ioutil"
   "encoding/json"
@@ -41,27 +42,33 @@ func DeleteTagFromRepo(repo string, name string, tag string) (ok bool){
 func MakeQueryToRepo(query string) (body interface{}, ok bool){
   ok = false
   if response, err := http.Get(query); err != nil {
+    body = -1
     say.L3(err.Error())
-    return
+    say.L3("Probably something wrong with network configuration or registry state")
   } else {
     defer response.Body.Close()
-    if bodytmp, err := ioutil.ReadAll(response.Body); err != nil {
-      say.L3(err.Error())
-      return
-    } else {
-      var c interface{}
-      if err := json.Unmarshal(bodytmp, &c); err != nil {
+    if response.StatusCode == 200 {
+      if bodytmp, err := ioutil.ReadAll(response.Body); err != nil {
         say.L3(err.Error())
-        return
       } else {
-        if c.(map[string]interface{})["errors"] != nil {
-          say.L3("Query :" + query)
-          say.L3(c.(map[string]interface{})["errors"].([]interface{})[0].(map[string]interface{})["message"].(string))
-          return
+        var c interface{}
+        if err := json.Unmarshal(bodytmp, &c); err != nil {
+          say.L3(err.Error())
         } else {
-          body = c
-          ok = true
+          if c.(map[string]interface{})["errors"] != nil {
+            say.L3("Query :" + query)
+            say.L3(c.(map[string]interface{})["errors"].([]interface{})[0].(map[string]interface{})["message"].(string))
+          } else {
+            body = c
+            ok = true
+          }
         }
+      }
+    } else {
+      body = response.StatusCode
+      switch response.StatusCode {
+      case 401: say.L3("[401] : Unauthorized response is returned (credentials problem)")
+      default:  say.L3("Cannot diagnose error: \n[ " + strconv.Itoa(response.StatusCode) + " ] " + response.Status)
       }
     }
   }
@@ -71,7 +78,7 @@ func MakeQueryToRepo(query string) (body interface{}, ok bool){
 func GetfsLayerSize(link string ) (size string){
   if Resp, err := http.Head(link); err != nil {
     say.L3(err.Error())
-    say.L3("CheckManifests Daemon: GetfsLayerSize cannot recieve response from registry, stopping work")
+    say.L3("GetfsLayerSize: Cannot recieve response from registry, stopping work")
   } else {
     defer Resp.Body.Close()
     if _, err := ioutil.ReadAll(Resp.Body); err != nil {

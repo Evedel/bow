@@ -2,6 +2,7 @@ package utils
 
 import(
   "say"
+  "strings"
   "strconv"
 )
 
@@ -52,5 +53,30 @@ func FromByteToHuman(bytes int) (human string){
     bytes = bytes / 1024
     human = strconv.Itoa(bytes) + " GB"
   }
+  return
+}
+func FromHumanToByte(human string) (bytes int){
+  space := strings.Index(human, " ")
+  bytes = 0
+  number := ""
+  scale := ""
+  if space != -1 {
+    number = human[:space]
+    scale = human[space+1:]
+  }
+  fscale := 0.0
+  switch scale {
+  case "B":
+    bytes, _ = strconv.Atoi(number)
+    return
+  case "KB":
+    fscale = 1024
+  case "MB":
+    fscale = 1024 * 1024
+  case "GB":
+    fscale = 1024 * 1024 * 1024
+  }
+  fnum, _ := strconv.ParseFloat(number, 64)
+  bytes = int(fnum * fscale)
   return
 }
