@@ -15,8 +15,8 @@
       {{ end }}
       {{ if $input.repos }}
         {{ range $input.repos }}
-          {{ if $input.chosen.reponame }}
-            {{ if eq $input.chosen.reponame . }}
+          {{ if $input.chosen.name }}
+            {{ if eq $input.chosen.name . }}
               <a class="chosen" href="/managerepos/edit?reponame={{.}}">[{{.}}]</a>
             {{ else }}
               <a href="/managerepos/edit?reponame={{.}}">[{{.}}]</a>
@@ -34,13 +34,15 @@
       {{ if eq $input.path "add" }}
       <div class="managerepos">
         <form id="managerepoform">
-          Repo name:&nbsp;&nbsp; <input type="text" name="reponame"> (Just how it will be shown in this app)<br>
-          Repo scheme:  <input type="radio" name="reposcheme" value="http">http
-                        <input type="radio" name="reposcheme" value="https" checked>https
+          Repo name:&nbsp;&nbsp; <input type="text" name="name"> (Just how it will be shown in this app)<br>
+          Repo scheme:  <input type="radio" name="scheme" value="http">http
+                        <input type="radio" name="scheme" value="https" checked>https
                         <br>
-          Repo addr:&nbsp;&nbsp; <input type="text" name="repohost"> (Hostname or ip:port of repo)<br>
-          Username:&nbsp;&nbsp;&nbsp; <input type="text" name="repouser"> (Username to connect to Repo, mandatory field)<br>
-          Password:&nbsp;&nbsp;&nbsp; <input type="text" name="repopass"> (Password to connect to Repo, mandatory field)<br>
+          Secure repo: <input type="checkbox" name="secure" value="true" checked> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          (Leave unchecked if your repo and/or auth server is insecure/use self-signed certs)<br>
+          Repo addr:&nbsp;&nbsp; <input type="text" name="host"> (Hostname or ip:port of repo)<br>
+          Username:&nbsp;&nbsp;&nbsp; <input type="text" name="user"> (Username to connect to Repo, mandatory field)<br>
+          Password:&nbsp;&nbsp;&nbsp; <input type="text" name="pass"> (Password to connect to Repo, mandatory field)<br>
         </form>
         <button type="submit" form="managerepoform" value="add">Add</button><a href="/managerepos/">Cancel</a>
       </div>
@@ -48,27 +50,36 @@
       {{ if eq $input.path "edit" }}
       <div class="managerepos">
         <form id="managerepoform">
-          Repo name:&nbsp;&nbsp; <input type="text" name="reponame" value="{{ $input.chosen.reponame }}"> (Just how it will be shown in this app)<br>
-          Repo scheme:  {{ if $input.chosen.reposcheme }}
-                          {{ if eq $input.chosen.reposcheme "http"}}
-                            <input type="radio" name="reposcheme" value="http" checked>http
-                            <input type="radio" name="reposcheme" value="https">https
+          Repo name:&nbsp;&nbsp; <input type="text" disabled value="{{ $input.chosen.name }}"> (Just how it will be shown in this app)<br>
+          Repo scheme:  {{ if $input.chosen.scheme }}
+                          {{ if eq $input.chosen.scheme "http"}}
+                            <input type="radio" name="scheme" value="http" checked>http
+                            <input type="radio" name="scheme" value="https">https
                           {{ end }}
-                          {{ if eq $input.chosen.reposcheme "https"}}
-                            <input type="radio" name="reposcheme" value="http">http
-                            <input type="radio" name="reposcheme" value="https" checked>https
+                          {{ if eq $input.chosen.scheme "https"}}
+                            <input type="radio" name="scheme" value="http">http
+                            <input type="radio" name="scheme" value="https" checked>https
                           {{ end }}
                         {{ else }}
-                          <input type="radio" name="reposcheme" value="http">http
-                          <input type="radio" name="reposcheme" value="https">https
+                          <input type="radio" name="scheme" value="http">http
+                          <input type="radio" name="scheme" value="https">https
                         {{ end }}
                         <br>
-          Repo addr:&nbsp;&nbsp; <input type="text" name="repohost" value="{{ $input.chosen.repohost }}"> (Hostname or ip:port of repo)<br>
-          Username:&nbsp;&nbsp;&nbsp; <input type="text" name="repouser" value="{{ $input.chosen.repouser }}"> (Username to connect to Repo, mandatory field)<br>
-          Password:&nbsp;&nbsp;&nbsp; <input type="text" name="repopass" value="{{ $input.chosen.repopass }}"> (Password to connect to Repo, mandatory field)<br>
+
+          Secure repo:  {{ if eq $input.chosen.secure "true"}}
+                          <input type="checkbox" name="secure" value="true" checked>
+                        {{else}}
+                          <input type="checkbox" name="secure" value="true">
+                        {{end}}
+           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          (Leave unchecked if your repo and/or auth server is insecure/use self-signed certs)<br>
+          Repo addr:&nbsp;&nbsp; <input type="text" name="host" value="{{ $input.chosen.host }}"> (Hostname or ip:port of repo)<br>
+          Username:&nbsp;&nbsp;&nbsp; <input type="text" name="user" value="{{ $input.chosen.user }}"> (Username to connect to Repo, mandatory field)<br>
+          Password:&nbsp;&nbsp;&nbsp; <input type="text" name="pass" value="{{ $input.chosen.pass }}"> (Password to connect to Repo, mandatory field)<br>
+          <input type="text" hidden="true" name="name" value="{{ $input.chosen.name }}">
         </form>
         <button type="submit" form="managerepoform" value="add">Edit</button>
-        <a href="/managerepos/delete?reponame={{ $input.chosen.reponame }}">Delete</a>
+        <a href="/managerepos/delete?reponame={{ $input.chosen.name }}">Delete</a>
         <a href="/managerepos/">Cancel</a>
       </div>
       {{ end }}

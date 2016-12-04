@@ -3,23 +3,23 @@ package checker
 import(
   "db"
   "say"
+  "qurl"
   "utils"
 )
 
 func CheckRepos(){
   say.L1("CheckRepos Daemon: started work")
   repos := db.GetRepos()
-  for _, e := range repos {
-    pretty := db.GetRepoPretty(e)
-    repopref := pretty["reposcheme"] + "://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
-    Req := repopref + "/v2/_catalog?n=&last="
-    if body, ok := utils.MakeQueryToRepo(Req); ok {
+  for e, _ := range repos {
+    repoinfo := db.GetRepoPretty(e)
+    Req := "/v2/_catalog?n=&last="
+    if body, ok := qurl.MakeSimpleQuery(Req, repoinfo); ok {
       dbcatalog := db.GetCatalog(e)
       arrint := body.(map[string]interface{})["repositories"].([]interface{})
       arrstr := make([]string, 0)
       for _, e := range arrint {
-        Reqtag := repopref + "/v2/" + e.(string) + "/tags/list"
-        if body, ok := utils.MakeQueryToRepo(Reqtag); ok {
+        Reqtag := "/v2/" + e.(string) + "/tags/list"
+        if body, ok := qurl.MakeSimpleQuery(Reqtag, repoinfo); ok {
           if body.(map[string]interface{})["tags"] != nil {
             arrstr = append(arrstr, e.(string))
           }

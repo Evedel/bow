@@ -10,7 +10,7 @@ import(
 )
 
 func CheckParents(){
-  repos := db.GetSimplePairsFromBucket([]string{})
+  repos := db.GetRepos()
   for key, value := range repos {
     if value == "" {
       names := db.GetSimplePairsFromBucket([]string{key, "catalog"})

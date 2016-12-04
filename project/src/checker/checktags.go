@@ -3,19 +3,19 @@ package checker
 import(
   "db"
   "say"
+  "qurl"
   "utils"
 )
 
 func CheckTags(){
   say.L1("CheckTags Daemon: started work")
   repos := db.GetRepos()
-  for _, er := range repos {
-    pretty := db.GetRepoPretty(er)
+  for er, _ := range repos {
+    repoinfo := db.GetRepoPretty(er)
     catalog := db.GetCatalog(er)
-    reponame := pretty["reposcheme"] + "://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
     for _, en := range catalog {
-      Reqt := reponame + "/v2/" + en + "/tags/list"
-      if body, ok := utils.MakeQueryToRepo(Reqt); ok {
+      Reqt := "/v2/" + en + "/tags/list"
+      if body, ok := qurl.MakeSimpleQuery(Reqt, repoinfo); ok {
         dbtags := db.GetTags(er, en)
         arrint := make([]interface{}, 0)
         if body.(map[string]interface{})["tags"] == nil {

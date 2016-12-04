@@ -1,7 +1,10 @@
 project/asapdrf.db
 project/pkg
 project/src/github.com
-develop/app
 project/main
 project/resources/treant-js
+
+develop/app
+develop/registry*
+
 asapdrf.db*

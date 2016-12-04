@@ -8,7 +8,7 @@
     {{ if eq $input.action "repos" }}
       <a class="chosen" href="/">Repos</a>
     {{ else }}
-      <a href="/">Repos</a>
+      <a href="/info/{{$input.headerdata.currepo}}">Repos</a>
     {{ end }}
     {{ if eq $input.action "graph" }}
       <a class="chosen" href="/repograph?reponame={{ $input.reponame }}">Graph</a>

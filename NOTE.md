@@ -17,10 +17,10 @@ __BS_CHECKER_TIMEOUT__ -- timeout for daemons tictac in seconds
 
 BoltDB levels
 ```
-{DB}
+{DB} --{ _info } => [ version:V ]
     \  
-(b){repositories}
-      \                       
+(b){repositories}   ,{ _info } => [ host:bow.example.com pass:test scheme:https user:test secure:false]
+      \            /            
 (br){reponame[N]}-*-{ _names }-*-{ imagename }---[ datetime => last_name ]
         \          \                                                   :
  (brc){catalog}     '--{ _namesgraph }                                 :

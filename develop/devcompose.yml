@@ -1,0 +1,65 @@
+version: '2'
+services:
+
+  golang:
+    build: ./golang/
+    image: golang-1.6:4
+    volumes:
+      - ../project:/app
+      - ../:/var/lib/bow
+    ports:
+      - 19808:19808
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - GOPATH=/app
+    command: sleep 90000000
+
+  dockerauth:
+    image: cesanta/docker_auth
+    ports:
+      - "4999:4999"
+    expose:
+      - "4999"
+    extra_hosts:
+      - "auth.example.org:127.0.0.1"
+    volumes:
+      - ./auth_config.yml:/auth_config.yml:ro
+      - ./server.key:/server.key
+      - ./server.pem:/server.pem
+    command: --v=2 --alsologtostderr /auth_config.yml
+
+  registry_token:
+    image: registry:2
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./registry/t:/var/lib/registry
+      - ./server.key:/server.key
+      - ./server.pem:/server.pem
+    extra_hosts:
+      - "reg.example.org:127.0.0.1"
+    links:
+      - dockerauth:auth.example.org
+    environment:
+      - REGISTRY_AUTH=token
+      - REGISTRY_AUTH_TOKEN_REALM=https://auth.example.org:4999/auth
+      - REGISTRY_AUTH_TOKEN_SERVICE="Docker registry"
+      - REGISTRY_AUTH_TOKEN_ISSUER="Auth Service"
+      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry
+      - REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE=/server.pem
+      - REGISTRY_STORAGE_DELETE_ENABLED=true
+
+  registry_basic:
+    image: registry:2
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./registry/b:/var/lib/registry
+      - ./htpasswd:/auth/htpasswd
+    environment:
+      - "REGISTRY_AUTH=htpasswd"
+      - "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm"
+      - "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd"
+      - "REGISTRY_STORAGE_DELETE_ENABLED=true"
+      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry

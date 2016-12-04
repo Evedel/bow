@@ -3,6 +3,7 @@ package checker
 import(
   "db"
   "say"
+  "qurl"
   "time"
   "utils"
   "strings"
@@ -14,16 +15,17 @@ import(
 func CheckManifests(){
   say.L1("CheckManifests Daemon: started work")
   repos := db.GetRepos()
-  for _, er := range repos {
-    pretty := db.GetRepoPretty(er)
+  for er, _ := range repos {
+    repoinfo := db.GetRepoPretty(er)
     catalog := db.GetCatalog(er)
-    curlpath := pretty["reposcheme"] + "://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
     for _, en := range catalog {
       dbtags := db.GetTags(er, en)
       for _, et := range dbtags {
-        Reqt := curlpath + "/v2/" + en + "/manifests/" + et
-        if body, ok := utils.MakeQueryToRepo(Reqt); ok {
+        Reqt := "/v2/" + en + "/manifests/" + et
+        if body, ok := qurl.MakeSimpleQuery(Reqt, repoinfo); ok {
           client := &http.Client{}
+          curlpath := repoinfo["scheme"] + "://" + repoinfo["user"] + ":" + repoinfo["pass"] + "@" + repoinfo["host"]
+          Reqt := curlpath + Reqt
           Reqtv2Digest, _ := http.NewRequest("GET", Reqt, nil)
           Reqtv2Digest.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
           if Respv2Digest, err := client.Do(Reqtv2Digest); err != nil {
@@ -41,7 +43,7 @@ func CheckManifests(){
               db.DeleteTagSubBucket(er, en, et, "history")
               for i, _ := range fsshaarr {
                 fssha := fsshaarr[i].(map[string]interface{})["blobSum"].(string)
-                fssize := utils.GetfsLayerSize(curlpath + "/v2/" + en + "/blobs/" + fssha)
+                fssize := qurl.GetfsLayerSize(curlpath + "/v2/" + en + "/blobs/" + fssha)
                 history := historyarr[i].(map[string]interface{})["v1Compatibility"].(string)
                 historynew := history
                 if fsshanum, err := strconv.Atoi(fssize); err != nil {

@@ -40,18 +40,24 @@ func IsSliceDifferent(a []string, b []string) (bool) {
 }
 
 func FromByteToHuman(bytes int) (human string){
-  human = strconv.Itoa(bytes) + " B"
-  if bytes > 1024 {
-    bytes = bytes / 1024
-    human = strconv.Itoa(bytes) + " KB"
+  var num float64
+  num = float64(bytes)
+  human = strconv.FormatFloat(num, 'f', 2, 64) + " B"
+  human = strings.Replace(human, ".00 B", " B", 1)
+  if num > 1024 {
+    num = num / 1024
+    human = strconv.FormatFloat(num, 'f', 2, 64) + " KB"
+    human = strings.Replace(human, ".00 KB", " KB", 1)
   }
-  if bytes > 1024 {
-    bytes = bytes / 1024
-    human = strconv.Itoa(bytes) + " MB"
+  if num > 1024 {
+    num = num / 1024
+    human = strconv.FormatFloat(num, 'f', 2, 64) + " MB"
+    human = strings.Replace(human, ".00 MB", " MB", 1)
   }
-  if bytes > 1024 {
-    bytes = bytes / 1024
-    human = strconv.Itoa(bytes) + " GB"
+  if num > 1024 {
+    num = num / 1024
+    human = strconv.FormatFloat(num, 'f', 2, 64) + " GB"
+    human = strings.Replace(human, ".00 MB", " MB", 1)
   }
   return
 }
@@ -78,5 +84,13 @@ func FromHumanToByte(human string) (bytes int){
   }
   fnum, _ := strconv.ParseFloat(number, 64)
   bytes = int(fnum * fscale)
+  return
+}
+
+func Keys(inmap map[string]string) (outkeys []string){
+  outkeys = make([]string, 0, len(inmap))
+  for k := range inmap {
+      outkeys = append(outkeys, k)
+  }
   return
 }

@@ -1,9 +1,10 @@
-package utils
+package qurl
 
 import(
   "say"
   "time"
   "flag"
+  "utils"
   "strings"
   "net/http"
   "strconv"
@@ -12,22 +13,32 @@ import(
 )
 
 var TestAddress string
-
+var TestInfo map[string]string
 func init(){
   flag.StringVar(&TestAddress, "repo", "", "Repository to be tested")
   flag.Parse()
+  tmpaddress := TestAddress
+  TestInfo = make(map[string]string)
+  TestInfo["scheme"]=tmpaddress[:strings.Index(tmpaddress, "://")]
+  tmpaddress = tmpaddress[strings.Index(tmpaddress, "://")+3:]
+  TestInfo["user"]=tmpaddress[:strings.Index(tmpaddress, ":")]
+  tmpaddress = tmpaddress[strings.Index(tmpaddress, ":")+1:]
+  TestInfo["pass"]=tmpaddress[:strings.Index(tmpaddress, "@")]
+  tmpaddress = tmpaddress[strings.Index(tmpaddress, "@")+1:]
+  TestInfo["host"]=tmpaddress
+  TestInfo["secure"]="false"
 }
 
 func TestGetAPI(t *testing.T){
   say.L1(">> GET /v2/")
-  if body_ping, ok := MakeQueryToRepo(TestAddress + "/v2/"); !ok {
+  if body_ping, ok := MakeSimpleQuery("/v2/", TestInfo); !ok {
     if body_ping == 404 {
       say.L3("API V2 is not supported by this registry")
     }
     t.Fail()
   } else {
     say.L1(">> GET /v2/_catalog")
-    if body_catalog, ok := MakeQueryToRepo(TestAddress + "/v2/_catalog"); !ok {
+    if body_catalog, ok := MakeSimpleQuery("/v2/_catalog", TestInfo); !ok {
       t.Fail()
     } else {
       var catalog interface{}
@@ -42,12 +53,12 @@ func TestGetAPI(t *testing.T){
         } else {
           for _, ei := range catalog.([]interface{}) {
             say.L1(">> GET /v2/" + ei.(string) + "/tags/list")
-            if body_tags, ok := MakeQueryToRepo(TestAddress + "/v2/" + ei.(string) + "/tags/list"); ok {
+            if body_tags, ok := MakeSimpleQuery("/v2/" + ei.(string) + "/tags/list", TestInfo); ok {
               if body_tags.(map[string]interface{})["name"] != nil &&
                  body_tags.(map[string]interface{})["tags"] != nil {
                   for _, et := range body_tags.(map[string]interface{})["tags"].([]interface{}) {
                     say.L1(">> GET /v2/" + ei.(string) + "/manifests/" + et.(string))
-                    if body_manifest, ok := MakeQueryToRepo(TestAddress + "/v2/" + ei.(string) + "/manifests/" + et.(string)); ok {
+                    if body_manifest, ok := MakeSimpleQuery("/v2/" + ei.(string) + "/manifests/" + et.(string), TestInfo); ok {
                       say.L1(">> CHECK MANIFEST FIELDS [" + ei.(string) + ":" + et.(string)+"]")
                       testManifestFields(t, body_manifest)
                       if !t.Failed() {
@@ -155,7 +166,7 @@ func testFSSHAandHistory(t *testing.T, Manifest interface{}){
       say.L3("Probably API was changed.")
       t.Fail()
     } else {
-      if strconv.Itoa(FromHumanToByte(FromByteToHuman(fsshanum)))[0:1] != fssize[0:1] {
+      if strconv.Itoa(utils.FromHumanToByte(utils.FromByteToHuman(fsshanum)))[0:2] != fssize[0:2] {
         say.L3("Connot convert size from Human to Byte and Back")
         t.Fail()
       }

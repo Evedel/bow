@@ -1,6 +1,7 @@
 Bow
 ==
-## As simple as possible frontend for your private docker registry
+## As simple as possible docker registry frontend/UI
+
 Pictures
 ==
 ![](develop/conf.png)  
@@ -13,8 +14,8 @@ Pictures
 
 Features
 ==  
-- v2 registry support only
-- internal db (BoltBD) gives it ability to store info, and as result it responses much more faster then after direct api call
+- V2 registries support only (secure, selfsigned and insecure, DNS and IP:PORT)
+- internal db ([BoltBD](https://github.com/boltdb/bolt)) gives it ability to store info, and as result it responses much faster then after direct api call, and can provide more data
 - app can pars, store and show info from registry such as:
  - image layers info:
    - name / tag
@@ -24,10 +25,10 @@ Features
 - it is possible to set multiple repositories and watch all registries in one place
 - show statistics pretty, draw curves of uploads number and image sizes for tag with respects to dates
 - find parent of image, in case, parent in the same repo (it is clickable!)
-- show tree of parents for image/ build dependency tree for whole repo
-- __(new)__ now it supports insecure regestries
-- __(the newest)__ enabled image deletion (registry --version >= 2.4.0)
-- __(killerfeature)__ API compatibility checks
+- show tree-graph of parents for image
+- __(new)__ enabled image deletion (registry --version >= 2.4.0)
+- __(the newest)__ API compatibility checks
+- __(killerfeature)__ Bearer token auth support (secure and selfsigned auth servers)
 
 Image deletion
 ==
@@ -46,12 +47,17 @@ docker run -d -p 5000:5000 --restart=always --name registry \
 2. Set up cron to run garbage collection  
 Example:  
 `10 * * * * docker exec registry bin/registry garbage-collect /etc/docker/registry/config.yml`  
-3. Also be aware, that there is a known [issue](https://github.com/docker/distribution/issues/1939) in docker registry 2.6 in earlier. It means, that if you delete an image from a repository, you will not able to push __the exactly same__ image in that repository. To fix it, you will need each time to perform rebuilding of image with `--no-cache` mode, or restarting of registry `docker restart registry`  
+3. Also be aware, that there is a known [issue](https://github.com/docker/distribution/issues/1939) in docker registry 2.5.1 in earlier. It means, that if you delete an image from a repository, you will not able to push __the exactly same__ image in that repository. To fix it, you will need each time to perform rebuilding of image with `--no-cache` mode or restarting the registry `docker restart registry`.
 
 See more:  
 https://github.com/docker/docker-registry/issues/988#issuecomment-224280919  
 https://docs.docker.com/registry/configuration/#delete  
 https://docs.docker.com/registry/garbage-collection/#/how-garbage-collection-works
+
+Bearer token auth
+==
+What is it and how it works see [docker documentation](https://docs.docker.com/registry/spec/auth/token/).
+Bow was tested to work with [cesanta/docker_auth](https://github.com/cesanta/docker_auth) in [this configuration](develop/devcompose.yml).
 
 Prospects
 ==
@@ -78,7 +84,7 @@ git clone https://github.com/fperucic/treant-js project/resources/treant-js
 cd bow
 docker-compose -f develop/devlinux.yml up -d
 docker exec -it develop_golang_1 go get
-docker exec -it develop_golang_1 go test -v utils -repo='https://UsErNaMe:PaSsWoRd@myownregistry.org'
+docker exec -it develop_golang_1 go test -v qurl -repo='https://UsErNaMe:PaSsWoRd@myownregistry.org'
 docker exec -it develop_golang_1 go run main.go
 ```
 Code and packages
