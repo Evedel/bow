@@ -80,8 +80,7 @@ How to start contribute to Bow
 If you have interest, you can easily start with
 ```
 git clone https://github.com/evedel/bow.git
-git clone https://github.com/fperucic/treant-js project/resources/treant-js
-cd bow
+cd bow && git clone https://github.com/fperucic/treant-js project/resources/treant-js
 docker-compose -f develop/devlinux.yml up -d
 docker exec -it develop_golang_1 go get
 docker exec -it develop_golang_1 go test -v qurl -repo='https://UsErNaMe:PaSsWoRd@myownregistry.org'

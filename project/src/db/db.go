@@ -39,6 +39,9 @@ func Init(){
 func Upgrade() (repeat bool){
   repeat = true
   say.L1("DB: INIT: DB Upgrade: Start")
+  if _, ok := GetSimplePairsFromBucket([]string{})["_info"]; !ok {
+    PutBucketToBucket([]string{"_info"})
+  }
   info := GetSimplePairsFromBucket([]string{"_info"})
   if len(info) == 0 {
     upto1()

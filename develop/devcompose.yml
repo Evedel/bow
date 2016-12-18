@@ -9,6 +9,9 @@ services:
       - ../:/var/lib/bow
     ports:
       - 19808:19808
+    links:
+      - dockerauth:auth.example.org
+      - registry_token:reg.example.org
     cap_add:
       - SYS_ADMIN
     environment:

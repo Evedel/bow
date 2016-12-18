@@ -19,12 +19,14 @@ func CreateRepo(params map[string][]string) {
   PutSimplePairToBucket([]string{name, "_info"}, "user", params["user"][0])
   PutSimplePairToBucket([]string{name, "_info"}, "scheme", params["scheme"][0])
   PutSimplePairToBucket([]string{name, "_info"}, "name", name)
-
   if _, ok := params["secure"]; ok {
     PutSimplePairToBucket([]string{name, "_info"}, "secure", "true")
   } else {
     PutSimplePairToBucket([]string{name, "_info"}, "secure", "false")
   }
+  PutBucketToBucket([]string{name, "catalog"})
+  PutBucketToBucket([]string{name, "_namesgraph"})
+  PutBucketToBucket([]string{name, "_names"})
 }
 
 func DeleteRepo(repo string){

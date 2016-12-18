@@ -1,3 +1,12 @@
+Build 21
+==
+(2016.12.18)
+- QURL refactoring finished.
+  - Fixed isues where bow was not able to make bearer auth reqest for HEAD/DELET/headers requests
+  - Nice & compact method capable to serv all reqest.
+- Fixed error for non-existing catalogs just after creation
+- Change db.upgrade for the most old versions
+
 Build 20
 ==
 (2016.12.04)

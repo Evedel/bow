@@ -42,6 +42,7 @@ func PutSimplePairToBucket(path []string, key string, value string){
   }
   say.L1("DB: PUT PAIR: Done")
 }
+
 func PutBucketToBucket(path []string){
   var err error
   b := make([]*bolt.Bucket, len(path)+1)

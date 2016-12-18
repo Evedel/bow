@@ -41,4 +41,11 @@ func Init()  {
   } else {
     Env["checker_time"] = "300"
   }
+  if val = os.Getenv("BS_LOG_LEVEL"); val != "" {
+    if val == "1" || val == "2" || val == "3" || val == "4" {
+      Env["log_level"] = val
+    }
+  } else {
+    Env["log_level"] = "1"
+  }
 }

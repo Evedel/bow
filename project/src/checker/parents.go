@@ -19,6 +19,9 @@ func CheckParents(){
           tags := db.GetSimplePairsFromBucket([]string{key, "catalog", keyn})
           for keyt, valuet := range tags {
             if (valuet == "") && (keyt[0:1] != "_"){
+              if _, ok := db.GetSimplePairsFromBucket([]string{key, "catalog", keyn, keyt})["history"]; !ok {
+                db.PutBucketToBucket([]string{key, "catalog", keyn, keyt, "history"})
+              }
               history := db.GetSimplePairsFromBucket([]string{key, "catalog", keyn, keyt, "history"})
               histarr := []string{}
               var tmpstr string

@@ -45,6 +45,7 @@ func GetSimplePairsFromBucket(path []string) (pairs map[string]string){
   say.L1("DB: GET BUCKET: Done")
   return
 }
+
 func GetValueFromBucket(path []string, key string) (value string){
   b := make([]*bolt.Bucket, len(path)+1)
   pathstr := ""

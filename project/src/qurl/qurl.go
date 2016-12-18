@@ -1,7 +1,6 @@
 package qurl
 
 import(
-  "db"
   "say"
   "strings"
   "strconv"
@@ -35,13 +34,18 @@ func makequery(rqst *http.Request, secure bool) (body interface{}, header map[st
         say.L3(err.Error())
       } else {
         var c interface{}
-        if err := json.Unmarshal(bodytmp, &c); err != nil {
-          status = -1
-          say.L3(err.Error())
+        if len(bodytmp) == 0 {
+          body = map[string]string{}
         } else {
-          body = c
-          if c.(map[string]interface{})["errors"] != nil  && status != 401 {
-            say.L3(c.(map[string]interface{})["errors"].([]interface{})[0].(map[string]interface{})["message"].(string))
+          if err := json.Unmarshal(bodytmp, &c); err != nil {
+            status = -1
+            say.L3(err.Error())
+            say.L3("makequery: Cannot convert body to interface")
+          } else {
+            body = c
+            if c.(map[string]interface{})["errors"] != nil  && status != 401 {
+              say.L3(c.(map[string]interface{})["errors"].([]interface{})[0].(map[string]interface{})["message"].(string))
+            }
           }
         }
       }
@@ -85,97 +89,61 @@ func getbearertoken(wwwauth string, user string, pass string, secure bool) (toke
    return
 }
 
-func MakeSimpleQuery(query string, info map[string]string) (body interface{}, ok bool){
+func MakeQuery(query, method string, info, inhdrs map[string]string) (body interface{}, outhdrs map[string][]string, ok bool){
   ok = false
   var c int
-  var h map[string][]string
   secure := true
   if info["secure"] == "false" { secure = false}
   tquery := info["scheme"] + "://" + info["user"] + ":" + info["pass"] + "@" + info["host"] + query
-  if reqst, err := http.NewRequest("GET", tquery, nil); err != nil {
+  if reqst, err := http.NewRequest(method, tquery, nil); err != nil {
     say.L3(err.Error())
+    return
   } else {
-    body, h, c = makequery(reqst, secure)
-    if c == 200 {
-      ok = true
-    } else {
-      switch c {
-      case 401:
-        if h["Www-Authenticate"][0][0:5] == "Basic" {
-          say.L3("MakeSimpleQuery: SCode [401] : Unauthorized response is returned (credentials problem, check user/pass pair)")
-        } else if h["Www-Authenticate"][0][0:6] == "Bearer" {
-          say.L1("MakeSimpleQuery: SCode [401] : Bearer auth. Trying to get auth token.")
-          if token, oktok := getbearertoken(h["Www-Authenticate"][0], info["user"], info["pass"], secure); oktok {
-            say.L1("MakeSimpleQuery: Token recieved. Retriying query.")
-            tquery = info["scheme"] + "://" + info["host"] + query
-            if reqst, err := http.NewRequest("GET", tquery, nil); err != nil {
-              say.L3(err.Error())
-            } else {
-              reqst.Header.Add("Authorization", "Bearer "+token)
-              body, h, c = makequery(reqst, secure)
-              if c == 200 {
-                ok = true
-              } else {
-                switch c {
-                case 401:
-                  say.L3("MakeSimpleQuery: Token code [401] : Unauthorized response is returned (credentials problem, check user/pass pair or communication between registry and auth server)")
-                  say.L3(body.(map[string]interface{})["errors"].([]interface{})[0].(map[string]interface{})["message"].(string))
-                case -1:
-                }
-              }
+    for kh, vh := range inhdrs{
+      reqst.Header.Set(kh, vh)
+    }
+    body, outhdrs, c = makequery(reqst, secure)
+    if c == 401 {
+      if outhdrs["Www-Authenticate"][0][0:5] == "Basic" {
+        say.L3("MakeQuery: Code [401] : Unauthorized response is returned (credentials problem, check user/pass pair)")
+        return
+      } else if outhdrs["Www-Authenticate"][0][0:6] == "Bearer" {
+        say.L1("MakeQuery: Code [401] : Bearer auth. Trying to get auth token.")
+        if token, oktok := getbearertoken(outhdrs["Www-Authenticate"][0], info["user"], info["pass"], secure); !oktok {
+          say.L3("MakeQuery: Bearer: Cannot obtain token for [" + outhdrs["Www-Authenticate"][0] + "]")
+          return
+        } else {
+          say.L1("MakeQuery: Bearer: Token recieved. Retriying query.")
+          tquery = info["scheme"] + "://" + info["host"] + query
+          if reqst, err := http.NewRequest(method, tquery, nil); err != nil {
+            say.L3(err.Error())
+            return
+          } else {
+            reqst.Header.Add("Authorization", "Bearer "+token)
+            for kh, vh := range inhdrs{
+              reqst.Header.Set(kh, vh)
+            }
+            body, outhdrs, c = makequery(reqst, secure)
+            if c == 401 {
+              say.L3("MakeQuery: Token: Code [401] : Unauthorized response is returned (credentials problem, check user/pass pair or communication between registry and auth server)")
+              say.L3(body.(map[string]interface{})["errors"].([]interface{})[0].(map[string]interface{})["message"].(string))
+              return
             }
           }
         }
-      case -1:
-      default:  say.L3("MakeSimpleQuery: Cannot diagnose problem. SCode \n[ " + strconv.Itoa(c) + " ] ")
       }
+    }
+
+    switch c {
+    case 200:
+      if method=="GET" || method=="HEAD" { ok = true } else { say.L3("MakeQuery: Unexpected [200] status")}
+    case 202:
+      if method=="DELETE"{ ok = true } else { say.L3("MakeQuery: Unexpected [202] status")}
+    case -1:
+      say.L3("MakeQuery: Netwrok or internal problem")
+    default:
+      say.L3("MakeQuery: Cannot diagnose problem. Code \n[ " + strconv.Itoa(c) + " ] ")
     }
   }
   return
-}
-
-func DeleteTagFromRepo(repo string, name string, tag string) (ok bool){
-  ok = false
-  pretty := db.GetRepoPretty(repo)
-  curlpath := pretty["reposcheme"] + "://" + pretty["repouser"] + ":" + pretty["repopass"] + "@" + pretty["repohost"]
-  ReqtStr := curlpath + "/v2/" + name + "/manifests/" + db.GetValueFromBucket([]string{repo, "catalog", name, tag}, "digest")
-  client := &http.Client{}
-  Reqt, _ := http.NewRequest("DELETE", ReqtStr, nil)
-  Reqt.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
-  if Resp, err := client.Do(Reqt); err != nil {
-    say.L3(err.Error())
-    say.L3("Delete From Repository: cannot recieve response from registry, stopping work")
-    return
-  } else {
-    defer Resp.Body.Close()
-    if Resp.StatusCode == 202 {
-      ok = true
-    } else {
-      if Resp.StatusCode == 405 {
-        say.L3(Resp.Status)
-        say.L3("You need to add '-e REGISTRY_STORAGE_DELETE_ENABLED=true'")
-        say.L3("Follow instructions here: https://github.com/Evedel/bow#image-deletion")
-      } else {
-        say.L3("Delete manifest: " + Resp.Status)
-      }
-      say.L3(ReqtStr)
-    }
-  }
-  return
-}
-
-func GetfsLayerSize(link string ) (size string){
-  if Resp, err := http.Head(link); err != nil {
-    say.L3(err.Error())
-    say.L3("GetfsLayerSize: Cannot recieve response from registry, stopping work")
-  } else {
-    defer Resp.Body.Close()
-    if _, err := ioutil.ReadAll(Resp.Body); err != nil {
-      say.L3(err.Error())
-    } else {
-      size = Resp.Header.Get("Content-Length")
-      return
-    }
-  }
-  return ""
 }

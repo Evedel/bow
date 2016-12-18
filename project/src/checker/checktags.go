@@ -15,7 +15,7 @@ func CheckTags(){
     catalog := db.GetCatalog(er)
     for _, en := range catalog {
       Reqt := "/v2/" + en + "/tags/list"
-      if body, ok := qurl.MakeSimpleQuery(Reqt, repoinfo); ok {
+      if body, _, ok := qurl.MakeQuery(Reqt, "GET", repoinfo, map[string]string{}); ok {
         dbtags := db.GetTags(er, en)
         arrint := make([]interface{}, 0)
         if body.(map[string]interface{})["tags"] == nil {

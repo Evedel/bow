@@ -14,13 +14,17 @@ func upto2(){
     PutSimplePairToBucket([]string{er, "_info"}, "host", repofull["repohost"])
     PutSimplePairToBucket([]string{er, "_info"}, "pass", repofull["repopass"])
     PutSimplePairToBucket([]string{er, "_info"}, "user", repofull["repouser"])
-    PutSimplePairToBucket([]string{er, "_info"}, "scheme", repofull["reposcheme"])
+    if scheme, ok := repofull["reposcheme"]; ok {
+      PutSimplePairToBucket([]string{er, "_info"}, "scheme", scheme)
+      DeleteKey([]string{er}, "reposcheme")
+    } else {
+      PutSimplePairToBucket([]string{er, "_info"}, "scheme", "http")
+    }
     PutSimplePairToBucket([]string{er, "_info"}, "name", er)
     PutSimplePairToBucket([]string{er, "_info"}, "secure", "true")
     DeleteKey([]string{er}, "repohost")
     DeleteKey([]string{er}, "repopass")
     DeleteKey([]string{er}, "repouser")
-    DeleteKey([]string{er}, "reposcheme")
   }
   PutSimplePairToBucket([]string{"_info"}, "version", "2")
 }
