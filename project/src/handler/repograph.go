@@ -5,6 +5,7 @@ import(
   "say"
   "utils"
 
+  "sort"
   "net/url"
   "net/http"
 )
@@ -24,7 +25,9 @@ func RepoGraph(w http.ResponseWriter, r *http.Request){
 				irepos["headerdata"] = headerdata
 
 				irepos["repodata"] = make(map[string]interface{})
-				irepos["repodata"].(map[string]interface{})["catalog"] = utils.Keys(db.GetRepos())
+        repos := utils.Keys(db.GetRepos())
+        sort.Strings(repos)
+				irepos["repodata"].(map[string]interface{})["catalog"] = repos
 				irepos["repodata"].(map[string]interface{})["curname"] = v["reponame"][0]
 			} else {
 				irepos["graphdata"] = ""

@@ -4,14 +4,16 @@ import(
   "db"
   "say"
   "qurl"
-  "time"
   "utils"
+
+  "time"
   "strings"
   "strconv"
   "encoding/json"
 )
 
-func CheckManifests(){
+func checkManifests(runchannel chan int){
+  runchannel <- 1
   say.L1("CheckManifests Daemon: started work")
   repos := db.GetRepos()
   for er, _ := range repos {
@@ -25,19 +27,16 @@ func CheckManifests(){
           ihdr := map[string]string{"Accept": "application/vnd.docker.distribution.manifest.v2+json"}
           if _, ohdr, ok := qurl.MakeQuery(Reqt, "GET", repoinfo, ihdr); !ok {
             say.L3("CheckManifests Daemon: cannot recieve digest header from registry, stopping work")
-            return
+            <- runchannel
           } else {
-            olddidg := db.GetTagDigest(er, en, et)
+            olddidg := db.GetValueFromBucket([]string{ er, "catalog", en, et}, "digest")
             newdidg := ohdr["Docker-Content-Digest"][0]
-            say.L3(olddidg)
-            say.L3(newdidg)
-
             if (olddidg != newdidg){
               var ch interface{}
               totalsize := 0
               fsshaarr := body.(map[string]interface{})["fsLayers"].([]interface{})
               historyarr := body.(map[string]interface{})["history"].([]interface{})
-              db.DeleteTagSubBucket(er, en, et, "history")
+              db.DeleteBucket([]string{ er, "catalog", en, et, "history" })
               for i, _ := range fsshaarr {
                 fssha := fsshaarr[i].(map[string]interface{})["blobSum"].(string)
                 var fssize string
@@ -78,18 +77,27 @@ func CheckManifests(){
                 }
               }
               sizedt := time.Now().Local().Format("2006-01-02 15:04:05")
+              shortsizedt := time.Now().Local().Format("2006-01-02")
               db.PutSimplePairToBucket([]string{ er, "catalog", en, et, "_totalsizehuman" }, sizedt, utils.FromByteToHuman(totalsize))
               db.PutSimplePairToBucket([]string{ er, "catalog", en, et, "_totalsizebytes" }, sizedt, strconv.Itoa(totalsize))
-              db.PutTagDigest(er, en, et, newdidg)
+              db.PutTagDigest(er, en, et, shortsizedt, newdidg)
             } else {
               say.L1("CheckManifests Daemon: digests are the same, shouldnot update anything, stopping work")
             }
           }
         } else {
-          say.L3("CheckManifests Daemon: cannot recieve response from registry, stopping work")
+          if body != nil {
+            if body.(int) == 404 {
+              say.L2("CheckManifests Daemon: Page with name [" + en + "/" + et + "] not found. Asuming it isn't valid in the moment")
+              db.PutSimplePairToBucket([]string{ er, "catalog", en }, "_valid", "0")
+            } else {
+              say.L3("CheckManifests Daemon: cannot recieve response from registry, stopping work")
+            }
+          }
         }
       }
     }
   }
   say.L1("CheckManifests Daemon: finished work")
+  <- runchannel
 }

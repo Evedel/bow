@@ -21,7 +21,7 @@ func DeleteImage(w http.ResponseWriter, r *http.Request){
       inhdr := map[string]string{"Accept": "application/vnd.docker.distribution.manifest.v2+json"}
       if _, _, ok := qurl.MakeQuery(query, "DELETE", db.GetRepoPretty(v["reponame"][0]), inhdr); ok {
 				db.PutSimplePairToBucket([]string{ v["reponame"][0], "catalog", v["curname"][0], v["curtag"][0]}, "_valid", "0")
-				go checker.CheckTags()
+				go checker.RunCheckTags()
 				http.Redirect(w, r, "/info/" + v["reponame"][0] + "?curname=" + v["curname"][0], 307)
 			}
 		} else {

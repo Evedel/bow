@@ -6,7 +6,7 @@ import (
   "github.com/boltdb/bolt"
 )
 
-func GetSimplePairsFromBucket(path []string) (pairs map[string]string){
+func GetAllPairsFromBucket(path []string) (pairs map[string]string){
   b := make([]*bolt.Bucket, len(path)+1)
   pairs = make(map[string]string)
   pathstr := ""

@@ -133,12 +133,14 @@ func MakeQuery(query, method string, info, inhdrs map[string]string) (body inter
         }
       }
     }
-
+    if c != 200 { body = c }
     switch c {
     case 200:
       if method=="GET" || method=="HEAD" { ok = true } else { say.L3("MakeQuery: Unexpected [200] status")}
     case 202:
       if method=="DELETE"{ ok = true } else { say.L3("MakeQuery: Unexpected [202] status")}
+    case 404:
+      say.L3("MakeQuery: [404] Page not found")
     case -1:
       say.L3("MakeQuery: Netwrok or internal problem")
     default:

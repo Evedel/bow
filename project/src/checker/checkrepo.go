@@ -7,7 +7,8 @@ import(
   "utils"
 )
 
-func CheckRepos(){
+func checkRepos(runchannel chan int){
+  runchannel <- 1
   say.L1("CheckRepos Daemon: started work")
   repos := db.GetRepos()
   for e, _ := range repos {
@@ -36,4 +37,5 @@ func CheckRepos(){
     }
   }
   say.L1("CheckRepos Daemon: finished work")
+  <-runchannel
 }
