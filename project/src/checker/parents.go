@@ -9,20 +9,25 @@ import(
   "encoding/json"
 )
 
-func CheckParents(){
+func checkParents(runchannel chan int){
+  runchannel <- 1
+  say.L1("CheckParents Daemon: started work")
   repos := db.GetRepos()
   for key, value := range repos {
     if value == "" {
-      names := db.GetSimplePairsFromBucket([]string{key, "catalog"})
+      names := db.GetAllPairsFromBucket([]string{key, "catalog"})
       for keyn, valuen := range names {
         if valuen == "" {
-          tags := db.GetSimplePairsFromBucket([]string{key, "catalog", keyn})
+          tags := db.GetAllPairsFromBucket([]string{key, "catalog", keyn})
           for keyt, valuet := range tags {
             if (valuet == "") && (keyt[0:1] != "_"){
-              history := db.GetSimplePairsFromBucket([]string{key, "catalog", keyn, keyt, "history"})
+              if _, ok := db.GetAllPairsFromBucket([]string{key, "catalog", keyn, keyt})["history"]; !ok {
+                db.PutBucketToBucket([]string{key, "catalog", keyn, keyt, "history"})
+              }
+              history := db.GetAllPairsFromBucket([]string{key, "catalog", keyn, keyt, "history"})
               histarr := []string{}
               var tmpstr string
-              cmd := db.GetSimplePairsFromBucket([]string{key, "_names", keyn + ":" + keyt})
+              cmd := db.GetAllPairsFromBucket([]string{key, "_names", keyn + ":" + keyt})
               for _, valh := range history {
                 var ch interface{}
                 if err := json.Unmarshal([]byte(valh), &ch); err != nil {
@@ -82,17 +87,19 @@ func CheckParents(){
     db.DeleteBucket([]string{key, "_namesgraph"})
     BuildParentsGraph(key)
   }
+  say.L1("CheckParents Daemon: finished work")
+  <- runchannel
 }
 
 func FindParent(childcmd []string, repo string, namei string, tagi string) (name string, tag string, ok bool){
   say.L1("Searching for parent of [ " + namei + ":" + tagi + " ]")
   ok = false
-  names := db.GetSimplePairsFromBucket([]string{repo, "_names"})
+  names := db.GetAllPairsFromBucket([]string{repo, "_names"})
   maxname := ""
   maxlayers := 0
   for kn, _ := range names {
     if strings.Split(kn, ":")[0] != namei {
-      cmd := db.GetSimplePairsFromBucket([]string{repo, "_names", kn})
+      cmd := db.GetAllPairsFromBucket([]string{repo, "_names", kn})
       for _, vc := range cmd {
         var parentcmd interface{}
         if err := json.Unmarshal([]byte(vc), &parentcmd); err == nil {
@@ -135,9 +142,9 @@ func FindParent(childcmd []string, repo string, namei string, tagi string) (name
 func BuildParentsGraph(repo string){
   say.L1("Building parents tree for [ " + repo + " ]")
   fullnames := []string{}
-  names := db.GetSimplePairsFromBucket([]string{repo, "catalog"})
+  names := db.GetAllPairsFromBucket([]string{repo, "catalog"})
   for kn, _ := range names {
-    tags := db.GetSimplePairsFromBucket([]string{repo, "catalog", kn})
+    tags := db.GetAllPairsFromBucket([]string{repo, "catalog", kn})
     for kt, _ := range tags {
       if kt[0:1] != "_" {
         fullnames = append(fullnames, kn + ":" + kt)

@@ -42,6 +42,7 @@ func PutSimplePairToBucket(path []string, key string, value string){
   }
   say.L1("DB: PUT PAIR: Done")
 }
+
 func PutBucketToBucket(path []string){
   var err error
   b := make([]*bolt.Bucket, len(path)+1)
@@ -65,9 +66,13 @@ func PutBucketToBucket(path []string){
         }
       }
     }
-    say.L1("DB: CREATE BUCKET: creating bucket [ " + path[len(path)-1] + " ]")
-    if b[len(path)], err = b[len(path)-1].CreateBucketIfNotExists([]byte(path[len(path)-1])); err != nil {
-      return err
+    if b[len(path)-1].Bucket([]byte(path[len(path)-1])) == nil {
+      say.L1("DB: CREATE BUCKET: creating bucket [ " + path[len(path)-1] + " ]")
+      if b[len(path)], err = b[len(path)-1].CreateBucketIfNotExists([]byte(path[len(path)-1])); err != nil {
+        return err
+      }
+    } else {
+      say.L1("DB: CREATE BUCKET: bucket already exist [ " + pathstr + " ]")
     }
     return nil
   }); err != nil {

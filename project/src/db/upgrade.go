@@ -10,17 +10,21 @@ func upto2(){
   say.L2("DB: INIT: DB Upgrade: Need upgrade")
   repos := GetRepos()
   for er, _ := range repos{
-    repofull := GetSimplePairsFromBucket([]string{er})
+    repofull := GetAllPairsFromBucket([]string{er})
     PutSimplePairToBucket([]string{er, "_info"}, "host", repofull["repohost"])
     PutSimplePairToBucket([]string{er, "_info"}, "pass", repofull["repopass"])
     PutSimplePairToBucket([]string{er, "_info"}, "user", repofull["repouser"])
-    PutSimplePairToBucket([]string{er, "_info"}, "scheme", repofull["reposcheme"])
+    if scheme, ok := repofull["reposcheme"]; ok {
+      PutSimplePairToBucket([]string{er, "_info"}, "scheme", scheme)
+      DeleteKey([]string{er}, "reposcheme")
+    } else {
+      PutSimplePairToBucket([]string{er, "_info"}, "scheme", "http")
+    }
     PutSimplePairToBucket([]string{er, "_info"}, "name", er)
     PutSimplePairToBucket([]string{er, "_info"}, "secure", "true")
     DeleteKey([]string{er}, "repohost")
     DeleteKey([]string{er}, "repopass")
     DeleteKey([]string{er}, "repouser")
-    DeleteKey([]string{er}, "reposcheme")
   }
   PutSimplePairToBucket([]string{"_info"}, "version", "2")
 }
@@ -36,7 +40,7 @@ func UpgradeOldParentNames(){
   repos := GetRepos()
   for key, value := range repos {
     if value == "" {
-      names := GetSimplePairsFromBucket([]string{key, "_names"})
+      names := GetAllPairsFromBucket([]string{key, "_names"})
       for keyn, valuen := range names {
         if valuen != "" {
           DeleteKey([]string{key, "_names" }, keyn)
@@ -51,7 +55,7 @@ func UpgradeFalseNumericImage(){
   repos := GetRepos()
   for key, value := range repos {
     if value == "" {
-      imagenames := GetSimplePairsFromBucket([]string{key, "catalog"})
+      imagenames := GetAllPairsFromBucket([]string{key, "catalog"})
       for keyi, _ := range imagenames {
         if _, err := strconv.Atoi(keyi); err == nil {
           DeleteBucket([]string{key, "catalog", keyi})
@@ -66,14 +70,14 @@ func UpgradeTotalSize(){
   repos := GetRepos()
   for key, value := range repos {
     if value == "" {
-      imagenames := GetSimplePairsFromBucket([]string{key, "catalog"})
+      imagenames := GetAllPairsFromBucket([]string{key, "catalog"})
       for keyi, _ := range imagenames {
-        tags := GetSimplePairsFromBucket([]string{key, "catalog", keyi})
+        tags := GetAllPairsFromBucket([]string{key, "catalog", keyi})
         for keyt, _ := range tags {
           if (keyt != "_uploads") && (keyt != "_valid") {
-            fields := GetSimplePairsFromBucket([]string{key, "catalog", keyi, keyt})
+            fields := GetAllPairsFromBucket([]string{key, "catalog", keyi, keyt})
             if _, ok := fields["_totalsize"]; ok {
-              totalsize := GetSimplePairsFromBucket([]string{key, "catalog", keyi, keyt, "_totalsize"})
+              totalsize := GetAllPairsFromBucket([]string{key, "catalog", keyi, keyt, "_totalsize"})
               for keys, vals := range totalsize {
                 lastchar := vals[len(vals)-1:len(vals)]
                 if lastchar == "B"{

@@ -7,7 +7,8 @@ import(
   "utils"
 )
 
-func CheckTags(){
+func checkTags(runchannel chan int){
+  runchannel <- 1
   say.L1("CheckTags Daemon: started work")
   repos := db.GetRepos()
   for er, _ := range repos {
@@ -15,7 +16,7 @@ func CheckTags(){
     catalog := db.GetCatalog(er)
     for _, en := range catalog {
       Reqt := "/v2/" + en + "/tags/list"
-      if body, ok := qurl.MakeSimpleQuery(Reqt, repoinfo); ok {
+      if body, _, ok := qurl.MakeQuery(Reqt, "GET", repoinfo, map[string]string{}); ok {
         dbtags := db.GetTags(er, en)
         arrint := make([]interface{}, 0)
         if body.(map[string]interface{})["tags"] == nil {
@@ -32,9 +33,17 @@ func CheckTags(){
           db.AddTags(er, en, arrstr)
         }
       } else {
-        say.L3("CheckTags Daemon: cannot recieve response from registry, stopping work")
+        if body != nil {
+          if body.(int) == 404 {
+            say.L2("CheckTags Daemon: Page with name [" + en + "] not found. Asuming it isn't valid in the moment")
+            db.PutSimplePairToBucket([]string{ er, "catalog", en }, "_valid", "0")
+          } else {
+            say.L3("CheckTags Daemon: cannot recieve response from registry, stopping work")
+          }
+        }
       }
     }
   }
   say.L1("CheckTags Daemon: finished work")
+  <- runchannel
 }

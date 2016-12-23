@@ -5,6 +5,7 @@ import(
   "say"
   "utils"
 
+  "sort"
   "strconv"
   "net/url"
   "net/http"
@@ -14,8 +15,9 @@ import(
 func Info(w http.ResponseWriter, r *http.Request){
 	irepos := make(map[string]interface{})
 	headerdata := make(map[string]string)
-	repos := db.GetRepos()
-  irepos["repos"] = utils.Keys(repos)
+	repos := utils.Keys(db.GetRepos())
+  sort.Strings(repos)
+  irepos["repos"] = repos
 
 	if len(r.URL.Path) <= 6 {
 		headerdata["header"] = ""
@@ -34,11 +36,12 @@ func Info(w http.ResponseWriter, r *http.Request){
 					irepos["curname"] = v["curname"][0]
 
 					tags := db.GetTags(irepos["reponame"].(string), irepos["curname"].(string))
+          sort.Strings(tags)
 					uploads := make(map[string]map[string]string)
 					totaluploads := make(map[string]int)
 					for _, e := range tags {
 						uploads[e] = make(map[string]string)
-						uploads[e] = db.GetSimplePairsFromBucket([]string{
+						uploads[e] = db.GetAllPairsFromBucket([]string{
 							irepos["reponame"].(string),
 							"catalog",
 							irepos["curname"].(string),
@@ -66,7 +69,7 @@ func Info(w http.ResponseWriter, r *http.Request){
 							irepos["curname"].(string),
 							irepos["curtag"].(string),
 							"history" }
-						strhist := db.GetSimplePairsFromBucket(dbpath)
+						strhist := db.GetAllPairsFromBucket(dbpath)
 						objhist := make(map[string]interface{})
 						lastkey := ""
 						layersnum := 0
@@ -83,9 +86,9 @@ func Info(w http.ResponseWriter, r *http.Request){
 						irepos["lastupdated"] = lastkey
 						irepos["layersnum"] = layersnum
 						dbpath[4] = "_totalsizehuman"
-						strsizehuman := db.GetSimplePairsFromBucket(dbpath)
+						strsizehuman := db.GetAllPairsFromBucket(dbpath)
 						dbpath[4] = "_totalsizebytes"
-						strsizebytes := db.GetSimplePairsFromBucket(dbpath)
+						strsizebytes := db.GetAllPairsFromBucket(dbpath)
 						lastkey = ""
 						for key, _ := range strsizehuman {
 							if lastkey < key {
@@ -100,12 +103,14 @@ func Info(w http.ResponseWriter, r *http.Request){
 						}
 						irepos["lastpushed"] = lastkey
 						dbpath[4] = "_parent"
-						irepos["parent"] = db.GetSimplePairsFromBucket(dbpath)
+						irepos["parent"] = db.GetAllPairsFromBucket(dbpath)
 					}
 				}
 			}
 		}
-		irepos["catalog"] = db.GetCatalog(irepos["reponame"].(string))
+		names := db.GetCatalog(irepos["reponame"].(string))
+    sort.Strings(names)
+    irepos["catalog"] = names
 	}
 
 	irepos["headerdata"] = headerdata

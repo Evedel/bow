@@ -22,6 +22,7 @@ func main() {
 	http.HandleFunc("/upgrade/", handler.UpgradeDB)
 	http.HandleFunc("/delete", handler.DeleteImage)
 	http.HandleFunc("/repograph", handler.RepoGraph)
+	http.HandleFunc("/update", handler.UpdateAll)
 	http.HandleFunc("/", handler.Main)
 
 	go checker.DaemonManager()

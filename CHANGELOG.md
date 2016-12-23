@@ -1,3 +1,18 @@
+Build 21
+==
+(2016.12.18)
+- Added ugly button to force bow to update all info
+- DB refactoring finished
+  - db.tag : deleted, created alias, added precreation of non-existed buckets for new tag
+  - db.catalog : the same as for db.tag
+- QURL refactoring finished
+  - Fixed isues where bow was not able to make bearer auth reqest for HEAD/DELET/headers requests
+  - Nice & compact method capable to serv all reqest
+- Fix: error when registry storage was changed externally
+- Fix: random order of repos/names/tags
+- Fix: error for non-existing catalogs just after creation
+- Fix: db.upgrade for the most old versions
+
 Build 20
 ==
 (2016.12.04)

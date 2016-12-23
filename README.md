@@ -56,13 +56,12 @@ https://docs.docker.com/registry/garbage-collection/#/how-garbage-collection-wor
 
 Bearer token auth
 ==
-What is it and how it works see [docker documentation](https://docs.docker.com/registry/spec/auth/token/).
-Bow was tested to work with [cesanta/docker_auth](https://github.com/cesanta/docker_auth) in [this configuration](develop/devcompose.yml).
+What is it and how it works see [docker documentation](https://docs.docker.com/registry/spec/auth/token/).  
+Bow was tested to work with [cesanta/docker_auth](https://github.com/cesanta/docker_auth) in [this configuration](develop/devcompose.yml).  
 
 Prospects
 ==
 I can say that this app almost fit my needs, so in all likelihood, soon, I will not improve it hardly, but this is the list of ideas just for case:  
-- "update repos" button (not wait for sleep time)
 - info for whole repository: size, number of pushes so on so on soon
 
 How to start use Bow
@@ -80,9 +79,8 @@ How to start contribute to Bow
 If you have interest, you can easily start with
 ```
 git clone https://github.com/evedel/bow.git
-git clone https://github.com/fperucic/treant-js project/resources/treant-js
-cd bow
-docker-compose -f develop/devlinux.yml up -d
+cd bow && git clone https://github.com/fperucic/treant-js project/resources/treant-js
+docker-compose -f develop/devcompose.yml up -d
 docker exec -it develop_golang_1 go get
 docker exec -it develop_golang_1 go test -v qurl -repo='https://UsErNaMe:PaSsWoRd@myownregistry.org'
 docker exec -it develop_golang_1 go run main.go
