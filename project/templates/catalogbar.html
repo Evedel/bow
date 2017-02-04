@@ -5,9 +5,12 @@
       {{range $input.catalog }}
         {{ if $input.curname }}
           {{ if eq $input.curname . }}
-            <a class="chosen" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+            <a id="{{.}}" class="chosen" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+            <script>
+              document.getElementById("{{.}}").scrollIntoView({block: "end", behavior: "smooth"});
+            </script>
           {{else}}
-            <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+            <a id="{{.}}" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
           {{end}}
         {{else}}
           <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>

@@ -5,9 +5,12 @@
       {{ range $etag, $eupl := $input.tags }}
         {{ if $input.curtag }}
           {{ if eq $input.curtag $etag }}
-            <a class="chosen" href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+            <a id="{{$etag}}" class="chosen" href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+            <script>
+              document.getElementById("{{$etag}}").scrollIntoView({block: "end", behavior: "smooth"});
+            </script>
           {{ else }}
-            <a href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+            <a id="{{$etag}}" href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
           {{ end }}
         {{ else }}
           <a href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
