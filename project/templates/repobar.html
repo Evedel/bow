@@ -5,12 +5,15 @@
       {{ range $input.repos }}
         {{ if $input.reponame }}
           {{ if eq $input.reponame . }}
-            <a class="chosen" href="/info/{{.}}">[{{.}}]</a>
+            <a id="{{.}}" class="chosen" href="/info/{{.}}">[{{.}}]</a>
+            <script>
+              document.getElementById("{{.}}").scrollIntoView({block: "end", behavior: "smooth"});
+            </script>
           {{ else }}
-            <a href="/info/{{.}}">[{{.}}]</a>
+            <a id="{{.}}" href="/info/{{.}}">[{{.}}]</a>
           {{ end }}
         {{ else }}
-          <a href="/info/{{.}}">[{{.}}]</a>
+          <a id="{{.}}" href="/info/{{.}}">[{{.}}]</a>
         {{ end }}
       {{ end }}
     {{ else }}

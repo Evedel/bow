@@ -2,7 +2,14 @@ body{
   font-family: Courier;
   font-size: 12px;
   background-color: #222225;
-  overflow: hidden;
+  /*background:
+  radial-gradient(black 15%, transparent 20%) 0 0,
+  radial-gradient(black 15%, transparent 20%) 8px 8px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+  background-color:#222225;
+  background-size:16px 16px;
+  overflow: hidden;*/
 }
 .preload * {
   -webkit-transition: none !important;
@@ -246,7 +253,7 @@ table.historytable th{
 
 table.infotable {
   float: left;
-  width: 40%;
+  width: 60%;
   padding: 10px 10px;
 }
 table.infotable td{

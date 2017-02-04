@@ -1,6 +1,12 @@
+Build 22
+==
+(2017.02.04)
+- Fix: panic in parents search for commited images [issue #5](https://github.com/Evedel/bow/issues/5)
+- Autoscroll to chosen element
+
 Build 21
 ==
-(2016.12.18)
+(2016.12.23)
 - Added ugly button to force bow to update all info
 - DB refactoring finished
   - db.tag : deleted, created alias, added precreation of non-existed buckets for new tag

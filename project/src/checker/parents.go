@@ -21,6 +21,7 @@ func checkParents(runchannel chan int){
           tags := db.GetAllPairsFromBucket([]string{key, "catalog", keyn})
           for keyt, valuet := range tags {
             if (valuet == "") && (keyt[0:1] != "_"){
+              say.L1("CheckParents Daemon: check [" + key + "->" + keyn + ":" + keyt + "]")
               if _, ok := db.GetAllPairsFromBucket([]string{key, "catalog", keyn, keyt})["history"]; !ok {
                 db.PutBucketToBucket([]string{key, "catalog", keyn, keyt, "history"})
               }
@@ -34,18 +35,20 @@ func checkParents(runchannel chan int){
                   say.L3(err.Error())
                 } else {
                   tmpstr = ""
-                  for valji, valj := range ch.(map[string]interface{})["container_config"].(map[string]interface{})["Cmd"].([]interface{}) {
-                    if strings.Contains(valj.(string), " CMD ") ||
-                       strings.Contains(valj.(string), " WORKDIR ") ||
-                       strings.Contains(valj.(string), " ENTRYPOINT ") ||
-                       strings.Contains(valj.(string), " VOLUME ") ||
-                       strings.Contains(valj.(string), " EXPOSE "){
-                       tmpstr = ""
-                       break
-                    } else {
-                      tmpstr += valj.(string)
-                      if (valji < len(ch.(map[string]interface{})["container_config"].(map[string]interface{})["Cmd"].([]interface{}))-1) {
-                        tmpstr += " "
+                  if ch.(map[string]interface{})["container_config"].(map[string]interface{})["Cmd"] != nil {
+                    for valji, valj := range ch.(map[string]interface{})["container_config"].(map[string]interface{})["Cmd"].([]interface{}) {
+                      if strings.Contains(valj.(string), " CMD ") ||
+                         strings.Contains(valj.(string), " WORKDIR ") ||
+                         strings.Contains(valj.(string), " ENTRYPOINT ") ||
+                         strings.Contains(valj.(string), " VOLUME ") ||
+                         strings.Contains(valj.(string), " EXPOSE "){
+                         tmpstr = ""
+                         break
+                      } else {
+                        tmpstr += valj.(string)
+                        if (valji < len(ch.(map[string]interface{})["container_config"].(map[string]interface{})["Cmd"].([]interface{}))-1) {
+                          tmpstr += " "
+                        }
                       }
                     }
                   }

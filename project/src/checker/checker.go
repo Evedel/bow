@@ -29,7 +29,7 @@ func DaemonManager() {
 }
 
 func StartManual() {
-  say.L2("DaemonManager: Started all checker manually")
+  say.L2("DaemonManager: Started all checkers manually")
   go checkRepos(runchannel["repo"])
   go checkTags(runchannel["tags"])
   go checkManifests(runchannel["mnft"])
