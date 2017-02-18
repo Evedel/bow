@@ -2,12 +2,14 @@ package qurl
 
 import(
   "say"
+
   "strings"
   "strconv"
   "net/http"
   "io/ioutil"
   "crypto/tls"
   "encoding/json"
+  "encoding/base64"
 )
 
 func makequery(rqst *http.Request, secure bool) (body interface{}, header map[string][]string, status int){
@@ -61,32 +63,34 @@ func getbearertoken(wwwauth string, user string, pass string, secure bool) (toke
   idaddrs := strings.Index(splitted[0], "\"")
   idservc := strings.Index(splitted[1], "\"")
   idscope := strings.Index(splitted[2], "\"")
-  if (splitted[0][:idaddrs-1]=="Bearer realm") &&
-     (splitted[1][:idservc-1]=="service") &&
-     (splitted[2][:idscope-1]=="scope"){
+  if  (splitted[0][:idaddrs-1]=="Bearer realm") &&
+      (splitted[1][:idservc-1]=="service") &&
+      (splitted[2][:idscope-1]=="scope") {
 
-     addrs := splitted[0][idaddrs+1:len(splitted[0])-1]
-     servc := splitted[1][idservc+1:len(splitted[1])-1]
-     spaceinservice := strings.Index(servc, " ")
-     servc = servc[:spaceinservice] + "+" + servc[spaceinservice+1:]
-     scope := splitted[2][idscope+1:len(splitted[2])-1]
-     endofschemeinadress := strings.Index(addrs, "://")
-     addrs = addrs[:endofschemeinadress+3] + user + ":" + pass + "@" + addrs[endofschemeinadress+3:]
-     query = addrs + "?account=" + user + "&service=" + servc + "&scope=" + scope
-     if reqst, err := http.NewRequest("GET", query, nil); err != nil {
-       say.L3(err.Error())
-     } else {
-       body, _, c := makequery(reqst, secure)
-       if c == 200 {
-         token = body.(map[string]interface{})["token"].(string)
-         ok = true
-       }
-     }
-   } else {
-     say.L3("GetBearerToken: Registry sent wrong Www-Authenticate header.")
-     say.L3(wwwauth)
-   }
-   return
+    addrs := splitted[0][idaddrs+1:len(splitted[0])-1]
+    servc := splitted[1][idservc+1:len(splitted[1])-1]
+    spaceinservice := strings.Index(servc, " ")
+    servc = servc[:spaceinservice] + "+" + servc[spaceinservice+1:]
+    scope := splitted[2][idscope+1:len(splitted[2])-1]
+    query = addrs + "?account=" + user + "&service=" + servc + "&scope=" + scope
+    if reqst, err := http.NewRequest("GET", query, nil); err != nil {
+      say.L3("Qurl: getbearertoken: cannot create query")
+      say.L3(err.Error())
+    } else {
+      // + user + ":" + pass + "@" +
+      reqst.Header.Add("Authorization", "Basic " +
+                        base64.StdEncoding.EncodeToString([]byte(user + ":" + pass)))
+      body, _, c := makequery(reqst, secure)
+      if c == 200 {
+        token = body.(map[string]interface{})["token"].(string)
+        ok = true
+      }
+    }
+  } else {
+    say.L3("Qurl: GetBearerToken: Registry sent wrong Www-Authenticate header.")
+    say.L3(wwwauth)
+  }
+  return
 }
 
 func MakeQuery(query, method string, info, inhdrs map[string]string) (body interface{}, outhdrs map[string][]string, ok bool){
@@ -94,11 +98,13 @@ func MakeQuery(query, method string, info, inhdrs map[string]string) (body inter
   var c int
   secure := true
   if info["secure"] == "false" { secure = false}
-  tquery := info["scheme"] + "://" + info["user"] + ":" + info["pass"] + "@" + info["host"] + query
+  tquery := info["scheme"] + "://" + info["host"] + query
   if reqst, err := http.NewRequest(method, tquery, nil); err != nil {
+    say.L3("Qurl: MakeQuery: cannot create query")
     say.L3(err.Error())
-    return
   } else {
+    reqst.Header.Add("Authorization", "Basic " +
+                      base64.StdEncoding.EncodeToString([]byte(info["user"] + ":" + info["pass"])))
     for kh, vh := range inhdrs{
       reqst.Header.Set(kh, vh)
     }

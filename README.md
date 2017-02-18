@@ -47,7 +47,7 @@ docker run -d -p 5000:5000 --restart=always --name registry \
 2. Set up cron to run garbage collection  
 Example:  
 `10 * * * * docker exec registry bin/registry garbage-collect /etc/docker/registry/config.yml`  
-3. Also be aware, that there is a known [issue](https://github.com/docker/distribution/issues/1939) in docker registry 2.5.1 in earlier. It means, that if you delete an image from a repository, you will not able to push __the exactly same__ image in that repository. To fix it, you will need each time to perform rebuilding of image with `--no-cache` mode or restarting the registry `docker restart registry`.
+3. Also be aware, that there is a known [issue](https://github.com/docker/distribution/issues/1939) in docker registry 2.6.0 and earlier. It means, that if you delete an image from a repository, you will not able to push __the exactly same__ image in that repository. To fix it, you will need to perform rebuilding of image with `--no-cache` mode each time or restarting the registry `docker restart registry` once after deletion.
 
 See more:  
 https://github.com/docker/docker-registry/issues/988#issuecomment-224280919  
@@ -63,6 +63,8 @@ Prospects
 ==
 I can say that this app almost fit my needs, so in all likelihood, soon, I will not improve it hardly, but this is the list of ideas just for case:  
 - info for whole repository: size, number of pushes so on so on soon
+- add button 'Don't Track', to store repo data but not update it
+- add tests for bearer token and for image deletion
 
 How to start use Bow
 ==

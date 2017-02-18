@@ -15,16 +15,19 @@ token:  # Settings for the tokens.
 # Static user map.
 users:
   # Password is specified as a BCrypt hash. Use htpasswd -B to generate.
-  # admin:admin test:test
+  # admin:admin test:test badchar:examplepassword!%#$#$%
   "admin":
     password: "$2y$05$kUmTkns0WvC/e3euqya0G.PsVZlOpgDtGfy9Bjaf0caETBYv06l3y"
   "test":
     password: "$2y$05$vl9p1Z1nO/9QZLj3.dixiOaDJ0.d6uEpv7fJ1Jps0oiynYsyeiiTa"
-  "": {}  # Allow anonymous (no "docker login") access.
+  "badchar":
+    password: "$2y$05$8PEr9A45y3LmLxcmu0kUw.FGS1Sbo4AjLeFVj2AhSvkxsqd.XfGCO"
 
 acl:
   # Admin has full access to everything.
   - match: {account: "admin"}
+    actions: ["*"]
+  - match: {account: "badchar"}
     actions: ["*"]
   # User "test" has full access to ubuntu image but nothing else.
   - match: {account: "test", name: "ubuntu"}
