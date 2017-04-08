@@ -26,7 +26,7 @@ func Init()  {
     } else {
       Env["dbpath"] = "/var/lib/bow"
   }
-  os.Mkdir(Env["dbpath"], 0600)
+  os.Mkdir(Env["dbpath"], 0700)
   if val = os.Getenv("BS_DB_NAME"); val != "" {
       Env["dbname"] = val
     } else {

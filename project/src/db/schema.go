@@ -28,7 +28,7 @@ func GetSchemaFromPoint(path []string)(schema string){
     if b[len(path)] == nil {
       return errors.New("DB: GET SCHEMA: There is no such bucket [ " + path[len(path)-1] + " ]")
     }
-    schema = schema2json(build_schema_recursive(b[len(path)], "root"))
+    schema = schema2json(buildSchemaRecursive(b[len(path)], "root"))
     return nil
   }); err != nil {
     say.L3(err.Error())
@@ -36,12 +36,12 @@ func GetSchemaFromPoint(path []string)(schema string){
   say.L1("DB: GET SCHEMA: Done")
   return
 }
-func build_schema_recursive(b *bolt.Bucket, s string) (_sch Schema) {
+func buildSchemaRecursive(b *bolt.Bucket, s string) (_sch Schema) {
   _psc := make(map[string]Schema)
   _ = b.ForEach(func(k, v []byte) error {
     bk := b.Bucket([]byte(k))
     if (bk != nil) {
-      _psc[string(k)] = build_schema_recursive(bk, string(k))
+      _psc[string(k)] = buildSchemaRecursive(bk, string(k))
       return nil
     } else {
       _psc[string(k)] = Schema{ string(k), nil }

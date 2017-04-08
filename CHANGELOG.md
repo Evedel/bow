@@ -1,8 +1,14 @@
+Build 24
+==
+(2017.02.18)
+- Fix: Wrong permissions when creating /var/lib/bow/ as non-root user [issue #8](https://github.com/Evedel/bow/issues/8)
+- Rename smurf names in checker, underscore to camel in db/schema/recursive
+
 Build 23
 ==
 (2017.02.18)
 - Fix: Can't authenticate when using a password with percent symbol [issue #7](https://github.com/Evedel/bow/issues/7)
-- Fix: Actualized Tests 
+- Fix: Actualized Tests
 
 Build 22
 ==
