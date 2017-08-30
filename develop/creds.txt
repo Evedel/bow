@@ -1,0 +1,5 @@
+Token
+  admin:admin
+Basic
+  test:test
+  badchar:examplepassword!%#$#$%
