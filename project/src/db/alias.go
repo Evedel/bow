@@ -2,6 +2,7 @@ package db
 
 import(
   // "say"
+  "strings"
   "strconv"
 )
 
@@ -105,5 +106,31 @@ func AddCatalog(er string, catalog []string) {
   for _, enrp := range catalog {
     PutSimplePairToBucket([]string{ er, "catalog", enrp}, "_valid", "1")
     PutBucketToBucket([]string{ er, "catalog", enrp, "_uploads"})
+    if len(GetAllPairsFromBucket([]string{ er, "catalog", enrp, "_namepair" })) == 0 {
+      PutBucketToBucket([]string{ er, "catalog", enrp, "_namepair"})
+      idx := strings.Index(enrp, "/")
+      if idx != -1 {
+        PutSimplePairToBucket([]string{ er, "catalog", enrp, "_namepair"}, enrp[:idx], enrp[idx+1:])
+      } else {
+        PutSimplePairToBucket([]string{ er, "catalog", enrp, "_namepair"}, "_none", enrp)
+      }
+    }
   }
+}
+
+func GetCatalogStructure(er string) (catalog []map[string]string){
+  catalogdb := GetAllPairsFromBucket([]string{ er, "catalog"})
+  for en, _ := range catalogdb {
+    if valid := GetValueFromBucket([]string{ er, "catalog", en}, "_valid"); valid == "1" {
+      elem := make(map[string]string)
+      elem["fullname"] = en
+      np := GetAllPairsFromBucket([]string{ er, "catalog", en, "_namepair"})
+      for n, p := range np {
+        elem["namespace"] = n
+        elem["nameshort"] = p
+      }
+      catalog = append(catalog, elem)
+    }
+  }
+  return
 }

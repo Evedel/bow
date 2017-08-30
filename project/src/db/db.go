@@ -51,6 +51,8 @@ func Upgrade() (repeat bool){
       switch version{
       case "1":
         upto2()
+      case "2":
+        upto3()
       default:
         say.L2("DB: INIT: DB Upgrade: Actual version")
         repeat = false

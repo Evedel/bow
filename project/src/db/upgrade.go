@@ -4,7 +4,26 @@ import(
   "say"
   "utils"
   "strconv"
+  "strings"
 )
+
+func upto3(){
+  say.L2("DB: INIT: DB Upgrade: Need upgrade")
+  repos := GetRepos()
+  for er, _ := range repos {
+    names := GetAllPairsFromBucket([]string{er, "catalog"})
+    for en, _ := range names {
+      PutBucketToBucket([]string{ er, "catalog", en, "_namepair"})
+      idx := strings.Index(en, "/")
+      if idx != -1 {
+        PutSimplePairToBucket([]string{ er, "catalog", en, "_namepair"}, en[:idx], en[idx+1:])
+      } else {
+        PutSimplePairToBucket([]string{ er, "catalog", en, "_namepair"}, "_none", en)
+      }
+    }
+  }
+  PutSimplePairToBucket([]string{"_info"}, "version", "3")
+}
 
 func upto2(){
   say.L2("DB: INIT: DB Upgrade: Need upgrade")

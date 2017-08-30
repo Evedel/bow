@@ -39,6 +39,7 @@ func DeleteBucket(path []string) {
   }
   say.L1("DB: DELETE BUCKET: Done")
 }
+
 func DeleteKey(path []string, key string ) {
   b := make([]*bolt.Bucket, len(path)+1)
   pathstr := ""
