@@ -4,7 +4,7 @@ import(
   "dt"
   "db"
   "say"
-  
+
   "time"
   "utils"
   "strings"
@@ -106,30 +106,37 @@ func FindParent(childcmd []string, repo string, namei string, tagi string) (name
   maxlayers := 0
   for kn, _ := range names {
     if strings.Split(kn, ":")[0] != namei {
+      // cmd := map[datetime_of_push]commands_in_manifest
       cmd := db.GetAllPairsFromBucket([]string{repo, "_names", kn})
       for _, vc := range cmd {
         var parentcmd interface{}
-        if err := json.Unmarshal([]byte(vc), &parentcmd); err == nil {
+        if err := json.Unmarshal([]byte(vc), &parentcmd); err != nil {
+          say.L3(err.Error())
+          // return -- don't shure why it was return
+          // if one of cmd broken, we can skeap only this exact comand
+          break
+        } else {
           initParentLen := len(parentcmd.([]interface{}))
-          if initParentLen != 0 {
-            for _, eccmd := range childcmd {
-              for ipcmd, epcmd := range parentcmd.([]interface{}) {
-                if epcmd == eccmd {
-                  parentcmd = append(parentcmd.([]interface{})[:ipcmd], parentcmd.([]interface{})[ipcmd+1:]...)
-                  break
+          if (maxlayers <= initParentLen) {
+            // already has better parent
+            if initParentLen != 0 {
+              for _, eccmd := range childcmd {
+                for ipcmd, epcmd := range parentcmd.([]interface{}) {
+                  if epcmd == eccmd {
+                    parentcmd = append(parentcmd.([]interface{})[:ipcmd], parentcmd.([]interface{})[ipcmd+1:]...)
+                    break
+                  }
+                }
+              }
+              if len(parentcmd.([]interface{})) == 0 {
+                if (maxlayers < initParentLen) && (len(childcmd) != initParentLen) {
+                                               // else it has same length and layers => it is exact copy
+                  maxlayers = initParentLen
+                  maxname = kn
                 }
               }
             }
-            if len(parentcmd.([]interface{})) == 0 {
-              if maxlayers < initParentLen {
-                maxlayers = initParentLen
-                maxname = kn
-              }
-            }
           }
-        } else {
-          say.L3(err.Error())
-          return
         }
       }
     }
@@ -161,8 +168,7 @@ func BuildParentsGraph(repo string){
 
   Depth := 0
   Base := [][]string{}
-  L0 := []string{repo, "_namesgraph"}
-  Base = append(Base, L0)
+  Base = append(Base, []string{repo, "_namesgraph"})
   db.PutBucketToBucket(Base[0])
 
   for (len(fullnames) > 0) && (Depth < 100) {
