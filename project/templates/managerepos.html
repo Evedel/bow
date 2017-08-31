@@ -65,7 +65,7 @@
                           <input type="radio" name="scheme" value="https">https
                         {{ end }}
                         <br>
-
+          {{ if $input.chosen.secure }}
           Secure repo:  {{ if eq $input.chosen.secure "true"}}
                           <input type="checkbox" name="secure" value="true" checked>
                         {{else}}
@@ -73,6 +73,7 @@
                         {{end}}
            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           (Leave unchecked if your repo and/or auth server is insecure/use self-signed certs)<br>
+          {{end}}
           Repo addr:&nbsp;&nbsp; <input type="text" name="host" value="{{ $input.chosen.host }}"> (Hostname or ip:port of repo)<br>
           Username:&nbsp;&nbsp;&nbsp; <input type="text" name="user" value="{{ $input.chosen.user }}"> (Username to connect to Repo, mandatory field)<br>
           Password:&nbsp;&nbsp;&nbsp; <input type="text" name="pass" value="{{ $input.chosen.pass }}"> (Password to connect to Repo, mandatory field)<br>

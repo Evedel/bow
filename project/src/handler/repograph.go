@@ -1,34 +1,56 @@
 package handler
 
 import(
+  "dt"
   "db"
   "say"
   "utils"
 
+  "time"
   "sort"
   "net/url"
   "net/http"
 )
 
 func RepoGraph(w http.ResponseWriter, r *http.Request){
+  defer dt.Watch(time.Now(), "Graph Handler")
+
 	if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
 		say.L3(err.Error())
 	} else {
-		if v["reponame"] != nil {
-			irepos := make(map[string]interface{})
+    irepos := make(map[string]interface{})
+    headerdata := make(map[string]string)
+    repos := utils.Keys(db.GetRepos())
+    sort.Strings(repos)
+    irepos["repos"] = repos
+    irepos["action"] = "graph"
+
+    headerdata["header"] = ""
+    headerdata["currepo"] = ""
+    irepos["curname"] = ""
+
+    irepos["headerdata"] = headerdata
+
+		if v["reponame"] == nil {
+      say.L3("Name of repository not set in repograpHandler")
+    } else {
 			if v["reponame"][0] != "" {
-				irepos["graphdata"] = db.GetSchemaFromPoint([]string{v["reponame"][0], "_namesgraph"})
+
+        irepos["reponame"] = v["reponame"][0]
+
+				irepos["graphdata"] = db.GetSchemaFromPoint([]string{irepos["reponame"].(string), "_namesgraph"})
 
 				headerdata := make(map[string]string)
-				headerdata["header"] = v["reponame"][0] + " : " + db.GetRepoPretty(v["reponame"][0])["host"]
-				headerdata["currepo"] = v["reponame"][0]
+				headerdata["header"] = irepos["reponame"].(string) + " : " +
+          db.GetRepoPretty(irepos["reponame"].(string))["host"]
+				headerdata["currepo"] = irepos["reponame"].(string)
 				irepos["headerdata"] = headerdata
 
 				irepos["repodata"] = make(map[string]interface{})
         repos := utils.Keys(db.GetRepos())
         sort.Strings(repos)
 				irepos["repodata"].(map[string]interface{})["catalog"] = repos
-				irepos["repodata"].(map[string]interface{})["curname"] = v["reponame"][0]
+				irepos["repodata"].(map[string]interface{})["curname"] = irepos["reponame"].(string)
 			} else {
 				irepos["graphdata"] = ""
 
@@ -41,11 +63,7 @@ func RepoGraph(w http.ResponseWriter, r *http.Request){
 				irepos["repodata"].(map[string]interface{})["catalog"] = utils.Keys(db.GetRepos())
 				irepos["repodata"].(map[string]interface{})["curname"] = ""
 			}
-
-			irepos["action"] = "graph"
-			renderTemplate(w, "repograph", irepos)
-		} else {
-			say.L3("Name of repository not set in repograpHandler")
 		}
+    renderTemplate(w, "repograph", irepos)
 	}
 }

@@ -127,21 +127,6 @@ div p {
   transition-delay: 0.01s;
 }
 
-div.sidebar{
-  width: 10%;
-  height: 90%;
-  padding: 5px 0px;
-  float: left;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-div.tagbar{
-  width: 10%;
-  height: 90%;
-  padding: 5px 0px;
-  float: left;
-  overflow-y: auto;
-}
 div.emptyrepos{
   position: relative;
   width: 100%;
@@ -164,10 +149,9 @@ div.managerepos a:hover, div.managerepos a:active{
   color: black;
 }
 div.manifestbar{
-  width: 70%;
+  width: 61%;
   height: 90%;
-  float: left;
-  padding: 5px 0px;
+  display: inline-block;
 }
 div.content{
   border: solid 1px white;
@@ -286,4 +270,35 @@ a.danger:hover, a.danger:active{
   float: left;
   width: 50%;
   height: 60%;
+}
+
+div.sidebar{
+  width: 9%;
+  height: 90%;
+  display: inline-block;
+}
+
+p.filtername{
+  float: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
+  background-color: #FFFFFF;
+  color: black;
+  padding: 10px 0px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  border: solid 1px white;
+}
+
+div.sidebar div.label{
+  height: 10%;
+}
+
+div.sidebar div.links{
+  height: 90%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

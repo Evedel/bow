@@ -9,11 +9,6 @@ import (
 
 var DB *bolt.DB
 
-type Schema struct {
-  Key string
-  Children map[string]Schema
-}
-
 func Init(){
   say.L2("DB: INIT: Start")
   var err error

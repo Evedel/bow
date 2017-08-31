@@ -1,21 +1,26 @@
 {{ define "tagbar" }}
 {{ $input := . }}
   {{ if $input.tags }}
-  <div class="tagbar">
+  <div class="sidebar">
+    <div class="label">
+      <p class="filtername">[ Tags ]</p>
+    </div>
+    <div class="links">
       {{ range $etag, $eupl := $input.tags }}
         {{ if $input.curtag }}
           {{ if eq $input.curtag $etag }}
-            <a id="{{$etag}}" class="chosen" href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+            <a id="{{$etag}}" class="chosen" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
             <script>
               document.getElementById("{{$etag}}").scrollIntoView({block: "end", behavior: "smooth"});
             </script>
           {{ else }}
-            <a id="{{$etag}}" href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+            <a id="{{$etag}}" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
           {{ end }}
         {{ else }}
-          <a href="/info/{{$input.reponame}}?curname={{$input.curname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+          <a href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
         {{ end }}
       {{ end }}
+    </div>
   </div>
   {{ end }}
 {{ end }}

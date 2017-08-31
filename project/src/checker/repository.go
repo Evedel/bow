@@ -1,14 +1,19 @@
 package checker
 
 import(
+  "dt"
   "db"
   "say"
   "qurl"
   "utils"
+
+  "time"
   "strings"
 )
 
 func checkRepos(runchannel chan int){
+  defer dt.Watch(time.Now(), "Check Repositories Demon")
+
   runchannel <- 1
   say.L1("CheckRepos Daemon: started work")
   repos := db.GetRepos()
@@ -51,7 +56,7 @@ func checkRepos(runchannel chan int){
         say.L3("CheckRepos Daemon: cannot recieve response from registry, stopping work")
       }
     }
-    
+
     dbcatalog := db.GetCatalog(e)
     if utils.IsSliceDifferent(dbcatalog, arrstr) {
       db.AddCatalog(e, arrstr)

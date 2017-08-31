@@ -16,6 +16,11 @@ func Init()  {
     } else {
       Env["log_silent"] = "no"
   }
+  if val = os.Getenv("BS_TIME_WATCH"); val != "" {
+      Env["timewatch"] = val
+    } else {
+      Env["timewatch"] = "no"
+  }
   if val = os.Getenv("BS_SERVE_ADD"); val != "" {
       Env["servadd"] = val
     } else {

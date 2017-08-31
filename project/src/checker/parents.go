@@ -1,8 +1,10 @@
 package checker
 
 import(
+  "dt"
   "db"
   "say"
+  
   "time"
   "utils"
   "strings"
@@ -10,6 +12,8 @@ import(
 )
 
 func checkParents(runchannel chan int){
+  defer dt.Watch(time.Now(), "Check Parents Demon")
+
   runchannel <- 1
   say.L1("CheckParents Daemon: started work")
   repos := db.GetRepos()

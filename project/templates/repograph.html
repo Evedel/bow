@@ -13,20 +13,11 @@
       <link rel="stylesheet" type="text/css" href="/resources/map.css">
     </head>
     <body>
+      <!-- <p class="filtername">
+        {{$input}}
+      </p> -->
       {{ template "topbar" $input }}
-      <div class="sidebar">
-        {{range $input.repodata.catalog }}
-          {{ if $input.repodata.curname }}
-            {{ if eq $input.repodata.curname . }}
-              <a class="chosen" href="/repograph?reponame={{.}}">[{{.}}]</a>
-            {{else}}
-              <a href="/repograph?reponame={{.}}">[{{.}}]</a>
-            {{end}}
-          {{else}}
-            <a href="/repograph?reponame={{.}}">[{{.}}]</a>
-          {{ end }}
-        {{end}}
-      </div>
+      {{ template "repobar" $input }}
       <div id="parents-tree"></div>
       <script>
         var simple_chart_config = {
@@ -57,7 +48,7 @@
         //     var clicktext = evt.target.innerText;
         //     var name = clicktext.split(":")[0];
         //     var teg = clicktext.split(":")[1];
-        //     var url = "/info/{{$input.repodata.curname}}?curname=" + name + "&curtag=" + teg;
+        //     var url = "/info?reponame={{$input.repodata.curname}}&curname=" + name + "&curtag=" + teg;
         //     window.location.href = url;
         //   });
         // $("#parents-tree").hover(

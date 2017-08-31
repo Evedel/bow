@@ -8,12 +8,13 @@
     {{ if eq $input.action "repos" }}
       <a class="chosen" href="/">Repos</a>
     {{ else }}
-      <a href="/info/{{$input.headerdata.currepo}}">Repos</a>
+      <a href="/info?reponame={{$input.headerdata.currepo}}">Repos</a>
     {{ end }}
+
     {{ if eq $input.action "graph" }}
-      <a class="chosen" href="/repograph?reponame={{ $input.reponame }}">Graph</a>
+      <a class="chosen" href="/graph?reponame={{ $input.reponame }}">Graph</a>
     {{ else }}
-      <a href="/repograph?reponame={{ $input.reponame }}">Graph</a>
+      <a href="/graph?reponame={{ $input.reponame }}">Graph</a>
     {{ end }}
 
     {{ if eq $input.action "conf" }}

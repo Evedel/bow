@@ -6,6 +6,11 @@ import (
   "github.com/boltdb/bolt"
 )
 
+type Schema struct {
+  Key string
+  Children map[string]Schema
+}
+
 func GetSchemaFromPoint(path []string)(schema string){
   b := []*bolt.Bucket{}
   pathstr := ""
@@ -36,6 +41,7 @@ func GetSchemaFromPoint(path []string)(schema string){
   say.L1("DB: GET SCHEMA: Done")
   return
 }
+
 func buildSchemaRecursive(b *bolt.Bucket, s string) (_sch Schema) {
   _psc := make(map[string]Schema)
   _ = b.ForEach(func(k, v []byte) error {
@@ -52,6 +58,7 @@ func buildSchemaRecursive(b *bolt.Bucket, s string) (_sch Schema) {
   _sch = Schema{s, _psc}
   return
 }
+
 func schema2json(schema Schema) (json string) {
   cnum := len(schema.Children)
   if cnum == 0 {

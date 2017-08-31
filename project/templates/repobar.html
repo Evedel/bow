@@ -1,25 +1,30 @@
 {{ define "repobar" }}
 {{ $input := . }}
   <div class="sidebar">
+    <div class="label">
+      <p class="filtername">[ Repo Name ]</p>
+    </div>
+    <div class="links">
     {{ if $input.repos }}
       {{ range $input.repos }}
         {{ if $input.reponame }}
           {{ if eq $input.reponame . }}
-            <a id="{{.}}" class="chosen" href="/info/{{.}}">[{{.}}]</a>
+            <a id="{{.}}" class="chosen" href="/{{$input.action}}?reponame={{.}}">[{{.}}]</a>
             <script>
               document.getElementById("{{.}}").scrollIntoView({block: "end", behavior: "smooth"});
             </script>
           {{ else }}
-            <a id="{{.}}" href="/info/{{.}}">[{{.}}]</a>
+            <a id="{{.}}" href="/{{$input.action}}?reponame={{.}}">[{{.}}]</a>
           {{ end }}
         {{ else }}
-          <a id="{{.}}" href="/info/{{.}}">[{{.}}]</a>
+          <a id="{{.}}" href="/{{$input.action}}?reponame={{.}}">[{{.}}]</a>
         {{ end }}
       {{ end }}
     {{ else }}
-    <div class="emptyrepos">
-      <p>Sorry, you have no added repos</p>
-    </div>
+      <div class="emptyrepos">
+        <p>Sorry, you have no added repos</p>
+      </div>
     {{ end }}
+    </div>
   </div>
 {{ end }}

@@ -1,21 +1,49 @@
 {{ define "catalogbar" }}
   {{ $input := . }}
-  {{ if $input.catalog }}
-    <div class="sidebar">
-      {{range $input.catalog }}
-        {{ if $input.curname }}
-          {{ if eq $input.curname . }}
-            <a id="{{.}}" class="chosen" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+  {{ if $input.namespaces }}
+  <div class="sidebar">
+    <div class="label">
+      <p class="filtername">[ Namespace ]</p>
+    </div>
+    <div class="links">
+      {{range $input.namespaces }}
+        {{ if $input.curnamespace }}
+          {{ if eq $input.curnamespace . }}
+            <a id="{{.}}" class="chosen" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{.}}">[{{.}}]</a>
             <script>
               document.getElementById("{{.}}").scrollIntoView({block: "end", behavior: "smooth"});
             </script>
-          {{else}}
-            <a id="{{.}}" href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
-          {{end}}
-        {{else}}
-          <a href="/info/{{$input.reponame}}?curname={{.}}">[{{.}}]</a>
+          {{ else }}
+            <a id="{{.}}" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{.}}">[{{.}}]</a>
+          {{ end }}
+        {{ else }}
+          <a id="{{.}}" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{.}}">[{{.}}]</a>
         {{ end }}
       {{end}}
     </div>
+  </div>
+  <div class="sidebar">
+    <div class="label">
+      <p class="filtername">[ Image ]</p>
+    </div>
+    {{ if $input.shortnames }}
+      <div class="links">
+        {{range $input.shortnames }}
+          {{ if $input.curshortname }}
+            {{ if eq $input.curshortname . }}
+              <a id="{{.}}" class="chosen" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{.}}">[{{.}}]</a>
+              <script>
+                document.getElementById("{{.}}").scrollIntoView({block: "end", behavior: "smooth"});
+              </script>
+            {{ else }}
+              <a id="{{.}}" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{.}}">[{{.}}]</a>
+            {{ end }}
+          {{ else }}
+            <a id="{{.}}" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{.}}">[{{.}}]</a>
+          {{ end }}
+        {{end}}
+      </div>
+    {{ end }}
+  </div>
   {{ end }}
 {{ end }}
