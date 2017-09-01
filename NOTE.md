@@ -1,6 +1,6 @@
 __BS_LOG_SILENT__ -- level of output logging  
 nothing - ful logging, default  
-`yes`   - only error mesages  
+`yes`   - only error and warn mesages  
 `super` - without any output  
 
 __BS_DB_PATH__ -- path to store your db  
@@ -15,6 +15,10 @@ __BS_SERVE_ADD__ -- port to serve
 __BS_CHECKER_TIMEOUT__ -- timeout for daemons tictac in seconds  
   `300` -- default time to renew data
 
+__BS_TIME_WATCH__ -- timewatch for daemons and handlers  
+  `yes` - print time of execution in log (level2)  
+
+
 BoltDB levels
 ```
 {DB} --{ _info } => [ version:V ]
@@ -26,8 +30,8 @@ BoltDB levels
  (brc){catalog}     '--{ _namesgraph }                                 :
           \                                                            :
  (brcn){imagename[N]}--*--[ _valid => 0 || 1 ]                         :
-            \           \                                              :
-             \           \- { _uploads }---[ date => count ]           :
+            \           \-{ _namepair }-[namespace : name]             :
+             \           \-{ _uploads }---[ date => count ]            :
               \                                                        :
       (brcnt){tags}--*                                                 :
                       \                                                :
