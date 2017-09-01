@@ -2,7 +2,10 @@ package db
 
 import (
   "say"
+
   "errors"
+  "strings"
+
   "github.com/boltdb/bolt"
 )
 
@@ -11,7 +14,7 @@ type Schema struct {
   Children map[string]Schema
 }
 
-func GetSchemaFromPoint(path []string)(schema string){
+func GetSchemaFromPoint(path []string, filter string)(schema Schema){
   b := []*bolt.Bucket{}
   pathstr := ""
   if len(path) > 0 {
@@ -33,7 +36,7 @@ func GetSchemaFromPoint(path []string)(schema string){
     if b[len(path)] == nil {
       return errors.New("DB: GET SCHEMA: There is no such bucket [ " + path[len(path)-1] + " ]")
     }
-    schema = schema2json(buildSchemaRecursive(b[len(path)], "root"))
+    schema, _ = buildSchemaRecursive(b[len(path)], "root", filter, false)
     return nil
   }); err != nil {
     say.L3(err.Error())
@@ -42,15 +45,24 @@ func GetSchemaFromPoint(path []string)(schema string){
   return
 }
 
-func buildSchemaRecursive(b *bolt.Bucket, s string) (_sch Schema) {
+func buildSchemaRecursive(b *bolt.Bucket, s string, f string, b0 bool) (_sch Schema, bi bool) {
+  bl := false
+  if (f == "") || (b0) {
+    bl = true
+  } else {
+    bl = strings.Contains(s, f)
+    bi = bl
+  }
+
   _psc := make(map[string]Schema)
   _ = b.ForEach(func(k, v []byte) error {
     bk := b.Bucket([]byte(k))
     if (bk != nil) {
-      _psc[string(k)] = buildSchemaRecursive(bk, string(k))
-      return nil
-    } else {
-      _psc[string(k)] = Schema{ string(k), nil }
+      schtmp, bn := buildSchemaRecursive(bk, string(k), f, bl)
+      if bl || bn {
+        _psc[string(k)] = schtmp
+        bi = true
+      }
       return nil
     }
     return nil
@@ -59,7 +71,7 @@ func buildSchemaRecursive(b *bolt.Bucket, s string) (_sch Schema) {
   return
 }
 
-func schema2json(schema Schema) (json string) {
+func Schema2json(schema Schema) (json string) {
   cnum := len(schema.Children)
   if cnum == 0 {
     json = "{\"text\":{\"name\":\"" + schema.Key + "\"}}"
@@ -68,7 +80,7 @@ func schema2json(schema Schema) (json string) {
     iter := 0
     for k, _ := range schema.Children {
       iter++
-      json += schema2json(schema.Children[k])
+      json += Schema2json(schema.Children[k])
       if iter < cnum {
         json += ","
       }

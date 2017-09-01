@@ -5,7 +5,7 @@
       <p>{{ $input.headerdata.header }}</p>
     {{ end }}
 
-    {{ if eq $input.action "repos" }}
+    {{ if eq $input.action "info" }}
       <a class="chosen" href="/">Repos</a>
     {{ else }}
       <a href="/info?reponame={{$input.headerdata.currepo}}">Repos</a>

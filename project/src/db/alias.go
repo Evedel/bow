@@ -1,7 +1,7 @@
 package db
 
 import(
-  // "say"
+  "say"
   "strings"
   "strconv"
 )
@@ -17,6 +17,7 @@ func GetRepoPretty(repo string) (pretty map[string]string){
 }
 
 func CreateRepo(params map[string][]string) {
+  say.L1("DB: Created new repo")
   name := params["name"][0]
   PutSimplePairToBucket([]string{name, "_info"}, "host", params["host"][0])
   PutSimplePairToBucket([]string{name, "_info"}, "pass", params["pass"][0])
@@ -61,6 +62,7 @@ func GetTags( er, en string) (tags []string){
   tagsdb := GetAllPairsFromBucket([]string{ er, "catalog", en})
   delete(tagsdb, "_valid")
   delete(tagsdb, "_uploads")
+  delete(tagsdb, "_namepair")
   for et, _ := range tagsdb {
     if valid := GetValueFromBucket([]string{ er, "catalog", en, et}, "_valid"); valid == "1" {
       tags = append(tags, et)
@@ -73,6 +75,7 @@ func AddTags( er, en string, tags []string){
   tagsdb := GetAllPairsFromBucket([]string{ er, "catalog", en})
   delete(tagsdb, "_valid")
   delete(tagsdb, "_uploads")
+  delete(tagsdb, "_namepair")
   for etdb, _ := range tagsdb {
     PutSimplePairToBucket([]string{ er, "catalog", en, etdb}, "_valid", "0")
   }
@@ -106,6 +109,7 @@ func AddCatalog(er string, catalog []string) {
   for _, enrp := range catalog {
     PutSimplePairToBucket([]string{ er, "catalog", enrp}, "_valid", "1")
     PutBucketToBucket([]string{ er, "catalog", enrp, "_uploads"})
+    PutBucketToBucket([]string{ er, "catalog", enrp, "_namepair"})
     if len(GetAllPairsFromBucket([]string{ er, "catalog", enrp, "_namepair" })) == 0 {
       PutBucketToBucket([]string{ er, "catalog", enrp, "_namepair"})
       idx := strings.Index(enrp, "/")

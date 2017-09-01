@@ -9,15 +9,19 @@
       {{ range $etag, $eupl := $input.tags }}
         {{ if $input.curtag }}
           {{ if eq $input.curtag $etag }}
-            <a id="{{$etag}}" class="chosen" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+            <a id="{{$etag}}" class="chosen"
+              href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">
+              [{{$etag}}] {{ if $eupl }} ({{$eupl}}) {{ end }} </a>
             <script>
               document.getElementById("{{$etag}}").scrollIntoView({block: "end", behavior: "smooth"});
             </script>
           {{ else }}
-            <a id="{{$etag}}" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+            <a id="{{$etag}}" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">
+              [{{$etag}}]{{ if $eupl }} ({{$eupl}}) {{ end }}</a>
           {{ end }}
         {{ else }}
-          <a href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">[{{$etag}}] ({{$eupl}})</a>
+          <a href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.curnamespace}}&curshortname={{$input.curshortname}}&curtag={{$etag}}">
+            [{{$etag}}]{{ if $eupl }} ({{$eupl}}) {{ end }}</a>
         {{ end }}
       {{ end }}
     </div>

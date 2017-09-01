@@ -18,6 +18,8 @@
       </p> -->
       {{ template "topbar" $input }}
       {{ template "repobar" $input }}
+      {{ template "catalogbar" $input }}
+      {{ template "tagbar" $input }}
       <div id="parents-tree"></div>
       <script>
         var simple_chart_config = {
@@ -25,7 +27,7 @@
             rootOrientation: "WEST",
             container: "#parents-tree",
             animateOnInit: false,
-            hideRootNode: true,
+            hideRootNode: false,
             nodeAlign: "BOTTOM",
             connectors: {
               type: "bCurve",
@@ -38,6 +40,9 @@
               nodeSpeed: 1000,
               connectorsAnimation: "easeInQuad",
               connectorsSpeed: 1500
+            },
+            node: {
+              collapsable: false
             }
           },
         	nodeStructure: JSON.parse({{ $input.graphdata }})

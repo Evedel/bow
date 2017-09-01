@@ -16,7 +16,7 @@ import(
 
 func Info(w http.ResponseWriter, r *http.Request){
   defer dt.Watch(time.Now(), "Info Handler")
-  
+
 	irepos := make(map[string]interface{})
 	headerdata := make(map[string]string)
 	repos := utils.Keys(db.GetRepos())
@@ -40,16 +40,18 @@ func Info(w http.ResponseWriter, r *http.Request){
     		irepos["curname"] = irepos["reponame"].(string)
 
         namesStructure := db.GetCatalogStructure(irepos["reponame"].(string))
-        sort.Slice(namesStructure, func(i, j int) bool {
-          return namesStructure[i]["fullname"] < namesStructure[j]["fullname"]
-        })
         nsarr := []string{}
-        nslast := namesStructure[0]["namespace"]
-        nsarr = append(nsarr, nslast)
-        for _, e := range namesStructure {
-          if nslast != e["namespace"] {
-            nsarr = append(nsarr, e["namespace"])
-            nslast = e["namespace"]
+        if (len(namesStructure) > 0) {
+          sort.Slice(namesStructure, func(i, j int) bool {
+            return namesStructure[i]["fullname"] < namesStructure[j]["fullname"]
+          })
+          nslast := namesStructure[0]["namespace"]
+          nsarr = append(nsarr, nslast)
+          for _, e := range namesStructure {
+            if nslast != e["namespace"] {
+              nsarr = append(nsarr, e["namespace"])
+              nslast = e["namespace"]
+            }
           }
         }
         irepos["namespaces"] = nsarr
@@ -67,7 +69,11 @@ func Info(w http.ResponseWriter, r *http.Request){
 
           if v["curshortname"] != nil {
             irepos["curshortname"] = v["curshortname"][0]
-            irepos["curname"] = irepos["curnamespace"].(string) + "/" + irepos["curshortname"].(string)
+            if irepos["curnamespace"].(string) == "_none" {
+              irepos["curname"] = irepos["curshortname"].(string)
+            } else {
+              irepos["curname"] = irepos["curnamespace"].(string) + "/" + irepos["curshortname"].(string)
+            }
 
             tags := db.GetTags(irepos["reponame"].(string), irepos["curname"].(string))
             sort.Strings(tags)

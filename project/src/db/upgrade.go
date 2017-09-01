@@ -13,12 +13,14 @@ func upto3(){
   for er, _ := range repos {
     names := GetAllPairsFromBucket([]string{er, "catalog"})
     for en, _ := range names {
-      PutBucketToBucket([]string{ er, "catalog", en, "_namepair"})
-      idx := strings.Index(en, "/")
-      if idx != -1 {
-        PutSimplePairToBucket([]string{ er, "catalog", en, "_namepair"}, en[:idx], en[idx+1:])
-      } else {
-        PutSimplePairToBucket([]string{ er, "catalog", en, "_namepair"}, "_none", en)
+      if en != "_valid" {
+        PutBucketToBucket([]string{ er, "catalog", en, "_namepair"})
+        idx := strings.Index(en, "/")
+        if idx != -1 {
+          PutSimplePairToBucket([]string{ er, "catalog", en, "_namepair"}, en[:idx], en[idx+1:])
+        } else {
+          PutSimplePairToBucket([]string{ er, "catalog", en, "_namepair"}, "_none", en)
+        }
       }
     }
   }
