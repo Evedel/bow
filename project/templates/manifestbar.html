@@ -45,7 +45,8 @@
                 <tr>
                   <td>Parent Image</td>
                   {{ if $input.parent.name }}
-                  <td><a class="namelink" href="/info/{{$input.reponame}}?curname={{ $input.parent.name }}&curtag={{ $input.parent.tag }}">
+                  <td>
+                    <a class="namelink" href="/{{$input.action}}?reponame={{$input.reponame}}&curnamespace={{$input.parent.namespace}}&curshortname={{$input.parent.shortname}}&curtag={{ $input.parent.tag }}">
                     {{ $input.parent.name }}:{{ $input.parent.tag }}
                   </a></td>
                   {{ else }}

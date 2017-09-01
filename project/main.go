@@ -18,10 +18,10 @@ func main() {
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
 
 	http.HandleFunc("/managerepos/", handler.ManageRepos)
-	http.HandleFunc("/info/", handler.Info)
+	http.HandleFunc("/info", handler.Info)
 	http.HandleFunc("/upgrade/", handler.UpgradeDB)
 	http.HandleFunc("/delete", handler.DeleteImage)
-	http.HandleFunc("/repograph", handler.RepoGraph)
+	http.HandleFunc("/graph", handler.RepoGraph)
 	http.HandleFunc("/update", handler.UpdateAll)
 	http.HandleFunc("/", handler.Main)
 

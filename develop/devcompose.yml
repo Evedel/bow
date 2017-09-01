@@ -3,7 +3,7 @@ services:
 
   golang:
     build: ./golang/
-    image: golang-1.6:4
+    image: golang-1.9
     volumes:
       - ../project:/app
       - ../:/var/lib/bow
@@ -16,6 +16,8 @@ services:
       - SYS_ADMIN
     environment:
       - GOPATH=/app
+      - GOROOT=/usr/local/go
+      - PATH=$GOPATH/bin:$GOROOT/bin:$PATH
     command: sleep 90000000
 
   dockerauth:

@@ -1,6 +1,7 @@
 package checker
 
 import(
+  "dt"
   "db"
   "say"
   "qurl"
@@ -13,6 +14,8 @@ import(
 )
 
 func checkManifests(runchannel chan int){
+  defer dt.Watch(time.Now(), "Check Manifest Demon")
+
   runchannel <- 1
   say.L1("CheckManifests Daemon: started work")
   repos := db.GetRepos()

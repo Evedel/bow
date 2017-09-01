@@ -22,7 +22,7 @@ func DeleteImage(w http.ResponseWriter, r *http.Request){
       if _, _, ok := qurl.MakeQuery(query, "DELETE", db.GetRepoPretty(v["reponame"][0]), inhdr); ok {
 				db.PutSimplePairToBucket([]string{ v["reponame"][0], "catalog", v["curname"][0], v["curtag"][0]}, "_valid", "0")
 				go checker.RunCheckTags()
-				http.Redirect(w, r, "/info/" + v["reponame"][0] + "?curname=" + v["curname"][0], 307)
+				http.Redirect(w, r, "/info?reponame=" + v["reponame"][0] + "&curname=" + v["curname"][0], 307)
 			}
 		} else {
 			say.L3("Something wrong with args in deleteHandler")

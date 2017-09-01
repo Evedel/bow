@@ -1,3 +1,14 @@
+Build 25
+==
+(2017.08.30)
+
+- Add: namespace level [issue #9](https://github.com/Evedel/bow/issues/9)
+- Add: filters on graph page [issue #9](https://github.com/Evedel/bow/issues/9)
+- Fix: list not only [first 100](https://github.com/docker/distribution/blob/b6e0cfbdaa1ddc3a17c95142c7bf6e42c5567370/registry/handlers/catalog.go#L16) but all of the images [issue #9](https://github.com/Evedel/bow/issues/9)
+- Add: timewatch for handlers and daemons
+- Add: script to fill test repo
+- Fix: loops brake parentgraph when there were copies in repo
+
 Build 24
 ==
 (2017.02.18)
@@ -8,12 +19,12 @@ Build 23
 ==
 (2017.02.18)
 - Fix: Can't authenticate when using a password with percent symbol [issue #7](https://github.com/Evedel/bow/issues/7)
-- Fix: Actualized Tests
+- Fix: Actualised Tests
 
 Build 22
 ==
 (2017.02.04)
-- Fix: panic in parents search for commited images [issue #5](https://github.com/Evedel/bow/issues/5)
+- Fix: panic in parents search for committed images [issue #5](https://github.com/Evedel/bow/issues/5)
 - Autoscroll to chosen element
 
 Build 21

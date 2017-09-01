@@ -1,13 +1,18 @@
 package checker
 
 import(
+  "dt"
   "db"
   "say"
   "qurl"
   "utils"
+
+  "time"
 )
 
 func checkTags(runchannel chan int){
+  defer dt.Watch(time.Now(), "Check Tags Demon")
+
   runchannel <- 1
   say.L1("CheckTags Daemon: started work")
   repos := db.GetRepos()

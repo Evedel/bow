@@ -9,11 +9,6 @@ import (
 
 var DB *bolt.DB
 
-type Schema struct {
-  Key string
-  Children map[string]Schema
-}
-
 func Init(){
   say.L2("DB: INIT: Start")
   var err error
@@ -51,6 +46,8 @@ func Upgrade() (repeat bool){
       switch version{
       case "1":
         upto2()
+      case "2":
+        upto3()
       default:
         say.L2("DB: INIT: DB Upgrade: Actual version")
         repeat = false
