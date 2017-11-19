@@ -1,7 +1,11 @@
+Build 26
+==
+(2017.11.19)
+- Fix: free format for service name in bearer token [issue #10](https://github.com/Evedel/bow/issues/10)
+
 Build 25
 ==
-(2017.08.30)
-
+(2017.09.01)
 - Add: namespace level [issue #9](https://github.com/Evedel/bow/issues/9)
 - Add: filters on graph page [issue #9](https://github.com/Evedel/bow/issues/9)
 - Fix: list not only [first 100](https://github.com/docker/distribution/blob/b6e0cfbdaa1ddc3a17c95142c7bf6e42c5567370/registry/handlers/catalog.go#L16) but all of the images [issue #9](https://github.com/Evedel/bow/issues/9)

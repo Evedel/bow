@@ -26,9 +26,10 @@ Features
 - show statistics pretty, draw curves of uploads number and image sizes for tag with respects to dates
 - find parent of image, in case, parent in the same repo (it is clickable!)
 - show tree-graph of parents for image
-- __(new)__ enabled image deletion (registry --version >= 2.4.0)
-- __(the newest)__ API compatibility checks
-- __(killerfeature)__ Bearer token auth support (secure and selfsigned auth servers)
+- enabled image deletion (registry --version >= 2.4.0)
+- __(new)__ API compatibility checks
+- __(the newest)__ Bearer token auth support (secure and selfsigned auth servers)
+- __(killerfeature)__ Namespace layer and parents graph filters
 
 Image deletion
 ==
@@ -72,6 +73,7 @@ How to start use Bow
 docker run -d \
    --name=Bow \
    -e BS_LOG_SILENT=yes \
+   -e BS_TIME_WATCH=no \
    -v ~/db/bow:/var/lib/bow \
    -p 5001:19808 \
    evedel/bow

@@ -30,13 +30,13 @@ func init(){
 }
 
 func TestGetAPI(t *testing.T){
-  say.L1(">> GET /v2/")
-  if body_ping, _, ok := MakeQuery("/v2/", "GET", TestInfo, map[string]string{}); !ok {
-    if body_ping == 404 {
-      say.L3("API V2 is not supported by this registry")
-    }
-    t.Fail()
-  } else {
+  // say.L1(">> GET /v2/")
+  // if body_ping, _, ok := MakeQuery("/v2/", "GET", TestInfo, map[string]string{}); !ok {
+  //   if body_ping == 404 {
+  //     say.L3("API V2 is not supported by this registry")
+  //   }
+  //   t.Fail()
+  // } else {
     say.L1(">> GET /v2/_catalog")
     if body_catalog, _, ok := MakeQuery("/v2/_catalog", "GET", TestInfo, map[string]string{}); !ok {
       t.Fail()
@@ -84,7 +84,7 @@ func TestGetAPI(t *testing.T){
         }
       }
     }
-  }
+  // }
 }
 
 func testManifestFields(t *testing.T, manifest interface{}){

@@ -60,35 +60,47 @@ func getbearertoken(wwwauth string, user string, pass string, secure bool) (toke
   ok = false
   query := ""
   splitted := strings.Split(wwwauth, ",")
-  idaddrs := strings.Index(splitted[0], "\"")
-  idservc := strings.Index(splitted[1], "\"")
-  idscope := strings.Index(splitted[2], "\"")
-  if  (splitted[0][:idaddrs-1]=="Bearer realm") &&
-      (splitted[1][:idservc-1]=="service") &&
-      (splitted[2][:idscope-1]=="scope") {
-
-    addrs := splitted[0][idaddrs+1:len(splitted[0])-1]
-    servc := splitted[1][idservc+1:len(splitted[1])-1]
-    spaceinservice := strings.Index(servc, " ")
-    servc = servc[:spaceinservice] + "+" + servc[spaceinservice+1:]
-    scope := splitted[2][idscope+1:len(splitted[2])-1]
-    query = addrs + "?account=" + user + "&service=" + servc + "&scope=" + scope
-    if reqst, err := http.NewRequest("GET", query, nil); err != nil {
-      say.L3("Qurl: getbearertoken: cannot create query")
-      say.L3(err.Error())
+  if len(splitted) < 3 {
+    say.L3(wwwauth)
+  } else {
+    idaddrs := strings.Index(splitted[0], "\"")
+    idservc := strings.Index(splitted[1], "\"")
+    idscope := strings.Index(splitted[2], "\"")
+    if (idaddrs == -1) || (idservc == -1) || (idscope == -1) {
+      say.L3(splitted[0])
+      say.L3(splitted[1])
+      say.L3(splitted[2])
     } else {
-      // + user + ":" + pass + "@" +
-      reqst.Header.Add("Authorization", "Basic " +
-                        base64.StdEncoding.EncodeToString([]byte(user + ":" + pass)))
-      body, _, c := makequery(reqst, secure)
-      if c == 200 {
-        token = body.(map[string]interface{})["token"].(string)
-        ok = true
+      if  (splitted[0][:idaddrs-1]=="Bearer realm") &&
+          (splitted[1][:idservc-1]=="service") &&
+          (splitted[2][:idscope-1]=="scope") {
+
+        addrs := splitted[0][idaddrs+1:len(splitted[0])-1]
+        servc := splitted[1][idservc+1:len(splitted[1])-1]
+        servc = strings.Replace(servc, " ", "+", -1)
+        scope := splitted[2][idscope+1:len(splitted[2])-1]
+        query = addrs + "?account=" + user + "&service=" + servc + "&scope=" + scope
+        if reqst, err := http.NewRequest("GET", query, nil); err != nil {
+          say.L3("Qurl: getbearertoken: cannot create query")
+          say.L3(err.Error())
+        } else {
+          // + user + ":" + pass + "@" +
+          reqst.Header.Add("Authorization", "Basic " +
+                            base64.StdEncoding.EncodeToString([]byte(user + ":" + pass)))
+          body, _, c := makequery(reqst, secure)
+          if c == 200 {
+            token = body.(map[string]interface{})["token"].(string)
+            ok = true
+          }
+        }
+      } else {
+        say.L3("Qurl: GetBearerToken: Registry sent wrong Www-Authenticate header.")
+        say.L3(wwwauth)
       }
     }
-  } else {
-    say.L3("Qurl: GetBearerToken: Registry sent wrong Www-Authenticate header.")
-    say.L3(wwwauth)
+  }
+  if !ok {
+    say.L3("Qurl: GetBearerToken: Registry sent wrong Www-Authenticate header or token specification was changed.")
   }
   return
 }
