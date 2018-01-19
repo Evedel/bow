@@ -3,20 +3,21 @@ package handler
 import(
   "dt"
   "db"
-  "say"
   "utils"
 
   "time"
   "sort"
   "net/url"
   "net/http"
+
+  "github.com/Evedel/glb/say"
 )
 
 func RepoGraph(w http.ResponseWriter, r *http.Request){
   defer dt.Watch(time.Now(), "Graph Handler")
 
 	if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-		say.L3(err.Error())
+    say.L1("", err, "\n")
 	} else {
     irepos := make(map[string]interface{})
     headerdata := make(map[string]string)
@@ -34,7 +35,7 @@ func RepoGraph(w http.ResponseWriter, r *http.Request){
     filter := ""
 
 		if v["reponame"] == nil {
-      say.L3("Name of repository not set in repograpHandler")
+      say.L1("Name of repository not set in repograpHandler", "","\n")
     } else {
 			if v["reponame"][0] != "" {
         irepos["reponame"] = v["reponame"][0]

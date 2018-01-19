@@ -3,7 +3,6 @@ package handler
 import(
   "db"
   "dt"
-  "say"
   "utils"
 
   "time"
@@ -12,6 +11,8 @@ import(
   "net/url"
   "net/http"
   "encoding/json"
+
+  "github.com/Evedel/glb/say"
 )
 
 func Info(w http.ResponseWriter, r *http.Request){
@@ -24,7 +25,7 @@ func Info(w http.ResponseWriter, r *http.Request){
   irepos["repos"] = repos
 
   if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-    say.L3(err.Error())
+    say.L1("", err, "\n")
   } else {
     headerdata["header"] = ""
     headerdata["currepo"] = ""
@@ -90,7 +91,7 @@ func Info(w http.ResponseWriter, r *http.Request){
   						count := 0
   						for _, eu := range uploads[e] {
   							if num, err := strconv.Atoi(eu); err != nil {
-  								say.L3(err.Error())
+  								say.L1("", err, "\n")
   							} else {
   								count += num
   							}

@@ -1,9 +1,10 @@
 package db
 
 import(
-  "say"
   "strings"
   "strconv"
+
+  "github.com/Evedel/glb/say"
 )
 
 func GetRepos() (repos map[string]string){
@@ -17,7 +18,7 @@ func GetRepoPretty(repo string) (pretty map[string]string){
 }
 
 func CreateRepo(params map[string][]string) {
-  say.L1("DB: Created new repo")
+  say.L2("DB: Created new repo","","\n")
   name := params["name"][0]
   PutSimplePairToBucket([]string{name, "_info"}, "host", params["host"][0])
   PutSimplePairToBucket([]string{name, "_info"}, "pass", params["pass"][0])

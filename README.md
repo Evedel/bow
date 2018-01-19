@@ -48,7 +48,7 @@ docker run -d -p 5000:5000 --restart=always --name registry \
 2. Set up cron to run garbage collection  
 Example:  
 `10 * * * * docker exec registry bin/registry garbage-collect /etc/docker/registry/config.yml`  
-3. Also be aware, that there is a known [issue](https://github.com/docker/distribution/issues/1939) in docker registry 2.6.2 and earlier. It means, that if you delete an image from a repository, you will not able to push __the exactly same__ image in that repository. To fix it, you will need to perform rebuilding of image with `--no-cache` mode each time or restarting the registry `docker restart registry` once after deletion.
+3. Also be aware, that there is a known [issue](https://github.com/docker/distribution/issues/1939) in docker registry 2.6.2 and earlier. It means, that if you delete an image from a repository, you will not be able to push __the exactly same__ image in that repository. To fix it, you will need to perform rebuilding of image with `--no-cache` mode each time or restart the registry `docker restart registry` once after deletion.
 
 See more:  
 https://github.com/docker/docker-registry/issues/988#issuecomment-224280919  
@@ -72,7 +72,7 @@ How to start use Bow
 ```
 docker run -d \
    --name=Bow \
-   -e BS_LOG_SILENT=yes \
+   -e BS_LOG_LEVEL=1 \
    -e BS_TIME_WATCH=no \
    -v ~/db/bow:/var/lib/bow \
    -p 5001:19808 \

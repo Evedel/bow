@@ -1,9 +1,9 @@
 package handler
 
 import(
-  "say"
-
   "net/http"
+
+  "github.com/Evedel/glb/say"
 )
 
 func Main(w http.ResponseWriter, r *http.Request){
@@ -11,7 +11,7 @@ func Main(w http.ResponseWriter, r *http.Request){
 		Info(w, r)
 	} else {
 		if r.URL.Path != "/favicon.ico" {
-			say.L3("Main Handler : Wrong query [" + r.URL.Path + "]")
+			say.L1("Main Handler : Wrong query [" + r.URL.Path + "]", "","\n")
 			http.Redirect(w, r, "/", 307)
 		}
 	}

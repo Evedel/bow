@@ -2,14 +2,15 @@ package handler
 
 import(
   "db"
-  "say"
 
   "net/http"
+
+  "github.com/Evedel/glb/say"
 )
 
 func UpgradeDB(w http.ResponseWriter, r *http.Request){
 	funcname := r.URL.Path[len("/upgrade/"):]
-	say.L1("Starting upgrade for [ " + funcname + " ]")
+	say.L3("Starting upgrade for [ " + funcname + " ]", "","\n")
 	if funcname == "totalsize" {
 		db.UpgradeTotalSize()
 	}

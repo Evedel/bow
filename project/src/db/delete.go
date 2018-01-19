@@ -1,9 +1,10 @@
 package db
 
 import (
-  "say"
   "errors"
+
   "github.com/boltdb/bolt"
+  "github.com/Evedel/glb/say"
 )
 
 func DeleteBucket(path []string) {
@@ -16,7 +17,7 @@ func DeleteBucket(path []string) {
   for i := 1; i < len(path); i++ {
     pathstr = pathstr + "->" + path[i]
   }
-  say.L1("DB: DELETE BUCKET: open bucket for DELETE [ " + pathstr + " ]")
+  say.L3("DB: DELETE BUCKET: open bucket for DELETE [ ",pathstr," ]\n")
   if err := DB.Update(func(tx *bolt.Tx) error {
     b[0] = tx.Bucket([]byte("repositories"))
     for i, e := range path {
@@ -29,15 +30,15 @@ func DeleteBucket(path []string) {
     if b[len(path)] == nil {
       return errors.New("DB: DELETE BUCKET: There is no such bucket [ " + path[len(path)-1] + " ]")
     }
-    say.L1("DB: DELETE BUCKET: deleting bucket [ " + path[len(path)-1] + " ]")
+    say.L3("DB: DELETE BUCKET: deleting bucket [ ",path[len(path)-1]," ]\n")
     if err = b[len(path)-1].DeleteBucket([]byte(path[len(path)-1])); err != nil {
       return err
     }
     return nil
   }); err != nil {
-    say.L3(err.Error())
+    say.L1("",err,"\n")
   }
-  say.L1("DB: DELETE BUCKET: Done")
+  say.L3("DB: DELETE BUCKET: Done.", "","\n")
 }
 
 func DeleteKey(path []string, key string ) {
@@ -49,7 +50,7 @@ func DeleteKey(path []string, key string ) {
   for i := 1; i < len(path); i++ {
     pathstr = pathstr + "->" + path[i]
   }
-  say.L1("DB: DELETE KEY: open bucket for DELETE [ " + pathstr + " ]")
+  say.L3("DB: DELETE KEY: open bucket for DELETE [ ",pathstr," ]\n")
   if err := DB.Update(func(tx *bolt.Tx) error {
     b[0] = tx.Bucket([]byte("repositories"))
     for i, e := range path {
@@ -65,14 +66,14 @@ func DeleteKey(path []string, key string ) {
     if b[len(path)].Get([]byte(key)) == nil {
       return errors.New("DB: DELETE KEY: There is no such key [ " + key + " ]")
     } else {
-      say.L1("DB: DELETE KEY: deleting key [ " + key + " ]")
+      say.L3("DB: DELETE KEY: deleting key [ ", key, " ]\n")
       if err := b[len(path)].Delete([]byte(key)); err != nil {
         return err
       }
       return nil
     }
   }); err != nil {
-    say.L3(err.Error())
+    say.L1("", err, "")
   }
-  say.L1("DB: DELETE KEY: Done")
+  say.L3("DB: DELETE KEY: Done.", "","\n")
 }

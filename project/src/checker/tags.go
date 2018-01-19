@@ -3,18 +3,19 @@ package checker
 import(
   "dt"
   "db"
-  "say"
   "qurl"
   "utils"
 
   "time"
+
+  "github.com/Evedel/glb/say"
 )
 
 func checkTags(runchannel chan int){
   defer dt.Watch(time.Now(), "Check Tags Demon")
 
   runchannel <- 1
-  say.L1("CheckTags Daemon: started work")
+  say.L3("CheckTags Daemon: started work", "","\n")
   repos := db.GetRepos()
   for er, _ := range repos {
     repoinfo := db.GetRepoPretty(er)
@@ -40,15 +41,15 @@ func checkTags(runchannel chan int){
       } else {
         if body != nil {
           if body.(int) == 404 {
-            say.L2("CheckTags Daemon: Page with name [" + en + "] not found. Asuming it isn't valid in the moment")
+            say.L2("CheckTags Daemon: Page with name [" + en + "] not found. Asuming it isn't valid in the moment", "","\n")
             db.PutSimplePairToBucket([]string{ er, "catalog", en }, "_valid", "0")
           } else {
-            say.L3("CheckTags Daemon: cannot recieve response from registry, stopping work")
+            say.L1("CheckTags Daemon: cannot recieve response from registry, stopping work", "","\n")
           }
         }
       }
     }
   }
-  say.L1("CheckTags Daemon: finished work")
+  say.L3("CheckTags Daemon: finished work", "","\n")
   <- runchannel
 }

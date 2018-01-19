@@ -3,7 +3,6 @@ package checker
 import(
   "dt"
   "db"
-  "say"
   "qurl"
   "utils"
 
@@ -11,13 +10,15 @@ import(
   "strings"
   "strconv"
   "encoding/json"
+
+  "github.com/Evedel/glb/say"
 )
 
 func checkManifests(runchannel chan int){
   defer dt.Watch(time.Now(), "Check Manifest Demon")
 
   runchannel <- 1
-  say.L1("CheckManifests Daemon: started work")
+  say.L3("CheckManifests Daemon: started work.", "","\n")
   repos := db.GetRepos()
   for er, _ := range repos {
     repoinfo := db.GetRepoPretty(er)
@@ -29,7 +30,7 @@ func checkManifests(runchannel chan int){
         if body, _, ok := qurl.MakeQuery(Reqt, "GET", repoinfo, map[string]string{}); ok {
           ihdr := map[string]string{"Accept": "application/vnd.docker.distribution.manifest.v2+json"}
           if _, ohdr, ok := qurl.MakeQuery(Reqt, "GET", repoinfo, ihdr); !ok {
-            say.L3("CheckManifests Daemon: cannot recieve digest header from registry, stopping work")
+            say.L1("CheckManifests Daemon: cannot recieve digest header from registry, stopping work", "","\n")
             <- runchannel
           } else {
             olddidg := db.GetValueFromBucket([]string{ er, "catalog", en, et}, "digest")
@@ -44,7 +45,7 @@ func checkManifests(runchannel chan int){
                 fssha := fsshaarr[i].(map[string]interface{})["blobSum"].(string)
                 var fssize string
                 if _, fsshdr, okcl := qurl.MakeQuery("/v2/" + en + "/blobs/" + fssha, "HEAD", repoinfo, map[string]string{}); !okcl {
-                  say.L3("CheckManifests Daemon: cannot recieve content length header from registry, stopping work")
+                  say.L1("CheckManifests Daemon: cannot recieve content length header from registry, stopping work.", "","\n")
                   fssize = "0"
                 } else {
                   fssize = fsshdr["Content-Length"][0]
@@ -52,19 +53,19 @@ func checkManifests(runchannel chan int){
                 history := historyarr[i].(map[string]interface{})["v1Compatibility"].(string)
                 historynew := history
                 if fsshanum, err := strconv.Atoi(fssize); err != nil {
-                  say.L3(err.Error())
+                  say.L1("", err, "\n")
                 } else {
                   // Cut the carriage return
                   if last := len(historynew) - 1; last >= 0 {
                     historynew = historynew[:last]
                   }
                   historynew = historynew + ",\"blobSum\":\"" +
-                  fssha + "\", \"blobSize\":\"" +
-                  utils.FromByteToHuman(fsshanum) + "\"}"
+                    fssha + "\", \"blobSize\":\"" +
+                    utils.FromByteToHuman(fsshanum) + "\"}"
                   totalsize += fsshanum
                 }
                 if err := json.Unmarshal([]byte(history), &ch); err != nil {
-                  say.L3(err.Error())
+                  say.L1("", err, "\n")
                 } else {
                   created := ch.(map[string]interface{})["created"].(string)
                   var indx int
@@ -85,22 +86,22 @@ func checkManifests(runchannel chan int){
               db.PutSimplePairToBucket([]string{ er, "catalog", en, et, "_totalsizebytes" }, sizedt, strconv.Itoa(totalsize))
               db.PutTagDigest(er, en, et, shortsizedt, newdidg)
             } else {
-              say.L1("CheckManifests Daemon: digests are the same, shouldnot update anything, stopping work")
+              say.L3("CheckManifests Daemon: digests are the same, shouldnot update anything, stopping work.", "","\n")
             }
           }
         } else {
           if body != nil {
             if body.(int) == 404 {
-              say.L2("CheckManifests Daemon: Page with name [" + en + "/" + et + "] not found. Asuming it isn't valid in the moment")
+              say.L2("CheckManifests Daemon: Page with name [" + en + "/" + et + "] not found. Asuming it isn't valid in the moment.", "","\n")
               db.PutSimplePairToBucket([]string{ er, "catalog", en }, "_valid", "0")
             } else {
-              say.L3("CheckManifests Daemon: cannot recieve response from registry, stopping work")
+              say.L1("CheckManifests Daemon: cannot recieve response from registry, stopping work.", "","\n")
             }
           }
         }
       }
     }
   }
-  say.L1("CheckManifests Daemon: finished work")
+  say.L3("CheckManifests Daemon: finished work.", "","\n")
   <- runchannel
 }

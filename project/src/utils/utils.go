@@ -1,25 +1,25 @@
 package utils
 
 import(
-  "say"
-
   "strings"
   "strconv"
+
+  "github.com/Evedel/glb/say"
 )
 
 func IsSliceDifferent(a []string, b []string) (bool) {
   al := len(a)
   bl := len(b)
   if a == nil && b == nil {
-    say.L1("Slices are equally nill. Same.")
+    say.L3("Slices are equally nill. Same.\n", "","")
     return false
   }
   if a == nil || b == nil {
-    say.L1("One of the slices is empty. Different.")
+    say.L3("One of the slices is empty. Different.\n", "","")
     return true
   }
   if al != bl {
-    say.L1("Length of slices are different. Different.")
+    say.L3("Length of slices are different. Different.\n", "","")
     return true
   }
   numofequal := 0
@@ -32,10 +32,10 @@ func IsSliceDifferent(a []string, b []string) (bool) {
     }
   }
   if len(a) == numofequal {
-    say.L1("Length of slices are same with number of equal elements. Same.")
+    say.L3("Length of slices are same with number of equal elements. Same.\n", "","")
     return false
   } else {
-  say.L1("Length of slices are differ with number of equal elements. Different.")
+  say.L3("Length of slices are differ with number of equal elements. Different.\n", "","")
     return true
   }
 }

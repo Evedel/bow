@@ -2,7 +2,6 @@ package main
 
 import (
 	"db"
-	"say"
 	"conf"
 	"handler"
 	"checker"
@@ -10,10 +9,13 @@ import (
 	"net/http"
 
 	_ "github.com/wader/disable_sendfile_vbox_linux"
+	"github.com/Evedel/glb/say"
 )
 func main() {
 	conf.Init()
 	db.Init()
+	say.L0("", conf.Env, "\n")
+	say.Init(conf.Env["log_level"])
 
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
 
@@ -25,10 +27,12 @@ func main() {
 	http.HandleFunc("/update", handler.UpdateAll)
 	http.HandleFunc("/", handler.Main)
 
+	say.L0("", db.GetAllPairsFromBucket([]string{"basic", "_info"}), "\n")
+
 	go checker.DaemonManager()
 
-	say.L2("Server listening at [" + conf.Env["servadd"] + "]")
+	say.L2("Main: Server listening at [" + conf.Env["servadd"] + "]", "","\n")
 	if err := http.ListenAndServe(conf.Env["servadd"], nil); err != nil {
-		say.L3(err.Error() + "\nListenAndServe()\nmain()\nmain.go\nmain")
+		say.L1("Main: Server start failed: ", err, "\n")
 	}
 }

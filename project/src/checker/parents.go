@@ -3,19 +3,20 @@ package checker
 import(
   "dt"
   "db"
-  "say"
 
   "time"
   "utils"
   "strings"
   "encoding/json"
+
+  "github.com/Evedel/glb/say"
 )
 
 func checkParents(runchannel chan int){
   defer dt.Watch(time.Now(), "Check Parents Demon")
 
   runchannel <- 1
-  say.L1("CheckParents Daemon: started work")
+  say.L3("CheckParents Daemon: started work.", "","\n")
   repos := db.GetRepos()
   for key, value := range repos {
     if value == "" {
@@ -25,7 +26,7 @@ func checkParents(runchannel chan int){
           tags := db.GetAllPairsFromBucket([]string{key, "catalog", keyn})
           for keyt, valuet := range tags {
             if (valuet == "") && (keyt[0:1] != "_"){
-              say.L1("CheckParents Daemon: check [" + key + "->" + keyn + ":" + keyt + "]")
+              say.L3("CheckParents Daemon: check [" + key + "->" + keyn + ":" + keyt + "]", "","\n")
               if _, ok := db.GetAllPairsFromBucket([]string{key, "catalog", keyn, keyt})["history"]; !ok {
                 db.PutBucketToBucket([]string{key, "catalog", keyn, keyt, "history"})
               }
@@ -36,7 +37,7 @@ func checkParents(runchannel chan int){
               for _, valh := range history {
                 var ch interface{}
                 if err := json.Unmarshal([]byte(valh), &ch); err != nil {
-                  say.L3(err.Error())
+                  say.L1("checkParents: Cannot unmarshal from history: ", err, "\n")
                 } else {
                   tmpstr = ""
                   if ch.(map[string]interface{})["container_config"].(map[string]interface{})["Cmd"] != nil {
@@ -65,7 +66,7 @@ func checkParents(runchannel chan int){
               cmdneedaddition := true
               for _, valcmd := range cmd {
                 if err := json.Unmarshal([]byte(valcmd), &cmdslice); err != nil {
-                  say.L3(err.Error())
+                  say.L1("checkParents: Cannot unmarshal new cmd", err, "\n")
                 } else {
                   if ! utils.IsSliceDifferent(histarr, cmdslice) {
                     cmdneedaddition = false
@@ -78,7 +79,7 @@ func checkParents(runchannel chan int){
                 fullcmd, _ := json.Marshal(histarr)
                 db.PutSimplePairToBucket([]string{ key, "_names", keyn + ":" + keyt }, sizedt, string(fullcmd))
               }
-              say.L1("Finding parent for [ " + keyn + ":" + keyt +  " ]")
+              say.L3("Finding parent for [ " + keyn + ":" + keyt +  " ]", "","\n")
               if pn, pt, pok := FindParent(histarr, key, keyn, keyt); pok {
                 db.PutSimplePairToBucket([]string{ key, "catalog", keyn, keyt, "_parent" }, "name", pn)
                 db.PutSimplePairToBucket([]string{ key, "catalog", keyn, keyt, "_parent" }, "tag",  pt)
@@ -94,12 +95,12 @@ func checkParents(runchannel chan int){
     db.DeleteBucket([]string{key, "_namesgraph"})
     BuildParentsGraph(key)
   }
-  say.L1("CheckParents Daemon: finished work")
+  say.L3("CheckParents Daemon: finished work.", "","\n")
   <- runchannel
 }
 
 func FindParent(childcmd []string, repo string, namei string, tagi string) (name string, tag string, ok bool){
-  say.L1("Searching for parent of [ " + namei + ":" + tagi + " ]")
+  say.L3("Searching for parent of [ " + namei + ":" + tagi + " ]", "","\n")
   ok = false
   names := db.GetAllPairsFromBucket([]string{repo, "_names"})
   maxname := ""
@@ -111,7 +112,7 @@ func FindParent(childcmd []string, repo string, namei string, tagi string) (name
       for _, vc := range cmd {
         var parentcmd interface{}
         if err := json.Unmarshal([]byte(vc), &parentcmd); err != nil {
-          say.L3(err.Error())
+          say.L1("", err, "\n")
           // return -- don't shure why it was return
           // if one of cmd broken, we can skeap only this exact comand
           break
@@ -142,9 +143,9 @@ func FindParent(childcmd []string, repo string, namei string, tagi string) (name
     }
   }
   if maxlayers == 0 {
-    say.L1("Parent not found")
+    say.L3("FindParent: Parent not found.", "","\n")
   } else {
-    say.L1("Parent is [ "+ maxname +" ]")
+    say.L3("FindParent: Parent is [ "+ maxname +" ]", "","\n")
     ok = true
     s := strings.Split(maxname, ":")
     name = s[0]
@@ -154,7 +155,7 @@ func FindParent(childcmd []string, repo string, namei string, tagi string) (name
 }
 
 func BuildParentsGraph(repo string){
-  say.L1("Building parents tree for [ " + repo + " ]")
+  say.L3("Building parents tree for [ " + repo + " ]", "","\n")
   fullnames := []string{}
   names := db.GetAllPairsFromBucket([]string{repo, "catalog"})
   for kn, _ := range names {
@@ -182,7 +183,7 @@ func BuildParentsGraph(repo string){
 
       for j := 0; j < len(Base); j++ {
         if ( np + ":" + tp == Base[j][len(Base[j])-1] ) || (( Depth == 0 ) && ( np + ":" + tp == ":" )) {
-          say.L1("Found parents [ " + np + ":" + tp + " => " + n + ":" + t + " ]")
+          say.L3("Found parents [ " + np + ":" + tp + " => " + n + ":" + t + " ]", "","\n")
           tmpPath := append(Base[j], n + ":" + t)
           cpPath := make([]string, len(tmpPath))
           copy(cpPath, tmpPath)

@@ -1,9 +1,10 @@
 package db
 
 import (
-  "say"
   "errors"
+
   "github.com/boltdb/bolt"
+  "github.com/Evedel/glb/say"
 )
 
 func GetAllPairsFromBucket(path []string) (pairs map[string]string){
@@ -19,7 +20,7 @@ func GetAllPairsFromBucket(path []string) (pairs map[string]string){
   if pathstr == "" {
     pathstr = "RootPoint"
   }
-  say.L1("DB: GET BUCKET: open bucket for READ  [ " + pathstr + " ]")
+  say.L3("DB: GET BUCKET: open bucket for READ  [ ", pathstr, " ]\n")
   if err := DB.View(func(tx *bolt.Tx) error {
     b[0] = tx.Bucket([]byte("repositories"))
     for i, e := range path {
@@ -40,9 +41,9 @@ func GetAllPairsFromBucket(path []string) (pairs map[string]string){
     }
     return nil
   }); err != nil {
-    say.L3(err.Error())
+    say.L1("", err, "\n")
   }
-  say.L1("DB: GET BUCKET: Done")
+  say.L3("DB: GET BUCKET: Done.", "", "\n")
   return
 }
 
@@ -55,7 +56,7 @@ func GetValueFromBucket(path []string, key string) (value string){
   for i := 1; i < len(path); i++ {
     pathstr = pathstr + "->" + path[i]
   }
-  say.L1("DB: GET VALUE: open bucket for READ  [ " + pathstr + "=>" + key + " ]")
+  say.L3("DB: GET VALUE: open bucket for READ  [ " + pathstr + "=>" + key + " ]", "", "\n")
   if err := DB.View(func(tx *bolt.Tx) error {
     b[0] = tx.Bucket([]byte("repositories"))
     for i, e := range path {
@@ -71,8 +72,8 @@ func GetValueFromBucket(path []string, key string) (value string){
     value =  string(b[len(path)].Get([]byte(key)))
     return nil
   }); err != nil {
-    say.L3(err.Error())
+    say.L1("", err, "\n")
   }
-  say.L1("DB: GET VALUE: Done")
+  say.L3("DB: GET VALUE: Done.", "", "\n")
   return
 }

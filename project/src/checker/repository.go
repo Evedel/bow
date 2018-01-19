@@ -3,19 +3,20 @@ package checker
 import(
   "dt"
   "db"
-  "say"
   "qurl"
   "utils"
 
   "time"
   "strings"
+
+  "github.com/Evedel/glb/say"
 )
 
 func checkRepos(runchannel chan int){
   defer dt.Watch(time.Now(), "Check Repositories Demon")
 
   runchannel <- 1
-  say.L1("CheckRepos Daemon: started work")
+  say.L3("CheckRepos Daemon: started work.", "","\n")
   repos := db.GetRepos()
   for e, _ := range repos {
     repoinfo := db.GetRepoPretty(e)
@@ -37,7 +38,7 @@ func checkRepos(runchannel chan int){
               arrstr = append(arrstr, e.(string))
             }
           } else {
-            say.L3("CheckRepos Daemon: cannot recieve response from registry, stopping work")
+            say.L1("CheckRepos Daemon: cannot recieve response from registry, stopping work", "","\n")
             break;
           }
         }
@@ -53,7 +54,7 @@ func checkRepos(runchannel chan int){
           }
         }
       } else {
-        say.L3("CheckRepos Daemon: cannot recieve response from registry, stopping work")
+        say.L1("CheckRepos Daemon: cannot recieve response from registry, stopping work", "","\n")
       }
     }
 
@@ -63,6 +64,6 @@ func checkRepos(runchannel chan int){
     }
 
   }
-  say.L1("CheckRepos Daemon: finished work")
+  say.L3("CheckRepos Daemon: finished work", "","\n")
   <-runchannel
 }

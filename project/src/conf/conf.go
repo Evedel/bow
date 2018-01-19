@@ -11,11 +11,23 @@ func Init()  {
   Env = make (map[string] string)
 
   var val string
+
   if val = os.Getenv("BS_LOG_SILENT"); val != "" {
       Env["log_silent"] = val
     } else {
       Env["log_silent"] = "no"
   }
+
+  if val = os.Getenv("BS_LOG_LEVEL"); val != "" {
+    Env["log_level"] = val
+  } else if Env["log_silent"] != "no" {
+    if Env["log_silent"] == "super" {
+      Env["log_level"] = "0"
+    } else if Env["log_silent"] == "yes" {
+      Env["log_level"] = "1"
+    }
+  }
+
   if val = os.Getenv("BS_TIME_WATCH"); val != "" {
       Env["timewatch"] = val
     } else {
@@ -45,12 +57,5 @@ func Init()  {
     }
   } else {
     Env["checker_time"] = "300"
-  }
-  if val = os.Getenv("BS_LOG_LEVEL"); val != "" {
-    if val == "1" || val == "2" || val == "3" || val == "4" {
-      Env["log_level"] = val
-    }
-  } else {
-    Env["log_level"] = "1"
   }
 }

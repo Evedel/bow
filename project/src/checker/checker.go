@@ -1,10 +1,11 @@
 package checker
 
 import (
-  "say"
   "conf"
   "time"
   "strconv"
+
+  "github.com/Evedel/glb/say"
 )
 
 var runchannel = make( map[string]chan int)
@@ -17,9 +18,9 @@ func DaemonManager() {
   runchannel["mnft"] = make(chan int,1)
   runchannel["prnt"] = make(chan int,1)
 
-  say.L2("DaemonManager: Sleep time is : " + conf.Env["checker_time"] + " seconds")
+  say.L2("DaemonManager: Sleep time is : ", conf.Env["checker_time"], " seconds.\n")
   for {
-    say.L1("DaemonManager: TicTac")
+    say.L3("DaemonManager: TicTac.", "","\n")
     go checkRepos(runchannel["repo"])
     go checkTags(runchannel["tags"])
     go checkManifests(runchannel["mnft"])
@@ -29,7 +30,7 @@ func DaemonManager() {
 }
 
 func StartManual() {
-  say.L2("DaemonManager: Started all checkers manually")
+  say.L3("DaemonManager: Started all checkers manually.", "","\n")
   go checkRepos(runchannel["repo"])
   go checkTags(runchannel["tags"])
   go checkManifests(runchannel["mnft"])
@@ -37,5 +38,6 @@ func StartManual() {
 }
 
 func RunCheckTags(){
+  say.L3("DaemonManager: Run check tags only.", "","\n")
   go checkTags(runchannel["tags"])
 }

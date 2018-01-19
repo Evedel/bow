@@ -1,12 +1,11 @@
 package db
 
 import (
-  "say"
-
   "errors"
   "strings"
 
   "github.com/boltdb/bolt"
+  "github.com/Evedel/glb/say"
 )
 
 type Schema struct {
@@ -23,7 +22,7 @@ func GetSchemaFromPoint(path []string, filter string)(schema Schema){
   for i := 1; i < len(path); i++ {
     pathstr = pathstr + "->" + path[i]
   }
-  say.L1("DB: GET SCHEMA: open bucket for READ  [ " + pathstr + " ]")
+  say.L3("DB: GET SCHEMA: open bucket for READ  [ ", pathstr, " ]\n")
   if err := DB.View(func(tx *bolt.Tx) error {
     b = append(b, tx.Bucket([]byte("repositories")))
     for i, e := range path {
@@ -39,9 +38,9 @@ func GetSchemaFromPoint(path []string, filter string)(schema Schema){
     schema, _ = buildSchemaRecursive(b[len(path)], "root", filter, false)
     return nil
   }); err != nil {
-    say.L3(err.Error())
+    say.L1("", err, "\n")
   }
-  say.L1("DB: GET SCHEMA: Done")
+  say.L3("DB: GET SCHEMA: Done.", "", "\n")
   return
 }
 

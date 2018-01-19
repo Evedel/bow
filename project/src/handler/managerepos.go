@@ -2,12 +2,13 @@ package handler
 
 import(
   "db"
-  "say"
   "utils"
 
   "sort"
   "net/url"
   "net/http"
+
+  "github.com/Evedel/glb/say"
 )
 
 func ManageRepos(w http.ResponseWriter, r *http.Request){
@@ -17,7 +18,7 @@ func ManageRepos(w http.ResponseWriter, r *http.Request){
 	var repopretty map[string]string
 	if urlc == "add" {
 		if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-			say.L3(err.Error())
+      say.L1("", err, "\n")
 		} else {
 			if len(v) != 0 {
 				db.CreateRepo(v)
@@ -27,7 +28,7 @@ func ManageRepos(w http.ResponseWriter, r *http.Request){
 	}
 	if urlc == "edit" {
 		if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-			say.L3(err.Error())
+			say.L1("", err, "\n")
 		} else {
 			if len(v) == 1 {
 				repopretty = db.GetRepoPretty(v["reponame"][0])
@@ -41,7 +42,7 @@ func ManageRepos(w http.ResponseWriter, r *http.Request){
 	}
 	if urlc == "delete" {
 		if v, err := url.ParseQuery(r.URL.RawQuery); err != nil {
-			say.L3(err.Error())
+			say.L1("", err, "\n")
 		} else {
 			if len(v) == 1 {
 				db.DeleteRepo(v["reponame"][0])

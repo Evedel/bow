@@ -1,14 +1,15 @@
 package db
 
 import(
-  "say"
   "utils"
   "strconv"
   "strings"
+
+  "github.com/Evedel/glb/say"
 )
 
 func upto3(){
-  say.L2("DB: INIT: DB Upgrade: Need upgrade")
+  say.L2("DB: INIT: DB Upgrade: Need upgrade.", "","\n")
   repos := GetRepos()
   for er, _ := range repos {
     names := GetAllPairsFromBucket([]string{er, "catalog"})
@@ -28,7 +29,7 @@ func upto3(){
 }
 
 func upto2(){
-  say.L2("DB: INIT: DB Upgrade: Need upgrade")
+  say.L2("DB: INIT: DB Upgrade: Need upgrade.", "","\n")
   repos := GetRepos()
   for er, _ := range repos{
     repofull := GetAllPairsFromBucket([]string{er})
@@ -51,13 +52,13 @@ func upto2(){
 }
 
 func upto1(){
-  say.L2("DB: INIT: DB Upgrade: Version: 0")
-  say.L2("DB: INIT: DB Upgrade: Need upgrade")
+  say.L2("DB: INIT: DB Upgrade: Version: 0.", "","\n")
+  say.L2("DB: INIT: DB Upgrade: Need upgrade.", "","\n")
   PutSimplePairToBucket([]string{"_info"}, "version", "1")
 }
 
 func UpgradeOldParentNames(){
-  say.L2("DB UPGRADE: make upgrade for old parent names")
+  say.L2("DB UPGRADE: make upgrade for old parent names.", "","\n")
   repos := GetRepos()
   for key, value := range repos {
     if value == "" {
@@ -72,7 +73,7 @@ func UpgradeOldParentNames(){
 }
 
 func UpgradeFalseNumericImage(){
-  say.L2("DB UPGRADE: make upgrade for false numeric image")
+  say.L2("DB UPGRADE: make upgrade for false numeric image.", "","\n")
   repos := GetRepos()
   for key, value := range repos {
     if value == "" {
@@ -87,7 +88,7 @@ func UpgradeFalseNumericImage(){
 }
 
 func UpgradeTotalSize(){
-  say.L2("DB UPGRADE: make upgrade for total size")
+  say.L2("DB UPGRADE: make upgrade for total size.", "","\n")
   repos := GetRepos()
   for key, value := range repos {
     if value == "" {
