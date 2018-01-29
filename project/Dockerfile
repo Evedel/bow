@@ -1,5 +1,5 @@
-FROM      debian:jessie
-RUN       apt-get update && apt-get install -y ca-certificates
+FROM     alpine:edge
+RUN apk add --no-cache ca-certificates
 ADD       main /evedel/bow
 ADD	      templates /evedel/templates
 ADD	      resources /evedel/resources
