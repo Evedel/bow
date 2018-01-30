@@ -3,7 +3,7 @@ MAINTAINER Jermine.hu@qq.com
 ENV APP_HOME /go/src/bow
 WORKDIR $APP_HOME
 COPY . $APP_HOME
-RUN go env && go build -v -o bow && chmod +x bow && pwd && ls
+RUN go env && go build -v -o bow && chmod +x bow
 FROM alpine:edge
 RUN apk add --no-cache ca-certificates
 WORKDIR /evedel
