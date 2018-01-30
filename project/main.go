@@ -6,9 +6,7 @@ import (
 	"conf"
 	"handler"
 	"checker"
-
 	"net/http"
-
 	_ "github.com/wader/disable_sendfile_vbox_linux"
 )
 func main() {

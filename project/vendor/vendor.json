@@ -1,0 +1,84 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "woWcujbCsyh56gMpDDbCF9rr1+8=",
+			"path": "checker",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "l49SEbVMpRfkMWLgt4ce3Q4DkAI=",
+			"path": "conf",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "SAZHn753ubnkq0pu1uUZTaIuG6Q=",
+			"path": "db",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "22+MbgW96IUKe0EcG50k6FzaL5A=",
+			"path": "dt",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "q02xxWXmjG0V6Uzj8O/yzCbhoyc=",
+			"path": "github.com/boltdb/bolt",
+			"revision": "9da31745363232bc1e27dbab3569e77383a51585",
+			"revisionTime": "2017-11-20T01:03:07Z"
+		},
+		{
+			"checksumSHA1": "2NXO9WZihD2R2eB3U/Js6RzZFGw=",
+			"path": "github.com/fatih/color",
+			"revision": "5df930a27be2502f99b292b7cc09ebad4d0891f4",
+			"revisionTime": "2017-09-26T11:14:11Z"
+		},
+		{
+			"checksumSHA1": "sGC8yzCmU7CO6/Uy6TTWRgHpgLI=",
+			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-colorable",
+			"path": "github.com/mattn/go-colorable",
+			"revision": "5df930a27be2502f99b292b7cc09ebad4d0891f4",
+			"revisionTime": "2017-09-26T11:14:11Z"
+		},
+		{
+			"checksumSHA1": "w8LTR7SnKYaJgDdhvC5qTjYJ5s8=",
+			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-isatty",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "5df930a27be2502f99b292b7cc09ebad4d0891f4",
+			"revisionTime": "2017-09-26T11:14:11Z"
+		},
+		{
+			"checksumSHA1": "6v9Tsmm8TzlNsqrkLAZMLj75zY8=",
+			"path": "github.com/wader/disable_sendfile_vbox_linux",
+			"revision": "40f6459883cd59fb0265888abe8a65eb5f7bd80a",
+			"revisionTime": "2017-07-13T09:21:12Z"
+		},
+		{
+			"checksumSHA1": "YF+/lXbyNK4PCI7ShxvQdKP48+0=",
+			"path": "golang.org/x/sys/unix",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "G9JeU6cCsmyfZ+n2sRbRzGLDMho=",
+			"path": "handler",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "uuaSWU2ji/X0vUT/vG5PtXrmiNM=",
+			"path": "qurl",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "daGuJwiOGQVMuYNlmM3YoNgtjvo=",
+			"path": "say",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "MKfh8kmeybJMUJmejdppxlrS7cE=",
+			"path": "utils",
+			"revision": ""
+		}
+	],
+	"rootPath": "project"
+}
