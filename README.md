@@ -4,13 +4,13 @@ Bow
 
 Pictures
 ==
-![](img/conf.png)  
+![](https://raw.githubusercontent.com/JermineHu/bow/master/img/conf.png)  
 
-![](img/info.png)
+![](https://raw.githubusercontent.com/JermineHu/bow/master/img/info.png)
 
-![](img/history.png)
+![](https://raw.githubusercontent.com/JermineHu/bow/master/img/history.png)
 
-![](img/parents.png)
+![](https://raw.githubusercontent.com/JermineHu/bow/master/img/parents.png)
 
 Features
 ==  
