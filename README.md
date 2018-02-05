@@ -84,7 +84,7 @@ The full list of available tags can be found at [hub.docker.com](https://hub.doc
 ``evedel/bow:latest`` -- the last build based on debian:jessie image (68MB)  
 ``evedel/bow:debian-latest`` -- the same last build based on debian image (68MB)  
 ``evedel/bow:alpine-latest`` -- the last alpine based build (4.7MB)  
-``evedel/bow:debian-$(buildNumber)`` -- tagged previously [released versions](https://github.com/Evedel/bow/blob/master/CHANGELOG.md) based on debian (~68MB).  
+``evedel/bow:debian-$(buildNumber)`` -- tagged previously [released versions](https://github.com/Evedel/bow/blob/master/CHANGELOG.md) based on debian (68MB).  
 ``evedel/bow:alpine-$(buildNumber)`` -- tagged previously [released versions](https://github.com/Evedel/bow/blob/master/CHANGELOG.md) based on alpine (4.7MB).  
 ``evedel/bow:$(buildNumber)`` -- tagged previously [released versions](https://github.com/Evedel/bow/blob/master/CHANGELOG.md) based on debian.  
 
