@@ -14,21 +14,21 @@ Pictures
 
 Features
 ==  
-- V2 registries support only (secure, selfsigned and insecure, DNS and IP:PORT)
-- internal db ([BoltBD](https://github.com/boltdb/bolt)) gives it ability to store info, and as result it responses much faster then after direct api call, and can provide more data
-- app can pars, store and show info from registry such as:
+- V2 registries support only (secure, self-signed and insecure, DNS and IP:PORT)
+- internal DB ([BoltBD](https://github.com/boltdb/bolt)) gives it the ability to store info, and as the result, it responses much faster than after direct API call, and can provide more data
+- the app can pars, store and show info from registry such as:
  - image layers info:
    - name / tag
-   - image size and pushes number
+   - image size and a number of pushes
    - upload and push dates
- - image creating commands history
+ - an image creating commands history
 - it is possible to set multiple repositories and watch all registries in one place
-- show statistics pretty, draw curves of uploads number and image sizes for tag with respects to dates
-- find parent of image, in case, parent in the same repo (it is clickable!)
+- show statistics pretty, draw curves of uploads number and image sizes for a tag with respects to dates
+- find a parent of an image, in case, the parent in the same repo (it is clickable!)
 - show tree-graph of parents for image
 - enabled image deletion (registry --version >= 2.4.0)
 - __(new)__ API compatibility checks
-- __(the newest)__ Bearer token auth support (secure and selfsigned auth servers)
+- __(the newest)__ Bearer token auth support (secure and self-signed auth servers)
 - __(killerfeature)__ Namespace layer and parents graph filters
 
 Image deletion
@@ -63,11 +63,11 @@ Bow was tested to work with [cesanta/docker_auth](https://github.com/cesanta/doc
 Prospects
 ==
 I can say that this app almost fit my needs, so in all likelihood, soon, I will not improve it hardly, but this is the list of ideas just for case:  
-- info for whole repository: size, number of pushes so on so on soon
+- info for the whole repository: size, number of pushes so on so on soon
 - add button 'Don't Track', to store repo data but not update it
-- add tests for bearer token and for image deletion
+- add tests for bearer token and image deletion
 
-How to start use Bow
+How to start to use Bow
 ==
 ```
 docker run -d \
@@ -78,6 +78,17 @@ docker run -d \
    -p 5001:19808 \
    evedel/bow
 ```
+
+The full list of available tags can be found at [hub.docker.com](https://hub.docker.com/r/evedel/bow/tags/).
+
+``evedel/bow:latest`` -- the last build based on debian:jessie image (68MB)  
+``evedel/bow:debian-latest`` -- the same last build based on debian image (68MB)  
+``evedel/bow:alpine-latest`` -- the last alpine based build (4.7MB)  
+``evedel/bow:debian-$(buildNumber)`` -- tagged previously [released versions](https://github.com/Evedel/bow/blob/master/CHANGELOG.md) based on debian (68MB).  
+``evedel/bow:alpine-$(buildNumber)`` -- tagged previously [released versions](https://github.com/Evedel/bow/blob/master/CHANGELOG.md) based on alpine (4.7MB).  
+``evedel/bow:$(buildNumber)`` -- tagged previously [released versions](https://github.com/Evedel/bow/blob/master/CHANGELOG.md) based on debian.  
+
+
 How to start contribute to Bow
 ==
 If you have interest, you can easily start with
