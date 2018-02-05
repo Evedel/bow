@@ -7,7 +7,7 @@ RUN		apt-get update &&\
 			mv go /usr/local &&\
 			apt-get clean autoremove
 WORKDIR /go
-COPY ./project /go
+COPY . /go
 ENV GOBIN "/go/bin"
 ENV GOPATH "/go"
 ENV GOROOT "/usr/local/go"
@@ -21,6 +21,6 @@ FROM debian:jessie
 RUN apt-get update && apt-get install -y ca-certificates
 WORKDIR /evedel
 COPY --from=artifact /go/bow /evedel/bow
-COPY ./project/templates /evedel/templates
-COPY ./project/resources /evedel/resources
+COPY ./templates /evedel/templates
+COPY ./resources /evedel/resources
 CMD	 ["/evedel/bow"]
