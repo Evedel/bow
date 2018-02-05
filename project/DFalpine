@@ -1,6 +1,6 @@
 FROM golang:1.9.3-alpine3.7 AS artifact
 WORKDIR /go
-ADD . /go
+ADD ./project /go
 RUN apk add --no-cache git
 ENV GOBIN "/go/bin"
 RUN go env
@@ -12,6 +12,6 @@ FROM alpine:3.7
 RUN apk add --no-cache ca-certificates
 WORKDIR /evedel
 COPY --from=artifact /go/bow /evedel/bow
-COPY templates /evedel/templates
-COPY resources /evedel/resources
+COPY ./project/templates /evedel/templates
+COPY ./project/resources /evedel/resources
 CMD	 ["/evedel/bow"]

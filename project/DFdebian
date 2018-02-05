@@ -1,0 +1,26 @@
+FROM debian:jessie AS artifact
+RUN		apt-get update &&\
+			apt-get install -y git wget &&\
+			wget https://storage.googleapis.com/golang/go1.9.linux-amd64.tar.gz &&\
+			tar -xvf go1.9.linux-amd64.tar.gz &&\
+			rm go1.9.linux-amd64.tar.gz &&\
+			mv go /usr/local &&\
+			apt-get clean autoremove
+WORKDIR /go
+COPY ./project /go
+ENV GOBIN "/go/bin"
+ENV GOPATH "/go"
+ENV GOROOT "/usr/local/go"
+ENV PATH "${GOPATH}/bin:${GOROOT}/bin:${PATH}"
+RUN go env && ls -l
+RUN go get -v && rm bin/go
+RUN go build -v -o bow
+RUN chmod +x bow
+
+FROM debian:jessie
+RUN apt-get update && apt-get install -y ca-certificates
+WORKDIR /evedel
+COPY --from=artifact /go/bow /evedel/bow
+COPY ./project/templates /evedel/templates
+COPY ./project/resources /evedel/resources
+CMD	 ["/evedel/bow"]

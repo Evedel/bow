@@ -1,4 +1,8 @@
 Build 26
+(2018.02.06)
+- Added alpine based image, as requested in [pr #1](https://github.com/Evedel/bow/pull/12), changed labelling system.
+
+Build 26
 ==
 (2017.11.19)
 - Fix: free format for service name in bearer token [issue #10](https://github.com/Evedel/bow/issues/10)
