@@ -4,13 +4,14 @@ Bow
 
 Pictures
 ==
-![](img/conf.png)  
 
-![](img/info.png)
+![](https://raw.githubusercontent.com/Evedel/bow/master/img/conf.png)  
 
-![](img/history.png)
+![](https://raw.githubusercontent.com/Evedel/bow/master/img/info.png)
 
-![](img/parents.png)
+![](https://raw.githubusercontent.com/Evedel/bow/master/img/history.png)
+
+![](https://raw.githubusercontent.com/Evedel/bow/master/img/parents.png)
 
 Features
 ==  
@@ -78,6 +79,15 @@ docker run -d \
    -p 5001:19808 \
    evedel/bow
 ```
+
+There are some parameters, that can be set only as [environment variables](https://github.com/Evedel/bow/blob/master/NOTE.md).
+Short descriptions with default value:  
+ - ``BS_LOG_SILENT=""`` -- logging level, default is full logging  
+ - ``BS_DB_PATH="/var/lib/bow"`` -- path to store your db  
+ - ``BS_DB_NAME="asapdrf.db"`` -- name of db and db file  
+ - ``BS_SERVE_ADD="19808"`` -- port address to serve  
+ - ``BS_CHECKER_TIMEOUT="300"`` -- seconds, time to renew data  
+ - ``BS_TIME_WATCH="yes"`` -- print time of  execution for qurl queries and page-renderers  
 
 The full list of available tags can be found at [hub.docker.com](https://hub.docker.com/r/evedel/bow/tags/).
 
