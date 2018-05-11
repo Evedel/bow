@@ -1,4 +1,5 @@
-Build 26
+Build 26.1
+==
 (2018.02.06)
 - Added alpine based image, as requested in [pr #1](https://github.com/Evedel/bow/pull/12), changed labelling system.
 
