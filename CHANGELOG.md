@@ -1,3 +1,8 @@
+Build 27
+==
+(2020.07.03)
+- CSS fixes [issue #16](https://github.com/Evedel/bow/issues/16)
+
 Build 26.1
 ==
 (2018.02.06)

@@ -9,7 +9,8 @@ body{
   radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
   background-color:#222225;
   background-size:16px 16px;
-  overflow: hidden;*/
+  */
+  /* overflow: hidden; */
 }
 .preload * {
   -webkit-transition: none !important;
@@ -149,7 +150,7 @@ div.managerepos a:hover, div.managerepos a:active{
   color: black;
 }
 div.manifestbar{
-  width: 61%;
+  width: 60%;
   height: 90%;
   display: inline-block;
 }
@@ -298,7 +299,9 @@ div.sidebar div.label{
 }
 
 div.sidebar div.links{
+  width: 100%;
   height: 90%;
+  display: inline-block;
   overflow-y: auto;
   overflow-x: hidden;
 }
