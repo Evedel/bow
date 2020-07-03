@@ -1,4 +1,4 @@
-Build 27
+Build 27.1
 ==
 (2020.07.03)
 - CSS fixes [issue #16](https://github.com/Evedel/bow/issues/16)
